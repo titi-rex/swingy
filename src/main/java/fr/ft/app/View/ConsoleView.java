@@ -1,4 +1,4 @@
-package fr.ft.app;
+package fr.ft.app.View;
 
 public class ConsoleView {
 
