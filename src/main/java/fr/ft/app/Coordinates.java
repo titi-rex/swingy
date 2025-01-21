@@ -1,7 +1,13 @@
 package fr.ft.app;
 
 public class Coordinates {
-  private int x;
-  private int y;
+  public int x;
+  public int y;
 
+
+  public void increase(int value) {
+    y += value;
+    x += value;
+  }
+ 
 }

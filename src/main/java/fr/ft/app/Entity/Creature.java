@@ -1,124 +1,64 @@
-package fr.ft.app;
+package fr.ft.app.Entity;
 
-public class Creature extends Entity {
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
 
-  private Artifact artifact;
+@Getter @Setter @ToString public class Creature extends Entity {
+
   private int level = 1;
-  private int xp;
-  private int attack;
-  private int defense;
-  private int hitPoint;
-  private int xpGrowth;
-  private int attackGrowth;
-  private int defenseGrowth;
-  private int hitPointGrowth;
+  private int xp = 0;
+  @NonNull private Role role;
+  @NonNull private Statistic attack;
+  @NonNull private Statistic defense;
+  @NonNull private Statistic hitPoint;
+  private Artifact artifact;
 
-  public int getLevel() {
-    return level;
+  Creature(String p_name, Role p_role, Statistic p_attack, Statistic p_defense, Statistic p_hitPoint) {
+    super(p_name);
+    role = p_role;
+    attack = p_attack;
+    defense = p_defense;
+    hitPoint = p_hitPoint;
   }
 
-  public void setLevel(int value) {
-    level = value;
-  }
-
-  public void increaseLevel(int value) {
-    setLevel(level + value);
-  }
-
-  public int getXp() {
-    return xp;
-  }
-
-  public void setXp(int value) {
-    xp = value;
-  }
-
-  public void increaseXp(int value) {
+  public void gainXp(int value) {
     setXp(xp + value);
+    checkLevel();
+  } 
+
+  private void checkLevel() {
+    int nextLevel = level * 1000 + (level - 1) * (level - 1) * 450;
+    if (xp >= nextLevel) {
+      levelUp();
+        xp -= nextLevel;
+        checkLevel();
+    }
   }
 
-  public int getAttack() {
-    return attack;
+  public void levelUp() {
+      setLevel(level + 1);
+      attack.growth();
+      defense.growth();
+      hitPoint.growth();
+
   }
 
-  public void setAttack(int value) {
-    attack = value;
+  public void levelUp(int n) {
+    for (int i = 0; i < n; i++) {
+      setLevel(level + 1);
+      attack.growth();
+      defense.growth();
+      hitPoint.growth();
+    }
   }
 
-  public void increaseAttack(int value) {
-    setAttack(attack + value);
-  }
-
-  public int getDefense() {
-    return defense;
-  }
-
-  public void setDefense(int value) {
-    defense = value;
-  }
-
-  public void increaseDefense(int value) {
-    setDefense(defense + value);
-  }
-
-  public int getHitPoint() {
-    return hitPoint;
-  }
-
-  public void setHitPoint(int value) {
-    hitPoint = value;
-  }
-
-  public void increaseHitPoint(int value) {
-    setHitPoint(hitPoint + value);
-  }
-
-  public int getXpGrowth() {
-    return xp;
-  }
-
-  public void setXpGrowth(int value) {
-    xp = value;
-  }
-
-  public void increaseXpGrowth(int value) {
-    setXpGrowth(xp + value);
-  }
-
-  public int getAttackGrowth() {
-    return attack;
-  }
-
-  public void setAttackGrowth(int value) {
-    attack = value;
-  }
-
-  public void increaseAttackGrowth(int value) {
-    setAttackGrowth(attack + value);
-  }
-
-  public int getDefenseGrowth() {
-    return defense;
-  }
-
-  public void setDefenseGrowth(int value) {
-    defense = value;
-  }
-
-  public void increaseDefenseGrowth(int value) {
-    setDefenseGrowth(defense + value);
-  }
-
-  public int getHitPointGrowth() {
-    return hitPoint;
-  }
-
-  public void setHitPointGrowth(int value) {
-    hitPoint = value;
-  }
-
-  public void increaseHitPointGrowth(int value) {
-    setHitPointGrowth(hitPoint + value);
+  static public Creature invoke(String p_name, Role p_role) {
+    return new Creature(p_name, p_role, 
+      new Statistic(p_role.attack, p_role.aGrowth), 
+      new Statistic(p_role.defense, p_role.dGrowth), 
+      new Statistic(p_role.hitPoint, p_role.hGrowth));
   }
 
 }

@@ -1,6 +1,10 @@
 package fr.ft.app;
 
-import javax.swing.*;
+import fr.ft.app.Entity.Artifact;
+import fr.ft.app.Entity.Weapon;
+import fr.ft.app.View.CreatureView;
+import fr.ft.app.Entity.Creature;
+import fr.ft.app.Entity.Role;
 
 /**
  * Hello world!
@@ -9,7 +13,21 @@ import javax.swing.*;
 public class App {
 
   public static void main(String[] args) {
-    // Creating instance of JFrame // Creating instance of JFrame
+    Creature c2 = Creature.invoke("mimou", Role.EMPRESS);
+    Artifact a = new Weapon("sword",10);
+
+    c2.setArtifact(a);
+    CreatureView.show(c2);
+
+    GameMap map = new GameMap(0);
+    map.populate(c2);
+    map.see();
+  }
+}
+
+/**
+ * import javax.swing.*;
+ *     // Creating instance of JFrame // Creating instance of JFrame
     JFrame frame = new JFrame();
 
     // Creating instance of JButton
@@ -29,5 +47,4 @@ public class App {
 
     // making the frame visible
     frame.setVisible(true);
-  }
-}
+ */

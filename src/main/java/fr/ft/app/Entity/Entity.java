@@ -1,13 +1,15 @@
-package fr.ft.app;
+package fr.ft.app.Entity;
 
-public abstract class Entity {
-  protected GameMap map;
+import fr.ft.app.Coordinates;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter public abstract class Entity {
   protected String name;
-  protected Coordinates coordinate;
+  protected Coordinates coordinates;
+  protected String symbole;
 
-  public String getName() {
-    return this.name;
+  Entity(String p_name) {
+    name = p_name;
   }
-
-
 }
