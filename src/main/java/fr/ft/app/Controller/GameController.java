@@ -28,7 +28,7 @@ import lombok.Setter;
     public void input(String input) {
         if (input.startsWith("."))
             meta(input);
-        else if (hero.isEncounter())
+        else if (hero.hasEncounter())
             encounter(input);
         else
             movement(input);
@@ -38,15 +38,25 @@ import lombok.Setter;
     private void meta(String input) {
         switch (input) {
             default:
+                System.err.println("meta: default to handle");
                 break;
             case ".exit":
                 stop();
- 
+                break;
+            case ".gui":
+                System.err.println("to handle: " + input);
+                break;
+            case ".help":
+                System.err.println("to handle: " + input);
+                break;
         }
     }
 
     private void movement(String input) {
         switch (input) {
+            default:
+                System.err.println("move: default to handle");
+                break ;
             case "north":
                 map.moveHero(Direction.NORTH);
                 break;
@@ -63,7 +73,18 @@ import lombok.Setter;
     }
 
     private void encounter(String input) {
+        switch (input) {
+            default:
+                System.err.println("encounter: default to handle");
+                break ;
+            case "fight":
+                hero.fight();
+                break;
+            case "run":
+                hero.runAway();
+                break;
 
+        }
     }
 
     private void stop() {

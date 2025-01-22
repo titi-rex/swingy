@@ -12,8 +12,12 @@ import lombok.Setter;
     }
 
     public String console() {
-        if (model.getEncounter() != null)
-            return HeroView.encounter(model.getEncounter());
+        if (model.getEncounter() != null) {
+            if (model.getEncounter().getHitPoint().getValue() <= 0)
+                return "You kill the monster!";
+            else
+                return HeroView.encounter(model.getEncounter());
+        }
         else
             return null;
     }

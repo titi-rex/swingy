@@ -44,7 +44,7 @@ public class App   {
 
 
         // create controller
-        HeroController heroController = new HeroController();
+        HeroController heroController = new HeroController(hero);
         MapController mapController = new MapController(map, 0);
         mapController.populate();
 

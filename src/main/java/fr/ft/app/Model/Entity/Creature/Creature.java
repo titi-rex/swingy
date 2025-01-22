@@ -64,18 +64,4 @@ import lombok.ToString;
       new Statistic(p_role.hitPoint, p_role.hGrowth));
   }
 
-  public boolean figth(Creature opponent) {
-    int damageInflicted = attack.getValue() - opponent.getDefense().getValue();
-    int damageTaken = opponent.getAttack().getValue() - defense.getValue();
-
-    hitPoint.increase(-damageTaken);
-    opponent.getHitPoint().increase(-damageInflicted);
-
-    return (damageInflicted > damageTaken);
-  }
-
-  public boolean run() {
-    return true;
-  }
-
 }
