@@ -1,6 +1,6 @@
-package fr.ft.app.Entity;
+package fr.ft.app.Model.Entity;
 
-import fr.ft.app.Coordinates;
+import fr.ft.app.Model.Map.Coordinates;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +9,7 @@ import lombok.Setter;
   protected Coordinates coordinates;
   protected String symbole;
 
-  Entity(String p_name) {
+  public Entity(String p_name) {
     name = p_name;
   }
 }

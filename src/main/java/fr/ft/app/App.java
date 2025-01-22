@@ -1,50 +1,83 @@
 package fr.ft.app;
 
-import fr.ft.app.Entity.Artifact;
-import fr.ft.app.Entity.Weapon;
-import fr.ft.app.View.CreatureView;
-import fr.ft.app.Entity.Creature;
-import fr.ft.app.Entity.Role;
+import fr.ft.app.Controller.GameController;
+import fr.ft.app.Controller.HeroController;
+import fr.ft.app.Controller.MapController;
+import fr.ft.app.Model.GameModel;
+import fr.ft.app.Model.Entity.Artifact.Artifact;
+import fr.ft.app.Model.Entity.Artifact.Weapon;
+import fr.ft.app.Model.Entity.Creature.Creature;
+import fr.ft.app.Model.Entity.Creature.Role;
+import fr.ft.app.Model.Map.MapModel;
+import fr.ft.app.View.GameView;
+import fr.ft.app.View.HeroView;
+import fr.ft.app.View.MapView;
+
+/*
+ * 1 create model
+ * 2 create controller
+ * 3 init model via controller
+ * 4 create view
+ * 5 launch view loop
+ */
 
 /**
  * Hello world!
  *
  */
-public class App {
+public class App   {
 
-  public static void main(String[] args) {
-    Creature c2 = Creature.invoke("mimou", Role.EMPRESS);
-    Artifact a = new Weapon("sword",10);
 
-    c2.setArtifact(a);
-    CreatureView.show(c2);
+    public static void main(String[] args) throws Exception {
+  
+        // create model 
+        Creature hero = Creature.invoke("mimou", Role.EMPRESS);
+        Artifact a = new Weapon("sword",10);
+        hero.setArtifact(a);
+    
+        MapModel map = new MapModel();
+        map.setHero(hero);
 
-    GameMap map = new GameMap(0);
-    map.populate(c2);
-    map.see();
-  }
+        GameModel model = new GameModel();
+        model.setMap(map);
+
+
+
+        // create controller
+        HeroController heroController = new HeroController();
+        MapController mapController = new MapController(map, 0);
+        mapController.populate();
+
+        GameController controller = new GameController();
+        controller.setHero(heroController);
+        controller.setMap(mapController);
+
+
+        //create view
+        MapView mView = new MapView(map);
+        HeroView hView = new HeroView(hero);
+
+        GameView view = new GameView();
+        view.setMap(mView);
+        view.setHero(hView);
+
+
+        // link M C V
+        controller.setView(view);
+        controller.setModel(model);
+        view.setController(controller);
+        view.setModel(model);
+        model.setView(view);
+        model.setController(controller);
+        model.setView(view);
+        
+        // start loop
+        view.run();
+
+      }
+
 }
 
-/**
- * import javax.swing.*;
- *     // Creating instance of JFrame // Creating instance of JFrame
-    JFrame frame = new JFrame();
+/*
 
-    // Creating instance of JButton
-    JButton button = new JButton(" GFG WebSite Click");
-
-    // x axis, y axis, width, height
-    button.setBounds(150, 200, 220, 50);
-
-    // adding button in JFrame
-    frame.add(button);
-
-    // 400 width and 500 height
-    frame.setSize(500, 600);
-
-    // using no layout managers
-    frame.setLayout(null);
-
-    // making the frame visible
-    frame.setVisible(true);
  */

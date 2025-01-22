@@ -1,4 +1,4 @@
-package fr.ft.app.Entity;
+package fr.ft.app.Model.Entity.Creature;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

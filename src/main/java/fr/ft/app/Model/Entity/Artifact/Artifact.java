@@ -1,5 +1,7 @@
-package fr.ft.app.Entity;
+package fr.ft.app.Model.Entity.Artifact;
 
+import fr.ft.app.Model.Entity.Entity;
+import fr.ft.app.Model.Entity.Creature.Creature;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +13,7 @@ import lombok.Setter;
 
   public abstract void removePower(Creature creature);
 
-  Artifact(String p_name, int p_power) {
+  public Artifact(String p_name, int p_power) {
     super(p_name);
     setPower(p_power);
   }

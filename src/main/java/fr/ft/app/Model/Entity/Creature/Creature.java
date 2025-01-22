@@ -1,5 +1,7 @@
-package fr.ft.app.Entity;
+package fr.ft.app.Model.Entity.Creature;
 
+import fr.ft.app.Model.Entity.Entity;
+import fr.ft.app.Model.Entity.Artifact.Artifact;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -14,6 +16,7 @@ import lombok.ToString;
   @NonNull private Statistic defense;
   @NonNull private Statistic hitPoint;
   private Artifact artifact;
+  private Creature encounter;
 
   Creature(String p_name, Role p_role, Statistic p_attack, Statistic p_defense, Statistic p_hitPoint) {
     super(p_name);
@@ -59,6 +62,20 @@ import lombok.ToString;
       new Statistic(p_role.attack, p_role.aGrowth), 
       new Statistic(p_role.defense, p_role.dGrowth), 
       new Statistic(p_role.hitPoint, p_role.hGrowth));
+  }
+
+  public boolean figth(Creature opponent) {
+    int damageInflicted = attack.getValue() - opponent.getDefense().getValue();
+    int damageTaken = opponent.getAttack().getValue() - defense.getValue();
+
+    hitPoint.increase(-damageTaken);
+    opponent.getHitPoint().increase(-damageInflicted);
+
+    return (damageInflicted > damageTaken);
+  }
+
+  public boolean run() {
+    return true;
   }
 
 }

@@ -1,4 +1,4 @@
-package fr.ft.app;
+package fr.ft.app.Model.Map;
 
 public class Coordinates {
   public int x;
@@ -9,5 +9,9 @@ public class Coordinates {
     y += value;
     x += value;
   }
- 
+
+  public Coordinates(int p_x, int p_y) {
+    x = p_x;
+    y = p_y;
+  }
 }

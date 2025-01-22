@@ -15,7 +15,14 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <exec.mainClass>fr.ft.app.App</exec.mainClass>
+    <!-- <exec.mainClass>fr.ft.app.App</exec.mainClass> -->
+    <!-- $ cat pom.xml | egrep '<maven.compiler.' --> 
+    <!-- <maven.compiler.source>21</maven.compiler.source> -->
+    <!-- <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
+    <maven.compiler.release>${maven.compiler.target}</maven.compiler.release>
+    <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
+    <maven.compiler.testTarget>${maven.compiler.testSource}</maven.compiler.testTarget>
+    <maven.compiler.testRelease>${maven.compiler.testTarget}</maven.compiler.testRelease> -->
   </properties>
 
   <dependencies>
@@ -38,18 +45,48 @@
       <version>5.0.0</version>
     </dependency>
   <!-- annotation tool  -->
-	<dependency>
-		<groupId>org.projectlombok</groupId>
-		<artifactId>lombok</artifactId>
-		<version>1.18.36</version>
-		<scope>provided</scope>
-	</dependency>
-
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.36</version>
+      <scope>provided</scope>
+    </dependency>
+  <!-- TUI lib -->
+    <dependency>
+      <groupId>com.gitlab.klamonte</groupId>
+      <artifactId>jexer</artifactId>
+      <version>1.6.0</version>
+    </dependency>
   </dependencies>
 
   <build>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
+
+        <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <configuration>
+            <archive>
+              <manifest>
+                <mainClass>${project.groupId}.App</mainClass>
+              </manifest>
+            </archive>
+            <descriptorRefs>
+              <descriptorRef>jar-with-dependencies</descriptorRef>
+            </descriptorRefs>
+          </configuration>
+          <executions>
+            <execution>
+              <id>make-assembly</id> <!-- this is used for inheritance merges -->
+              <phase>package</phase> <!-- bind to the packaging phase -->
+              <goals>
+                <goal>single</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
+
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.4.0</version>
@@ -70,6 +107,15 @@
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.13.0</version>
+          <configuration>
+            <annotationProcessorPaths>
+              <path>
+                <groupId>org.projectlombok</groupId>     
+                <artifactId>lombok</artifactId>
+                <version>1.18.36</version>
+              </path>
+            </annotationProcessorPaths>
+          </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
@@ -81,7 +127,7 @@
           <configuration>
             <archive>
               <manifest>
-                <mainClass>${project.groupId}.Main</mainClass>
+                <mainClass>${project.groupId}.App</mainClass>
               </manifest>
             </archive>
           </configuration>

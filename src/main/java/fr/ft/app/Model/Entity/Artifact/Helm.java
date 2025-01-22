@@ -1,4 +1,6 @@
-package fr.ft.app.Entity;
+package fr.ft.app.Model.Entity.Artifact;
+
+import fr.ft.app.Model.Entity.Creature.Creature;
 
 public class Helm extends Artifact {
 

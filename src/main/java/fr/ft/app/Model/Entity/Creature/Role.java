@@ -1,4 +1,4 @@
-package fr.ft.app.Entity;
+package fr.ft.app.Model.Entity.Creature;
 
 import java.util.Arrays;
 import java.util.Collections;
