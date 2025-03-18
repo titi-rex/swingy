@@ -21,27 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingo;
-
-import Controller.Controller;
-import Model.Model;
-import View.View;
+package Model;
 
 /**
  *
  * @author Pril Wolf
  */
-public class App {
+public class Statistic {
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        // Assemble all the pieces of the MVC
-        Model m = new Model("Sylvain", "Saurel");
-        View v = new View("MVC with SSaurel");
-        Controller c = new Controller(m, v);
-        c.initController();
+    public int value;
+    public float growthRate;
+
+    public Statistic() {
+        this.value = 1;
+        this.growthRate = 1;
+    }
+
+    public Statistic(int value, float growthRate) {
+        this.value = value;
+        this.growthRate = growthRate;
+    }
+
+    public void growth() {
+        value += growthRate;
+    }
+
+    public void increase(int p_value) {
+        setValue(value + p_value);
+    }
+
+    public Statistic duplicate() {
+        return new Statistic(value, growthRate);
+    }
+
+    public void setValue(int value) {
+        this.value = value;
     }
 
 }

@@ -22,6 +22,7 @@ public class Swingo {
 
     public static void main(String[] args) {
         GuiView gui = new GuiView();
+        gui.showCreatorView();
         gui.setVisible(true);
         System.out.println("main end");
     }
