@@ -26,6 +26,7 @@ package fr.ft.swingo.View;
 import fr.ft.swingo.Model.Cell;
 import fr.ft.swingo.Model.PlayModel;
 import java.awt.BorderLayout;
+import java.awt.Point;
 import java.net.URL;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -40,11 +41,16 @@ import javax.swing.event.ChangeListener;
  */
 public class PlayView extends JPanel implements ChangeListener {
 
+    public static final int MIN_RENDER_SIZE = 3;
     public static final int MAX_RENDER_SIZE = 3;
+    private static final int RENDER_BOUND = MAX_RENDER_SIZE / 2;
+
     private final URL HERO_TILE = getClass().getResource("/images/hero.png");
     private final URL EMPTY_TILE = getClass().getResource("/images/empty.png");
     private final URL ENNEMY_TILE = getClass().getResource("/images/ennemy.png");
+
     private PlayModel model;
+    private JPanel map;
 
     public PlayView(PlayModel model) {
         super();
@@ -54,17 +60,38 @@ public class PlayView extends JPanel implements ChangeListener {
         renderMap();
     }
 
+    private Point getRenderPosition(int pos, int size) {
+        int start = Integer.max(pos - RENDER_BOUND, 0);
+        int end = Integer.min(pos + RENDER_BOUND + 1, size);
+        return new Point(start, end);
+    }
+
     private void renderMap() {
-        JPanel map = new JPanel();
-        BoxLayout cLayout = new BoxLayout(map, BoxLayout.PAGE_AXIS);
-        map.setLayout(cLayout);
-        int start = 0;
-        int end = model.getSize();
-        for (int i = start; i < end; i++) {
+        Point yRenderInterval = getRenderPosition(
+                model.getHeroCoordinate().y,
+                model.getSize()
+        );
+        Point xRenderInterval = getRenderPosition(
+                model.getHeroCoordinate().y,
+                model.getSize()
+        );
+        System.out.println("yRenderInt: " + yRenderInterval);
+        System.out.println("xRenderInt: " + xRenderInterval);
+
+        map = renderLoop(yRenderInterval, xRenderInterval);
+        add(map, BorderLayout.CENTER);
+    }
+
+    private JPanel renderLoop(Point yRenderInterval, Point xRenderInterval) {
+        JPanel mapPanel = new JPanel();
+        BoxLayout cLayout = new BoxLayout(mapPanel, BoxLayout.PAGE_AXIS);
+        mapPanel.setLayout(cLayout);
+
+        for (int i = yRenderInterval.x; i < yRenderInterval.y; i++) {
             JPanel line = new JPanel();
             BoxLayout lLayout = new BoxLayout(line, BoxLayout.LINE_AXIS);
             line.setLayout(lLayout);
-            for (int j = start; j < end; j++) {
+            for (int j = xRenderInterval.x; j < xRenderInterval.y; j++) {
                 switch (model.getCellAt(i, j).getType()) {
                     case Cell.Type.EMPTY:
                         line.add(new JLabel(new ImageIcon(EMPTY_TILE)));
@@ -79,9 +106,13 @@ public class PlayView extends JPanel implements ChangeListener {
                         throw new AssertionError();
                 }
             }
-            map.add(line);
+            mapPanel.add(line);
         }
-        add(map, BorderLayout.CENTER);
+        return mapPanel;
+    }
+
+    public void clearMap() {
+        remove(map);
     }
 
     public PlayModel getModel() {

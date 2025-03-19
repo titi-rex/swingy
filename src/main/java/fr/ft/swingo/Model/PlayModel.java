@@ -43,13 +43,13 @@ public class PlayModel {
     private Point heroCoordinate;
 
     public PlayModel() {
-
+        heroCoordinate = new Point(2, 2);
     }
 
-    private void stateChanged(){
+    private void stateChanged() {
         view.stateChanged(null);
     }
-    
+
     public Cell getCellAt(int y, int x) {
         return cells[y][x];
     }
