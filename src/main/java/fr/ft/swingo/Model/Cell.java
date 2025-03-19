@@ -21,41 +21,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package Model;
+package fr.ft.swingo.Model;
 
 /**
  *
  * @author Pril Wolf
  */
-public class Statistic {
+public class Cell {
 
-    public int value;
-    public float growthRate;
+    public enum Type {
+        EMPTY, HERO, ENNEMY
+    };
 
-    public Statistic() {
-        this.value = 1;
-        this.growthRate = 1;
+    private Type type;
+    private Creature creature;
+
+    public Cell() {
+        this.type = Type.EMPTY;
+        this.creature = null;
     }
 
-    public Statistic(int value, float growthRate) {
-        this.value = value;
-        this.growthRate = growthRate;
+    public Cell(Type type, Creature creature) {
+        this.type = type;
+        this.creature = creature;
     }
 
-    public void growth() {
-        value += growthRate;
+    public Type getType() {
+        return type;
     }
 
-    public void increase(int p_value) {
-        setValue(value + p_value);
+    public void setType(Type type) {
+        this.type = type;
     }
 
-    public Statistic duplicate() {
-        return new Statistic(value, growthRate);
+    public Creature getCreature() {
+        return creature;
     }
 
-    public void setValue(int value) {
-        this.value = value;
+    public void setCreature(Creature creature) {
+        this.creature = creature;
     }
 
 }

@@ -21,18 +21,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package View;
+package fr.ft.swingo.View;
 
-import java.awt.BorderLayout;
-import javax.swing.JPanel;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
 /**
  *
  * @author Pril Wolf
  */
-public class PlayView extends JPanel {
-    
-    public PlayView() {
-        setLayout(new BorderLayout());
+public class MenuView extends JMenuBar {
+
+    public JMenuItem switchItem;
+    public JMenuItem saveItem;
+    public JMenuItem selectItem;
+    public JMenuItem exitItem;
+
+    public MenuView() {
+        switchItem = new JMenuItem("Switch");
+        switchItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.ALT_MASK));
+
+        saveItem = new JMenuItem("Save");
+        saveItem.setEnabled(false);
+        saveItem.setMnemonic(KeyEvent.VK_S);
+
+        selectItem = new JMenuItem("Selector");
+        exitItem = new JMenuItem("Exit");
+
+        JMenu menu = new JMenu("Settings");
+        menu.setMnemonic(KeyEvent.VK_M);
+
+        menu.add(switchItem);
+        menu.add(saveItem);
+        menu.add(selectItem);
+        menu.add(exitItem);
+
+        add(menu);
     }
 }

@@ -21,10 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package Controller;
+package fr.ft.swingo.Controller;
 
-import View.GuiView;
-import View.MenuView;
+import fr.ft.swingo.View.GuiView;
+import fr.ft.swingo.View.MenuView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;

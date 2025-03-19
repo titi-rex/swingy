@@ -21,18 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package View;
+package fr.ft.swingo.View;
 
-import Controller.CreatorController;
-import Controller.MenuController;
-import Controller.PlayController;
-import Model.CreatorModel;
+import fr.ft.swingo.Controller.CreatorController;
+import fr.ft.swingo.Controller.MenuController;
+import fr.ft.swingo.Controller.PlayController;
+import fr.ft.swingo.Model.CreatorModel;
+import fr.ft.swingo.Model.PlayModel;
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
 
 /**
  *
@@ -42,9 +48,15 @@ public class GuiView extends JFrame {
 
     public static final int WINDOW_SIZE = 500;
     public static final String TITLE = "Swingy - The best RPG you never played";
+    public static final String CREATE_VIEW_NAME = "create";
+    public static final String PLAY_VIEW_NAME = "play";
+
     private final MenuView menuView;
     private final CreatorView creatorPanel;
     private final PlayView playPanel;
+    private final PlayModel playModel;
+    private final JPanel cards;
+    private final CardLayout cLayout;
 
     public GuiView() throws HeadlessException {
         super(TITLE);
@@ -53,7 +65,21 @@ public class GuiView extends JFrame {
         setMinimumSize(size);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
-        setDefaultLookAndFeelDecorated(true);
+        cLayout = new CardLayout();
+        cards = new JPanel(cLayout);
+        add(cards);
+
+        /*
+javax.swing.UIManager$LookAndFeelInfo[Metal javax.swing.plaf.metal.MetalLookAndFeel]
+javax.swing.UIManager$LookAndFeelInfo[Nimbus javax.swing.plaf.nimbus.NimbusLookAndFeel]
+javax.swing.UIManager$LookAndFeelInfo[CDE/Motif com.sun.java.swing.plaf.motif.MotifLookAndFeel]
+javax.swing.UIManager$LookAndFeelInfo[GTK+ com.sun.java.swing.plaf.gtk.GTKLookAndFeel]
+         */
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+        } catch (Exception ex) {
+            Logger.getLogger(GuiView.class.getName()).log(Level.SEVERE, null, ex);
+        }
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -83,33 +109,31 @@ public class GuiView extends JFrame {
         menuController.init();
         setJMenuBar(menuView);
 
-//        create play view
-        playPanel = new PlayView();
-        PlayController playController = new PlayController(this, playPanel);
-        playController.init();
-        add(playPanel);
-
 //        create creatorview
         CreatorModel creatorModel = new CreatorModel();
         creatorPanel = new CreatorView(creatorModel.roles, creatorModel.characters);
         CreatorController creatorController = new CreatorController(this, creatorPanel, creatorModel);
         creatorController.init();
-        add(creatorPanel);
+        cards.add(creatorPanel, CREATE_VIEW_NAME);
 
-        pack();
+//        create play view
+        playModel = new PlayModel();
+        playPanel = new PlayView(playModel);
+        PlayController playController = new PlayController(this, playPanel);
+        playController.init();
+        cards.add(playPanel, PLAY_VIEW_NAME);
+
     }
 
     public void showCreatorView() {
-        playPanel.setVisible(false);
-        creatorPanel.setVisible(true);
+        cLayout.show(cards, CREATE_VIEW_NAME);
     }
 
     public void showPlayView() {
-        creatorPanel.setVisible(false);
-        playPanel.setVisible(true);
+        cLayout.show(cards, PLAY_VIEW_NAME);
     }
 
     private void loadGame() {
-        
+
     }
 }

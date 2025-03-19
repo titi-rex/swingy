@@ -21,12 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package Model;
+package fr.ft.swingo.Model;
 
 /**
  *
  * @author Pril Wolf
  */
-public class PlayModel {
-    
+public class Statistic {
+
+    public int value;
+    public float growthRate;
+
+    public Statistic() {
+        this.value = 1;
+        this.growthRate = 1;
+    }
+
+    public Statistic(int value, float growthRate) {
+        this.value = value;
+        this.growthRate = growthRate;
+    }
+
+    public void growth() {
+        value += growthRate;
+    }
+
+    public void increase(int p_value) {
+        setValue(value + p_value);
+    }
+
+    public Statistic duplicate() {
+        return new Statistic(value, growthRate);
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
+
 }

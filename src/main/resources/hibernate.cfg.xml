@@ -13,7 +13,7 @@
 
 
         <!-- Mapping des classes -->
-        <mapping class="Model.Creature"/>
+        <mapping class="fr.ft.swingo.Model.Creature"/>
     </session-factory>
 </hibernate-configuration>
 

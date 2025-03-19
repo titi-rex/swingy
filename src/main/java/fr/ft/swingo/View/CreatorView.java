@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package View;
+package fr.ft.swingo.View;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
