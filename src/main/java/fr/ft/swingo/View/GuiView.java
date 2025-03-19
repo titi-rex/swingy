@@ -131,9 +131,10 @@ javax.swing.UIManager$LookAndFeelInfo[GTK+ com.sun.java.swing.plaf.gtk.GTKLookAn
 
     public void showPlayView() {
         cLayout.show(cards, PLAY_VIEW_NAME);
+        loadGame();
     }
 
     private void loadGame() {
-
+        playPanel.renderMap();
     }
 }
