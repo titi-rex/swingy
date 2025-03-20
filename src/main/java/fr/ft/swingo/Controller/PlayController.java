@@ -23,10 +23,12 @@
  */
 package fr.ft.swingo.Controller;
 
+import fr.ft.swingo.Model.PlayModel;
 import fr.ft.swingo.View.GuiView;
 import fr.ft.swingo.View.PlayView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.JButton;
 
 /**
  *
@@ -36,22 +38,79 @@ public class PlayController {
 
     private final GuiView window;
     private final PlayView view;
+    private PlayModel model;
 
     public PlayController(GuiView window, PlayView view) {
         this.window = window;
         this.view = view;
+
     }
 
     public void init() {
+        view.getCommandBar().getNorthButton().addActionListener(new NorthAction());
+        view.getCommandBar().getEastButton().addActionListener(new EastAction());
+        view.getCommandBar().getSouthButton().addActionListener(new SouthAction());
+        view.getCommandBar().getWestButton().addActionListener(new WestAction());
+        view.getCommandBar().getFightButton().addActionListener(new FightAction());
+        view.getCommandBar().getRunButton().addActionListener(new RunAction());
 
     }
 
-    private class ExampleAction implements ActionListener {
+    private class NorthAction implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("create requested");
+            model.moveHero(PlayModel.Direction.NORTH);
         }
+    }
+
+    private class EastAction implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            model.moveHero(PlayModel.Direction.EAST);
+        }
+    }
+
+    private class SouthAction implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            model.moveHero(PlayModel.Direction.SOUTH);
+        }
+    }
+
+    private class WestAction implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            model.moveHero(PlayModel.Direction.WEST);
+        }
+    }
+
+    private class FightAction implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println("fight");
+
+        }
+    }
+
+    private class RunAction implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println("RUN");
+        }
+    }
+
+    public PlayModel getModel() {
+        return model;
+    }
+
+    public void setModel(PlayModel model) {
+        this.model = model;
     }
 
 }

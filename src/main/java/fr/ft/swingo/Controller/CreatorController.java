@@ -30,6 +30,7 @@ import fr.ft.swingo.View.CreatorView;
 import fr.ft.swingo.View.GuiView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import javax.swing.JList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -93,8 +94,9 @@ public class CreatorController {
             if (idx < 0) {
                 return;
             }
-            window.showPlayView();
-            System.out.println("play requested");
+            window.showPlayView(
+                    (Creature) view.getCharacterList().getSelectedValue()
+            );
         }
     }
 

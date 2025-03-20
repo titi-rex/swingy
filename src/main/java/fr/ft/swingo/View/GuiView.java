@@ -27,6 +27,7 @@ import fr.ft.swingo.Controller.CreatorController;
 import fr.ft.swingo.Controller.MenuController;
 import fr.ft.swingo.Controller.PlayController;
 import fr.ft.swingo.Model.CreatorModel;
+import fr.ft.swingo.Model.Creature;
 import fr.ft.swingo.Model.PlayModel;
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -54,7 +55,8 @@ public class GuiView extends JFrame {
     private final MenuView menuView;
     private final CreatorView creatorPanel;
     private final PlayView playPanel;
-    private final PlayModel playModel;
+    private PlayModel playModel;
+    private final PlayController playController;
     private final JPanel cards;
     private final CardLayout cLayout;
 
@@ -69,12 +71,7 @@ public class GuiView extends JFrame {
         cards = new JPanel(cLayout);
         add(cards);
 
-        /*
-javax.swing.UIManager$LookAndFeelInfo[Metal javax.swing.plaf.metal.MetalLookAndFeel]
-javax.swing.UIManager$LookAndFeelInfo[Nimbus javax.swing.plaf.nimbus.NimbusLookAndFeel]
-javax.swing.UIManager$LookAndFeelInfo[CDE/Motif com.sun.java.swing.plaf.motif.MotifLookAndFeel]
-javax.swing.UIManager$LookAndFeelInfo[GTK+ com.sun.java.swing.plaf.gtk.GTKLookAndFeel]
-         */
+
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
         } catch (Exception ex) {
@@ -117,9 +114,8 @@ javax.swing.UIManager$LookAndFeelInfo[GTK+ com.sun.java.swing.plaf.gtk.GTKLookAn
         cards.add(creatorPanel, CREATE_VIEW_NAME);
 
 //        create play view
-        playModel = new PlayModel();
-        playPanel = new PlayView(playModel);
-        PlayController playController = new PlayController(this, playPanel);
+        playPanel = new PlayView();
+        playController = new PlayController(this, playPanel);
         playController.init();
         cards.add(playPanel, PLAY_VIEW_NAME);
 
@@ -129,12 +125,27 @@ javax.swing.UIManager$LookAndFeelInfo[GTK+ com.sun.java.swing.plaf.gtk.GTKLookAn
         cLayout.show(cards, CREATE_VIEW_NAME);
     }
 
-    public void showPlayView() {
+    public void showPlayView(Creature newHero) {
+        loadGame(newHero);
         cLayout.show(cards, PLAY_VIEW_NAME);
-        loadGame();
+        playPanel.renderMap();
+
     }
 
-    private void loadGame() {
-        playPanel.renderMap();
+    private void loadGame(Creature newHero) {
+        playModel = new PlayModel(newHero);
+        playModel.setView(playPanel);
+        playPanel.setModel(playModel);
+        playController.setModel(playModel);
+        
     }
+
 }
+
+
+        /*
+javax.swing.UIManager$LookAndFeelInfo[Metal javax.swing.plaf.metal.MetalLookAndFeel]
+javax.swing.UIManager$LookAndFeelInfo[Nimbus javax.swing.plaf.nimbus.NimbusLookAndFeel]
+javax.swing.UIManager$LookAndFeelInfo[CDE/Motif com.sun.java.swing.plaf.motif.MotifLookAndFeel]
+javax.swing.UIManager$LookAndFeelInfo[GTK+ com.sun.java.swing.plaf.gtk.GTKLookAndFeel]
+         */

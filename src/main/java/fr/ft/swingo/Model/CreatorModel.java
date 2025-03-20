@@ -23,10 +23,6 @@
  */
 package fr.ft.swingo.Model;
 
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import jakarta.validation.Validation;
-import jakarta.validation.ValidatorFactory;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
