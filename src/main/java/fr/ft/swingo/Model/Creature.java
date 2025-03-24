@@ -47,7 +47,6 @@ public class Creature {
     @NotNull
     @NotEmpty
     private String name;
-//  protected Coordinates coordinates;
 
     private int level = 1;
     private int xp = 0;
@@ -100,10 +99,24 @@ public class Creature {
 
     public void levelUp() {
         level += 1;
+        attack += 1;
+        defense += 1;
+        hitPoint += 5;
+
 //        attack.growth();
 //        defense.growth();
 //        hitPoint.growth();
+    }
 
+    public void takeDamage(int value) {
+        int damage = Math.max(value - this.defense, 1);
+        this.hitPoint -= damage;
+        System.err.println(this + " take " + damage + " damage");
+    }
+
+    public void attack(Creature opponent) {
+        System.err.println(this + " attack " + opponent + " with " + this.getAttack() + " attack");
+        opponent.takeDamage(this.getAttack());
     }
 
     static public Creature invoke(String p_name, Roles p_role) {
@@ -113,9 +126,13 @@ public class Creature {
                 p_role.hitPoint);
     }
 
+    public boolean isAlive() {
+        return getHitPoint() >= 0;
+    }
+
     @Override
     public String toString() {
-        return "l" + level + " : " + name + " the " + role.name();
+        return name + " the " + role.name();
     }
 
     public String getName() {

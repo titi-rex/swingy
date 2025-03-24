@@ -92,7 +92,7 @@ public class PlayController {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("fight");
+            model.resolveFight();
 
         }
     }
@@ -101,7 +101,7 @@ public class PlayController {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("RUN");
+            model.resolveRun();
         }
     }
 

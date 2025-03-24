@@ -25,6 +25,7 @@ package fr.ft.swingo.View;
 
 import fr.ft.swingo.Model.Cell;
 import fr.ft.swingo.Model.PlayModel;
+import fr.ft.swingo.Model.Roles;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.FlowLayout;
@@ -65,7 +66,7 @@ public class PlayView extends JPanel implements ChangeListener {
     public PlayView() {
         super();
         setLayout(new BorderLayout());
-        
+
         JPanel header = new JPanel(new FlowLayout());
         statusLabel = new JLabel("PLAYING");
         header.add(statusLabel);
@@ -83,6 +84,12 @@ public class PlayView extends JPanel implements ChangeListener {
     private Point getRenderPosition(int pos, int size) {
         int start = Integer.max(pos - RENDER_BOUND, 0);
         int end = Integer.min(pos + RENDER_BOUND + 1, size);
+
+        if (pos - RENDER_BOUND < 0) {
+            end += Math.abs(pos - RENDER_BOUND);
+        } else if (pos + RENDER_BOUND > size) {
+            start += (size - (pos + RENDER_BOUND));
+        }
         return new Point(start, end);
     }
 
@@ -91,12 +98,12 @@ public class PlayView extends JPanel implements ChangeListener {
                 model.getHeroCoordinate().y,
                 model.getSize()
         );
+        System.out.println("render interval Y: " + yRenderInterval);
+
         Point xRenderInterval = getRenderPosition(
-                model.getHeroCoordinate().y,
+                model.getHeroCoordinate().x,
                 model.getSize()
         );
-
-        System.out.println("render interval Y: " + yRenderInterval);
         System.out.println("render interval X: " + xRenderInterval);
 
         map = renderLoop(yRenderInterval, xRenderInterval);
@@ -122,9 +129,6 @@ public class PlayView extends JPanel implements ChangeListener {
                         case Cell.Type.EMPTY:
                             line.add(new JLabel(new ImageIcon(EMPTY_TILE)));
                             break;
-//                    case Cell.Type.HERO:
-//                        line.add(new JLabel(new ImageIcon(HERO_TILE)));
-//                        break;
                         case Cell.Type.ENNEMY:
                             line.add(new JLabel(new ImageIcon(ENNEMY_TILE)));
                             break;
@@ -137,39 +141,33 @@ public class PlayView extends JPanel implements ChangeListener {
     }
 
     public void clearMap() {
-        remove(map);
+        if (map != null) {
+            remove(map);
+        }
     }
 
-    public PlayModel getModel() {
-        return model;
+    public void renderCommandBar() {
+        Point hero = model.getHeroCoordinate();
+        if (model.getCellAt(hero.y, hero.x).getType() == Cell.Type.ENNEMY) {
+            commandBar.showFightCommand();
+        } else {
+            commandBar.showMoveCommand();
+        }
     }
 
-    public void setModel(PlayModel model) {
-        this.model = model;
+    public void renderHeroStats() {
+        heroStats.update(model.getHero());
     }
 
-    public JPanel getMap() {
-        return map;
+    public void renderEnnemyStats() {
+        Point hero = model.getHeroCoordinate();
+        if (model.getCellAt(hero.y, hero.x).getType() == Cell.Type.ENNEMY) {
+            ennemyStats.update(model.getCellAt(hero.y, hero.x).getCreature());
+        } else {
+            ennemyStats.clear();
+        }
     }
 
-    public void setMap(JPanel map) {
-        this.map = map;
-    }
-
-    public JLabel getStatusLabel() {
-        return statusLabel;
-    }
-
-    public CreatureStats getHeroStats() {
-        return heroStats;
-    }
-
-    public CreatureStats getEnnemyStats() {
-        return ennemyStats;
-    }
-
-    
-    
     /**
      *
      * @param e
@@ -178,18 +176,13 @@ public class PlayView extends JPanel implements ChangeListener {
     public void stateChanged(ChangeEvent e) {
         clearMap();
         renderMap();
+        renderCommandBar();
+        renderHeroStats();
+        renderEnnemyStats();
         if (model.isRunning() == false) {
             statusLabel.setText("END OF GAME");
         }
         this.revalidate();
-    }
-
-    /**
-     *
-     * @return commandBar used by playView
-     */
-    public CommandBar getCommandBar() {
-        return commandBar;
     }
 
     /**
@@ -229,7 +222,7 @@ public class PlayView extends JPanel implements ChangeListener {
 
             JPanel fightPanel = new JPanel(new FlowLayout());
             fightButton = new JButton("Fight");
-            runButton = new JButton("Fight");
+            runButton = new JButton("Run");
             fightPanel.add(fightButton);
             fightPanel.add(runButton);
             this.add(fightPanel, FIGHT_COMMAND);
@@ -266,7 +259,37 @@ public class PlayView extends JPanel implements ChangeListener {
         public JButton getRunButton() {
             return runButton;
         }
-
     }
 
+    public CommandBar getCommandBar() {
+        return commandBar;
+    }
+
+    public PlayModel getModel() {
+        return model;
+    }
+
+    public void setModel(PlayModel model) {
+        this.model = model;
+    }
+
+    public JPanel getMap() {
+        return map;
+    }
+
+    public void setMap(JPanel map) {
+        this.map = map;
+    }
+
+    public JLabel getStatusLabel() {
+        return statusLabel;
+    }
+
+    public CreatureStats getHeroStats() {
+        return heroStats;
+    }
+
+    public CreatureStats getEnnemyStats() {
+        return ennemyStats;
+    }
 }

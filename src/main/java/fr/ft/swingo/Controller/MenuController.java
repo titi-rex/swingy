@@ -23,6 +23,7 @@
  */
 package fr.ft.swingo.Controller;
 
+import fr.ft.swingo.Model.PlayModel;
 import fr.ft.swingo.View.GuiView;
 import fr.ft.swingo.View.MenuView;
 import java.awt.event.ActionEvent;
@@ -37,6 +38,7 @@ public class MenuController {
 
     private final GuiView window;
     private final MenuView view;
+    private PlayModel model;
 
     public MenuController(GuiView window, MenuView view) {
         this.window = window;
@@ -62,7 +64,7 @@ public class MenuController {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("save requested");
+            model.save();
         }
     }
 
@@ -70,6 +72,7 @@ public class MenuController {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            model.close();
             window.showCreatorView();
             System.out.println("switch to selector requested");
         }
@@ -84,4 +87,19 @@ public class MenuController {
                     new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
         }
     }
+
+    public PlayModel getModel() {
+        return model;
+    }
+
+    public void setModel(PlayModel model) {
+        this.model = model;
+        view.saveItem.setEnabled(true);
+    }
+
+    public void unsetModel() {
+        this.model = null;
+        view.saveItem.setEnabled(false);
+    }
+
 }

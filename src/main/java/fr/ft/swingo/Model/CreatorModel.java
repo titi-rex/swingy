@@ -70,6 +70,16 @@ public class CreatorModel implements AutoCloseable {
 
     }
 
+    public void refresh() {
+        characters.clear();
+        List<Creature> data = sessionFactory.fromSession(session -> {
+            return session
+                    .createSelectionQuery("from Creature", Creature.class)
+                    .getResultList();
+        });
+        characters.addAll(data);
+    }
+
     public void delete(int idx) {
         Creature hero = (Creature) characters.remove(idx);
         sessionFactory.inTransaction(session -> {

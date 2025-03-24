@@ -47,13 +47,17 @@ import javax.swing.UIManager;
  */
 public class GuiView extends JFrame {
 
-    public static final int WINDOW_SIZE = 500;
+    public static final int WINDOW_SIZE = 800;
+    public static final int WINDOW_SIZE_MIN = 500;
+
     public static final String TITLE = "Swingy - The best RPG you never played";
     public static final String CREATE_VIEW_NAME = "create";
     public static final String PLAY_VIEW_NAME = "play";
 
     private final MenuView menuView;
+    private final MenuController menuController;
     private final CreatorView creatorPanel;
+    private final CreatorModel creatorModel;
     private final PlayView playPanel;
     private PlayModel playModel;
     private final PlayController playController;
@@ -62,15 +66,13 @@ public class GuiView extends JFrame {
 
     public GuiView() throws HeadlessException {
         super(TITLE);
-        Dimension size = new Dimension(WINDOW_SIZE, WINDOW_SIZE);
-        setSize(size);
-        setMinimumSize(size);
+        setSize(new Dimension(WINDOW_SIZE, WINDOW_SIZE));
+        setMinimumSize(new Dimension(WINDOW_SIZE_MIN, WINDOW_SIZE_MIN));
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
         cLayout = new CardLayout();
         cards = new JPanel(cLayout);
         add(cards);
-
 
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
@@ -102,12 +104,12 @@ public class GuiView extends JFrame {
 
 //        create and init menubar
         menuView = new MenuView();
-        MenuController menuController = new MenuController(this, menuView);
+        menuController = new MenuController(this, menuView);
         menuController.init();
         setJMenuBar(menuView);
 
 //        create creatorview
-        CreatorModel creatorModel = new CreatorModel();
+        creatorModel = new CreatorModel();
         creatorPanel = new CreatorView(creatorModel.roles, creatorModel.characters);
         CreatorController creatorController = new CreatorController(this, creatorPanel, creatorModel);
         creatorController.init();
@@ -122,13 +124,15 @@ public class GuiView extends JFrame {
     }
 
     public void showCreatorView() {
+        menuController.unsetModel();
+        creatorModel.refresh();
         cLayout.show(cards, CREATE_VIEW_NAME);
     }
 
     public void showPlayView(Creature newHero) {
         loadGame(newHero);
         cLayout.show(cards, PLAY_VIEW_NAME);
-        playPanel.renderMap();
+        playPanel.stateChanged(null);
 
     }
 
@@ -136,8 +140,10 @@ public class GuiView extends JFrame {
         playModel = new PlayModel(newHero);
         playModel.setView(playPanel);
         playPanel.setModel(playModel);
+        playPanel.clearMap();
+        menuController.setModel(playModel);
         playController.setModel(playModel);
-        
+
     }
 
 }

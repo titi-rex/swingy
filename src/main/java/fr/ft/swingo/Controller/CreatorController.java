@@ -30,7 +30,6 @@ import fr.ft.swingo.View.CreatorView;
 import fr.ft.swingo.View.GuiView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 import javax.swing.JList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -105,10 +104,7 @@ public class CreatorController {
         @Override
         public void actionPerformed(ActionEvent e) {
             Roles role = (Roles) view.getRolesBox().getSelectedItem();
-            view.getInfoStat().getRoleLabel().setText(role.name());
-            view.getInfoStat().getAttackValue().setText(String.valueOf(role.attack));
-            view.getInfoStat().getDefenseValue().setText(String.valueOf(role.defense));
-            view.getInfoStat().getHitPointValue().setText(String.valueOf(role.hitPoint));
+            view.getInfoStat().update(role);
         }
     }
 
@@ -122,10 +118,7 @@ public class CreatorController {
                 return ;
             }
             
-            view.getInfoStat().getRoleLabel().setText(crt.getName());
-            view.getInfoStat().getAttackValue().setText(String.valueOf(crt.getAttack()));
-            view.getInfoStat().getDefenseValue().setText(String.valueOf(crt.getDefense()));
-            view.getInfoStat().getHitPointValue().setText(String.valueOf(crt.getHitPoint()));
+            view.getInfoStat().update(crt);
         }
 
     }

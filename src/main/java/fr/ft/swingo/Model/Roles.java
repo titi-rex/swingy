@@ -32,7 +32,7 @@ public enum Roles {
     SENTINEL(10, 3, 10, 3, 10, 3),
     PRIESTESS(10, 3, 10, 3, 10, 3),
     VALKYRIE(10, 5, 10, 5, 10, 5),
-    EMPRESS(15, 2, 20, 2, 20, 2),
+    EMPRESS(25, 2, 20, 2, 20, 2),
     PRODIGE(5, 5, 5, 5, 5, 5),
     LICH(10, 3, 10, 3, 10, 3),
     BONEWALKER(10, 3, 10, 3, 10, 3),

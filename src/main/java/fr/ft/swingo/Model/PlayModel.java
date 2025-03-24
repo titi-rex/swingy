@@ -24,6 +24,7 @@
 package fr.ft.swingo.Model;
 
 import java.awt.Point;
+import java.util.Random;
 import javax.swing.event.ChangeListener;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -43,35 +44,52 @@ public class PlayModel implements AutoCloseable {
         NORTH, EAST, WEST, SOUTH
     };
 
-    private Cell[][] cells = {
-        {new Cell(), new Cell(), new Cell(), new Cell(), new Cell()},
-        {new Cell(), new Cell(), new Cell(), new Cell(), new Cell()},
-        {new Cell(), new Cell(), new Cell(Cell.Type.HERO, null), new Cell(), new Cell()},
-        {new Cell(), new Cell(), new Cell(), new Cell(), new Cell()},
-        {new Cell(), new Cell(), new Cell(), new Cell(), new Cell()},};
-    private int size = 5;
+    private Cell[][] cells;
+    private int size;
     private boolean running;
     private ChangeListener view;
     private Point heroCoordinate;
-    SessionFactory sessionFactory;
-    Session gameSession;
-    Creature hero;
+    private final SessionFactory sessionFactory;
+//    private final Session gameSession;
+    private final Creature hero;
+    private final Random randGen;
+    private Direction heroDirectionFrom;
 
     /**
      * after creation you nust set the view via
      * {@link fr.ft.swingo.Model.PlayModel#setView}
+     *
+     * @param newHero
      */
     public PlayModel(Creature newHero) {
         this.running = false;
+        this.randGen = new Random();
+        this.heroDirectionFrom = null;
 
         sessionFactory = new Configuration().configure().buildSessionFactory();
-        gameSession = sessionFactory.openSession();
-        hero = gameSession.get(Creature.class, newHero.getName());
+//        gameSession = sessionFactory.openSession();
+//          gameSession.get(Creature.class, newHero.getName());
+        hero = sessionFactory.fromSession(session -> {
+            return session
+                    .get(Creature.class, newHero.getName());
+        });
+
         if (hero == null) {
             throw new AssertionError("not handled");
         }
         generateWorld();
         running = true;
+    }
+
+    private Creature invokeEnnemy() {
+        Roles[] monsters = Roles.monster();
+        int idx = randGen.nextInt(monsters.length);
+
+        Creature creature = Creature.invoke("Monster", monsters[idx]);
+        if (randGen.nextInt(100) < 33) {
+            creature.setName("should have artifact");
+        }
+        return creature;
     }
 
     private void generateWorld() {
@@ -80,7 +98,11 @@ public class PlayModel implements AutoCloseable {
         cells = new Cell[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                cells[i][j] = new Cell();
+                if (randGen.nextInt(100) < 33) {
+                    cells[i][j] = new Cell(Cell.Type.ENNEMY, invokeEnnemy());
+                } else {
+                    cells[i][j] = new Cell();
+                }
             }
         }
         heroCoordinate = new Point(size / 2, size / 2);
@@ -88,14 +110,20 @@ public class PlayModel implements AutoCloseable {
 
     public void save() {
         if (running == true) {
-            gameSession.flush();
+            System.err.println("save");
+//            gameSession.getTransaction().begin();
+            sessionFactory.inTransaction(session -> {
+                session.merge(hero);
+            });
+//            gameSession.persist(hero);
+//            gameSession.getTransaction().commit();
         }
     }
 
     @Override
     public void close() {
         if (running == true) {
-            gameSession.close();
+//            gameSession.close();
             sessionFactory.close();
         }
     }
@@ -114,26 +142,58 @@ public class PlayModel implements AutoCloseable {
 
             switch (dir) {
                 case Direction.NORTH -> {
+                    heroDirectionFrom = Direction.SOUTH;
                     heroCoordinate.y--;
                     checkEnd();
                 }
                 case Direction.EAST -> {
+                    heroDirectionFrom = Direction.WEST;
                     heroCoordinate.x--;
                     checkEnd();
                 }
                 case Direction.SOUTH -> {
+                    heroDirectionFrom = Direction.NORTH;
                     heroCoordinate.y++;
                     checkEnd();
                 }
                 case Direction.WEST -> {
+                    heroDirectionFrom = Direction.EAST;
                     heroCoordinate.x++;
                     checkEnd();
                 }
                 default ->
-                    throw new AssertionError();
+                    throw new AssertionError("should be handled");
             }
         } else {
             System.out.println("cant move, game not running");
+        }
+    }
+
+    public void resolveFight() {
+        Creature opponent = getCellAt(heroCoordinate.y, heroCoordinate.x).getCreature();
+        if (opponent == null) {
+            System.err.println("no opponent here");
+        } else {
+            while (hero.isAlive() && opponent.isAlive()) {
+                hero.attack(opponent);
+                opponent.attack(hero);
+            }
+            if (hero.isAlive()) {
+                System.err.println("hero win !");
+                getCellAt(heroCoordinate.y, heroCoordinate.x).setType(Cell.Type.EMPTY);
+                hero.gainXp(1000);
+            } else {
+                System.err.println("hero loose... !");
+            }
+        }
+        checkEnd();
+    }
+
+    public void resolveRun() {
+        if (randGen.nextInt(100) < 50) {
+            moveHero(heroDirectionFrom);
+        } else {
+            resolveFight();
         }
     }
 
@@ -142,7 +202,8 @@ public class PlayModel implements AutoCloseable {
         if (heroCoordinate.x == 0
                 || heroCoordinate.y == 0
                 || heroCoordinate.x == size - 1
-                || heroCoordinate.y == size - 1) {
+                || heroCoordinate.y == size - 1
+                || hero.getHitPoint() <= 0) {
             endGame();
         }
         stateChanged();
@@ -246,6 +307,10 @@ public class PlayModel implements AutoCloseable {
      */
     public void setRunning(boolean running) {
         this.running = running;
+    }
+
+    public Creature getHero() {
+        return hero;
     }
 
 }
