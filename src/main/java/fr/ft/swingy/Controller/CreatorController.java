@@ -21,13 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingo.Controller;
+package fr.ft.swingy.Controller;
 
-import fr.ft.swingo.Model.CreatorModel;
-import fr.ft.swingo.Model.Creature;
-import fr.ft.swingo.Model.Roles;
-import fr.ft.swingo.View.CreatorView;
-import fr.ft.swingo.View.GuiView;
+import fr.ft.swingy.Model.CreatorModel;
+import fr.ft.swingy.Model.Creature;
+import fr.ft.swingy.Model.Roles;
+import fr.ft.swingy.View.CreatorView;
+import fr.ft.swingy.View.GuiView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JList;

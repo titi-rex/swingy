@@ -21,45 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingo.View;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
+package fr.ft.swingy.Model;
 
 /**
  *
  * @author Pril Wolf
  */
-public class MenuView extends JMenuBar {
+public class Statistic {
 
-    public JMenuItem switchItem;
-    public JMenuItem saveItem;
-    public JMenuItem selectItem;
-    public JMenuItem exitItem;
+    public int value;
+    public float growthRate;
 
-    public MenuView() {
-        switchItem = new JMenuItem("Switch");
-        switchItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.ALT_MASK));
-
-        saveItem = new JMenuItem("Save");
-        saveItem.setEnabled(false);
-        saveItem.setMnemonic(KeyEvent.VK_S);
-
-        selectItem = new JMenuItem("Selector");
-        exitItem = new JMenuItem("Exit");
-
-        JMenu menu = new JMenu("Settings");
-        menu.setMnemonic(KeyEvent.VK_M);
-
-        menu.add(switchItem);
-        menu.add(saveItem);
-        menu.add(selectItem);
-        menu.add(exitItem);
-
-        add(menu);
+    public Statistic() {
+        this.value = 1;
+        this.growthRate = 1;
     }
+
+    public Statistic(int value, float growthRate) {
+        this.value = value;
+        this.growthRate = growthRate;
+    }
+
+    public void growth() {
+        value += growthRate;
+    }
+
+    public void increase(int p_value) {
+        setValue(value + p_value);
+    }
+
+    public Statistic duplicate() {
+        return new Statistic(value, growthRate);
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
+
 }

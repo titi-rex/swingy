@@ -21,70 +21,87 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingo.Controller;
+package fr.ft.swingy.Controller;
 
-import fr.ft.swingo.Model.PlayModel;
-import fr.ft.swingo.View.GuiView;
-import fr.ft.swingo.View.MenuView;
+import fr.ft.swingy.Model.PlayModel;
+import fr.ft.swingy.View.GuiView;
+import fr.ft.swingy.View.PlayView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
+import javax.swing.JButton;
 
 /**
  *
  * @author Pril Wolf
  */
-public class MenuController {
+public class PlayController {
 
     private final GuiView window;
-    private final MenuView view;
+    private final PlayView view;
     private PlayModel model;
 
-    public MenuController(GuiView window, MenuView view) {
+    public PlayController(GuiView window, PlayView view) {
         this.window = window;
         this.view = view;
+
     }
 
     public void init() {
-        view.switchItem.addActionListener(new SwitchAction());
-        view.saveItem.addActionListener(new SaveAction());
-        view.selectItem.addActionListener(new SelectAction());
-        view.exitItem.addActionListener(new ExitAction());
+        view.getCommandBar().getNorthButton().addActionListener(new NorthAction());
+        view.getCommandBar().getEastButton().addActionListener(new EastAction());
+        view.getCommandBar().getSouthButton().addActionListener(new SouthAction());
+        view.getCommandBar().getWestButton().addActionListener(new WestAction());
+        view.getCommandBar().getFightButton().addActionListener(new FightAction());
+        view.getCommandBar().getRunButton().addActionListener(new RunAction());
+
     }
 
-    private class SwitchAction implements ActionListener {
+    private class NorthAction implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("switch to cli requested");
+            model.moveHero(PlayModel.Direction.NORTH);
         }
     }
 
-    private class SaveAction implements ActionListener {
+    private class EastAction implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            model.save();
+            model.moveHero(PlayModel.Direction.EAST);
         }
     }
 
-    private class SelectAction implements ActionListener {
+    private class SouthAction implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            model.close();
-            window.showCreatorView();
-            System.out.println("switch to selector requested");
+            model.moveHero(PlayModel.Direction.SOUTH);
         }
     }
 
-    private class ExitAction implements ActionListener {
+    private class WestAction implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("exit requested");
-            window.dispatchEvent(
-                    new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
+            model.moveHero(PlayModel.Direction.WEST);
+        }
+    }
+
+    private class FightAction implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            model.resolveFight();
+
+        }
+    }
+
+    private class RunAction implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            model.resolveRun();
         }
     }
 
@@ -94,12 +111,6 @@ public class MenuController {
 
     public void setModel(PlayModel model) {
         this.model = model;
-        view.saveItem.setEnabled(true);
-    }
-
-    public void unsetModel() {
-        this.model = null;
-        view.saveItem.setEnabled(false);
     }
 
 }

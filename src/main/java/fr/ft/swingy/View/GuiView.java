@@ -21,14 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingo.View;
+package fr.ft.swingy.View;
 
-import fr.ft.swingo.Controller.CreatorController;
-import fr.ft.swingo.Controller.MenuController;
-import fr.ft.swingo.Controller.PlayController;
-import fr.ft.swingo.Model.CreatorModel;
-import fr.ft.swingo.Model.Creature;
-import fr.ft.swingo.Model.PlayModel;
+import fr.ft.swingy.Controller.CreatorController;
+import fr.ft.swingy.Controller.MenuController;
+import fr.ft.swingy.Controller.PlayController;
+import fr.ft.swingy.Model.CreatorModel;
+import fr.ft.swingy.Model.Creature;
+import fr.ft.swingy.Model.PlayModel;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.HeadlessException;

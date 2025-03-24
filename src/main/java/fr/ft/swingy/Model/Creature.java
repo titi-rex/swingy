@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingo.Model;
+package fr.ft.swingy.Model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

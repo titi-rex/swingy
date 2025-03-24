@@ -21,10 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingo.View;
+package fr.ft.swingy.View;
 
-import fr.ft.swingo.Model.Creature;
-import fr.ft.swingo.Model.Roles;
+import fr.ft.swingy.Model.Creature;
+import fr.ft.swingy.Model.Roles;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;

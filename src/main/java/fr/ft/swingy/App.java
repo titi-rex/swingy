@@ -21,41 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingo.Model;
+package fr.ft.swingy;
+
+import fr.ft.swingy.View.GuiView;
+import javax.swing.JFrame;
 
 /**
  *
  * @author Pril Wolf
  */
-public class Statistic {
+public class App {
 
-    public int value;
-    public float growthRate;
-
-    public Statistic() {
-        this.value = 1;
-        this.growthRate = 1;
+    public static void main(String[] args) {
+        JFrame.setDefaultLookAndFeelDecorated(true);
+        GuiView gui = new GuiView();
+        gui.showCreatorView();
+        gui.setVisible(true);
+        System.out.println("main end");
     }
-
-    public Statistic(int value, float growthRate) {
-        this.value = value;
-        this.growthRate = growthRate;
-    }
-
-    public void growth() {
-        value += growthRate;
-    }
-
-    public void increase(int p_value) {
-        setValue(value + p_value);
-    }
-
-    public Statistic duplicate() {
-        return new Statistic(value, growthRate);
-    }
-
-    public void setValue(int value) {
-        this.value = value;
-    }
-
 }
