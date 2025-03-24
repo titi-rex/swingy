@@ -24,8 +24,8 @@
 package fr.ft.swingy.Controller;
 
 import fr.ft.swingy.Model.PlayModel;
-import fr.ft.swingy.View.GuiView;
-import fr.ft.swingy.View.PlayView;
+import fr.ft.swingy.View.GUI.GuiView;
+import fr.ft.swingy.View.GUI.GameView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -36,14 +36,10 @@ import javax.swing.JButton;
  */
 public class PlayController {
 
-    private final GuiView window;
-    private final PlayView view;
+    private GameView view;
     private PlayModel model;
 
-    public PlayController(GuiView window, PlayView view) {
-        this.window = window;
-        this.view = view;
-
+    public PlayController() {
     }
 
     public void init() {
@@ -111,6 +107,14 @@ public class PlayController {
 
     public void setModel(PlayModel model) {
         this.model = model;
+    }
+
+    public GameView getView() {
+        return view;
+    }
+
+    public void setView(GameView view) {
+        this.view = view;
     }
 
 }

@@ -41,7 +41,7 @@ public class PlayModel implements AutoCloseable {
      * enum representing possible movement for hero
      */
     public enum Direction {
-        NORTH, EAST, WEST, SOUTH
+        NORTH, EAST, WEST, SOUTH, CENTER
     };
 
     private Cell[][] cells;
@@ -50,7 +50,6 @@ public class PlayModel implements AutoCloseable {
     private ChangeListener view;
     private Point heroCoordinate;
     private final SessionFactory sessionFactory;
-//    private final Session gameSession;
     private final Creature hero;
     private final Random randGen;
     private Direction heroDirectionFrom;
@@ -64,11 +63,9 @@ public class PlayModel implements AutoCloseable {
     public PlayModel(Creature newHero) {
         this.running = false;
         this.randGen = new Random();
-        this.heroDirectionFrom = null;
+        this.heroDirectionFrom = Direction.CENTER;
 
         sessionFactory = new Configuration().configure().buildSessionFactory();
-//        gameSession = sessionFactory.openSession();
-//          gameSession.get(Creature.class, newHero.getName());
         hero = sessionFactory.fromSession(session -> {
             return session
                     .get(Creature.class, newHero.getName());
@@ -111,19 +108,15 @@ public class PlayModel implements AutoCloseable {
     public void save() {
         if (running == true) {
             System.err.println("save");
-//            gameSession.getTransaction().begin();
             sessionFactory.inTransaction(session -> {
                 session.merge(hero);
             });
-//            gameSession.persist(hero);
-//            gameSession.getTransaction().commit();
         }
     }
 
     @Override
     public void close() {
         if (running == true) {
-//            gameSession.close();
             sessionFactory.close();
         }
     }
@@ -160,6 +153,9 @@ public class PlayModel implements AutoCloseable {
                     heroDirectionFrom = Direction.EAST;
                     heroCoordinate.x++;
                     checkEnd();
+                }
+                case Direction.CENTER -> {
+
                 }
                 default ->
                     throw new AssertionError("should be handled");

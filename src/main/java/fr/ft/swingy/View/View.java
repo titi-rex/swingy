@@ -23,43 +23,35 @@
  */
 package fr.ft.swingy.View;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
+import fr.ft.swingy.Controller.Controller;
+import fr.ft.swingy.Model.Model;
+import fr.ft.swingy.Model.PlayModel;
+import fr.ft.swingy.View.GUI.CreatorView;
+import fr.ft.swingy.View.GUI.GameView;
+import fr.ft.swingy.View.GUI.MenuBarView;
 
 /**
  *
  * @author Pril Wolf
  */
-public class MenuView extends JMenuBar {
+public interface View {
 
-    public JMenuItem switchItem;
-    public JMenuItem saveItem;
-    public JMenuItem selectItem;
-    public JMenuItem exitItem;
+    void setModel(Model model);
 
-    public MenuView() {
-        switchItem = new JMenuItem("Switch");
-        switchItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.ALT_MASK));
+    void setController(Controller controller);
 
-        saveItem = new JMenuItem("Save");
-        saveItem.setEnabled(false);
-        saveItem.setMnemonic(KeyEvent.VK_S);
+    void start();
 
-        selectItem = new JMenuItem("Selector");
-        exitItem = new JMenuItem("Exit");
+    void showPlayView();
 
-        JMenu menu = new JMenu("Settings");
-        menu.setMnemonic(KeyEvent.VK_M);
+    void showCreatorView();
 
-        menu.add(switchItem);
-        menu.add(saveItem);
-        menu.add(selectItem);
-        menu.add(exitItem);
+    void requestClose();
+    
+    CreatorView getCreatorPanel();
 
-        add(menu);
-    }
+    MenuBarView getMenuBarView();
+
+    GameView getPlayPanel();
+
 }

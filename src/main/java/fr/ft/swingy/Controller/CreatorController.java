@@ -26,8 +26,8 @@ package fr.ft.swingy.Controller;
 import fr.ft.swingy.Model.CreatorModel;
 import fr.ft.swingy.Model.Creature;
 import fr.ft.swingy.Model.Roles;
-import fr.ft.swingy.View.CreatorView;
-import fr.ft.swingy.View.GuiView;
+import fr.ft.swingy.View.GUI.CreatorView;
+import fr.ft.swingy.View.GUI.GuiView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JList;
@@ -40,17 +40,15 @@ import javax.swing.event.ListSelectionListener;
  */
 public class CreatorController {
 
-    private final GuiView window;
-    private final CreatorView view;
-    private final CreatorModel model;
+    private Controller main;
+    private CreatorView view;
+    private CreatorModel model;
 
-    public CreatorController(GuiView window, CreatorView view, CreatorModel model) {
-        this.window = window;
-        this.view = view;
-        this.model = model;
+    public CreatorController() {
     }
 
     public void init() {
+
         view.getCreateButton().addActionListener(new CreateAction());
         view.getDeleteButton().addActionListener(new DeleteAction());
         view.getPlayButton().addActionListener(new PlayAction());
@@ -93,9 +91,8 @@ public class CreatorController {
             if (idx < 0) {
                 return;
             }
-            window.showPlayView(
-                    (Creature) view.getCharacterList().getSelectedValue()
-            );
+            System.out.println("play requested");
+            main.loadNewGame();
         }
     }
 
@@ -114,16 +111,38 @@ public class CreatorController {
         public void valueChanged(ListSelectionEvent e) {
             JList list = (JList) e.getSource();
             Creature crt = (Creature) list.getSelectedValue();
-            if (crt == null) {
-                return ;
+            if (crt != null) {
+                view.getInfoStat().update(crt);
             }
-            
-            view.getInfoStat().update(crt);
         }
-
     }
 
     private int characterSelected() {
         return view.getCharacterList().getSelectedIndex();
     }
+
+    public Controller getMain() {
+        return main;
+    }
+
+    public void setMain(Controller main) {
+        this.main = main;
+    }
+
+    public CreatorView getView() {
+        return view;
+    }
+
+    public void setView(CreatorView view) {
+        this.view = view;
+    }
+
+    public CreatorModel getModel() {
+        return model;
+    }
+
+    public void setModel(CreatorModel model) {
+        this.model = model;
+    }
+
 }

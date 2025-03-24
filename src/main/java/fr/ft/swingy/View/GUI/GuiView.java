@@ -21,13 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingy.View;
+package fr.ft.swingy.View.GUI;
 
+import fr.ft.swingy.Controller.Controller;
+import fr.ft.swingy.Controller.DefaultController;
 import fr.ft.swingy.Controller.CreatorController;
 import fr.ft.swingy.Controller.MenuController;
 import fr.ft.swingy.Controller.PlayController;
 import fr.ft.swingy.Model.CreatorModel;
 import fr.ft.swingy.Model.Creature;
+import fr.ft.swingy.Model.DefaultModel;
+import fr.ft.swingy.Model.Model;
 import fr.ft.swingy.Model.PlayModel;
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -40,12 +44,16 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import fr.ft.swingy.View.View;
 
 /**
  *
  * @author Pril Wolf
  */
-public class GuiView extends JFrame {
+public class GuiView extends JFrame implements View {
+
+    private Model model;
+    private Controller controller;
 
     public static final int WINDOW_SIZE = 800;
     public static final int WINDOW_SIZE_MIN = 500;
@@ -54,13 +62,9 @@ public class GuiView extends JFrame {
     public static final String CREATE_VIEW_NAME = "create";
     public static final String PLAY_VIEW_NAME = "play";
 
-    private final MenuView menuView;
-    private final MenuController menuController;
+    private final MenuBarView menuView;
     private final CreatorView creatorPanel;
-    private final CreatorModel creatorModel;
-    private final PlayView playPanel;
-    private PlayModel playModel;
-    private final PlayController playController;
+    private final GameView playPanel;
     private final JPanel cards;
     private final CardLayout cLayout;
 
@@ -70,88 +74,109 @@ public class GuiView extends JFrame {
         setMinimumSize(new Dimension(WINDOW_SIZE_MIN, WINDOW_SIZE_MIN));
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
-        cLayout = new CardLayout();
-        cards = new JPanel(cLayout);
-        add(cards);
 
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
         } catch (Exception ex) {
             Logger.getLogger(GuiView.class.getName()).log(Level.SEVERE, null, ex);
         }
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                GuiView frame = (GuiView) e.getSource();
+        addWindowListener(new windowHandler());
 
-                int result = JOptionPane.showConfirmDialog(
-                        frame,
-                        "Are you sure you want to exit the application?",
-                        "Exit Application",
-                        JOptionPane.YES_NO_OPTION);
-
-                if (result == JOptionPane.YES_OPTION) {
-                    frame.dispose();
-                }
-            }
-        });
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e) {
-                System.out.println("Windows closed");
-            }
-        });
-
-//        create and init menubar
-        menuView = new MenuView();
-        menuController = new MenuController(this, menuView);
-        menuController.init();
+        cLayout = new CardLayout();
+        cards = new JPanel(cLayout);
+        add(cards);
+        
+        menuView = new MenuBarView();
         setJMenuBar(menuView);
-
-//        create creatorview
-        creatorModel = new CreatorModel();
-        creatorPanel = new CreatorView(creatorModel.roles, creatorModel.characters);
-        CreatorController creatorController = new CreatorController(this, creatorPanel, creatorModel);
-        creatorController.init();
+        
+        creatorPanel = new CreatorView();
         cards.add(creatorPanel, CREATE_VIEW_NAME);
 
-//        create play view
-        playPanel = new PlayView();
-        playController = new PlayController(this, playPanel);
-        playController.init();
+        playPanel = new GameView();
         cards.add(playPanel, PLAY_VIEW_NAME);
-
     }
 
+    @Override
+    public void start() {
+        setVisible(true);
+        showCreatorView();
+    }
+
+    @Override
     public void showCreatorView() {
-        menuController.unsetModel();
-        creatorModel.refresh();
+//        menuController.unsetModel();
+//        creatorModel.refresh();
         cLayout.show(cards, CREATE_VIEW_NAME);
     }
 
-    public void showPlayView(Creature newHero) {
-        loadGame(newHero);
+    @Override
+    public void showPlayView() {
+        playPanel.stateChanged(null); // -> should be called by model
         cLayout.show(cards, PLAY_VIEW_NAME);
-        playPanel.stateChanged(null);
-
     }
 
-    private void loadGame(Creature newHero) {
-        playModel = new PlayModel(newHero);
-        playModel.setView(playPanel);
-        playPanel.setModel(playModel);
-        playPanel.clearMap();
-        menuController.setModel(playModel);
-        playController.setModel(playModel);
+    @Override
+    public void setModel(Model model) {
+        this.model = model;
+        creatorPanel.getCharacterList().setModel(model.getCreatorModel().characters);
+        creatorPanel.getRolesBox().setModel(model.getCreatorModel().roles);
+    }
 
+    @Override
+    public void setController(Controller controller) {
+        this.controller = controller;
+    }
+
+    @Override
+    public MenuBarView getMenuBarView() {
+        return menuView;
+    }
+
+    @Override
+    public void requestClose() {
+        this.dispatchEvent(
+                        new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+    }
+
+    private class windowHandler extends WindowAdapter {
+
+        @Override
+        public void windowClosing(WindowEvent e) {
+            GuiView frame = (GuiView) e.getSource();
+
+            int result = JOptionPane.showConfirmDialog(
+                    frame,
+                    "Are you sure you want to exit the application?",
+                    "Exit Application",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (result == JOptionPane.YES_OPTION) {
+                frame.dispose();
+            }
+        }
+
+        @Override
+        public void windowClosed(WindowEvent e) {
+            System.out.println("Windows closed");
+        }
+    }
+
+    @Override
+    public CreatorView getCreatorPanel() {
+        return creatorPanel;
+    }
+
+    @Override
+    public GameView getPlayPanel() {
+        return playPanel;
     }
 
 }
 
 
-        /*
+/*
 javax.swing.UIManager$LookAndFeelInfo[Metal javax.swing.plaf.metal.MetalLookAndFeel]
 javax.swing.UIManager$LookAndFeelInfo[Nimbus javax.swing.plaf.nimbus.NimbusLookAndFeel]
 javax.swing.UIManager$LookAndFeelInfo[CDE/Motif com.sun.java.swing.plaf.motif.MotifLookAndFeel]
 javax.swing.UIManager$LookAndFeelInfo[GTK+ com.sun.java.swing.plaf.gtk.GTKLookAndFeel]
-         */
+ */

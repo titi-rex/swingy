@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingy.View;
+package fr.ft.swingy.View.GUI;
 
 import fr.ft.swingy.Model.Creature;
 import fr.ft.swingy.Model.Roles;
@@ -37,7 +37,7 @@ import javax.swing.JPanel;
  *
  * @author Pril Wolf
  */
-public class CreatureStats extends JPanel {
+public class CreatureView extends JPanel {
 
     public static final int P_WIDTH = 130;
     public static final int P_HEIGHT = 300;
@@ -49,7 +49,7 @@ public class CreatureStats extends JPanel {
     private JLabel defenseValue;
     private JLabel hitPointValue;
 
-    public CreatureStats() {
+    public CreatureView() {
         super();
 
         Dimension d = new Dimension(P_WIDTH, P_HEIGHT);

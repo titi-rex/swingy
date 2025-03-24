@@ -21,42 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingy;
+package fr.ft.swingy.Controller;
 
-import fr.ft.swingy.Controller.Controller;
-import fr.ft.swingy.Controller.DefaultController;
-import fr.ft.swingy.Model.DefaultModel;
 import fr.ft.swingy.Model.Model;
-import fr.ft.swingy.View.GUI.GuiView;
-import javax.swing.JFrame;
 import fr.ft.swingy.View.View;
 
 /**
  *
  * @author Pril Wolf
  */
-public class App {
+public interface Controller {
 
-    public static void main(String[] args) {
-        JFrame.setDefaultLookAndFeelDecorated(true);
-        Model model = new DefaultModel();
-        View view = new GuiView();
-        Controller controller = new DefaultController();
-        
-        view.setModel(model);
-        
-//        not used
-//        view.setController(controller);
-        model.setView(view);
-        
-//        not used
-//        model.setController(controller);
-        
-        controller.setView(view);
-        controller.setModel(model);
-        controller.init();
-        
-        view.start();
-        System.out.println("main end");
-    }
+    void setModel(Model model);
+
+    void setView(View view);
+
+    void init();
+
+    void loadNewGame();
+
 }

@@ -24,8 +24,8 @@
 package fr.ft.swingy.Controller;
 
 import fr.ft.swingy.Model.PlayModel;
-import fr.ft.swingy.View.GuiView;
-import fr.ft.swingy.View.MenuView;
+import fr.ft.swingy.View.GUI.GuiView;
+import fr.ft.swingy.View.GUI.MenuBarView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -36,13 +36,13 @@ import java.awt.event.WindowEvent;
  */
 public class MenuController {
 
-    private final GuiView window;
-    private final MenuView view;
+    private GuiView window;
+    private Controller main;
+    private MenuBarView view;
     private PlayModel model;
 
-    public MenuController(GuiView window, MenuView view) {
-        this.window = window;
-        this.view = view;
+    public MenuController() {
+
     }
 
     public void init() {
@@ -102,4 +102,30 @@ public class MenuController {
         view.saveItem.setEnabled(false);
     }
 
+    public GuiView getWindow() {
+        return window;
+    }
+
+    public void setWindow(GuiView window) {
+        this.window = window;
+    }
+
+    public MenuBarView getView() {
+        return view;
+    }
+
+    public void setView(MenuBarView view) {
+        this.view = view;
+    }
+
+    public Controller getMain() {
+        return main;
+    }
+
+    public void setMain(Controller main) {
+        this.main = main;
+    }
+
+    
+    
 }

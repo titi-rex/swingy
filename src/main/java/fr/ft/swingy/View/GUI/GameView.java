@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingy.View;
+package fr.ft.swingy.View.GUI;
 
 import fr.ft.swingy.Model.Cell;
 import fr.ft.swingy.Model.PlayModel;
@@ -43,7 +43,7 @@ import javax.swing.event.ChangeListener;
  *
  * @author Pril Wolf
  */
-public class PlayView extends JPanel implements ChangeListener {
+public class GameView extends JPanel implements ChangeListener {
 
     public static final int MIN_RENDER_SIZE = 3;
     public static final int MAX_RENDER_SIZE = 15;
@@ -56,14 +56,14 @@ public class PlayView extends JPanel implements ChangeListener {
     private PlayModel model;
     private JPanel map;
     private final JLabel statusLabel;
-    private final CreatureStats heroStats;
-    private final CreatureStats ennemyStats;
+    private final CreatureView heroStats;
+    private final CreatureView ennemyStats;
     private final CommandBar commandBar;
 
     /**
      * MUST set model after constructor
      */
-    public PlayView() {
+    public GameView() {
         super();
         setLayout(new BorderLayout());
 
@@ -71,8 +71,8 @@ public class PlayView extends JPanel implements ChangeListener {
         statusLabel = new JLabel("PLAYING");
         header.add(statusLabel);
 
-        heroStats = new CreatureStats();
-        ennemyStats = new CreatureStats();
+        heroStats = new CreatureView();
+        ennemyStats = new CreatureView();
         commandBar = new CommandBar();
 
         add(header, BorderLayout.PAGE_START);
@@ -86,9 +86,11 @@ public class PlayView extends JPanel implements ChangeListener {
         int end = Integer.min(pos + RENDER_BOUND + 1, size);
 
         if (pos - RENDER_BOUND < 0) {
-            end += Math.abs(pos - RENDER_BOUND);
+//            end += Math.abs(pos - RENDER_BOUND);
+            end = Math.min(size, end + Math.abs(pos - RENDER_BOUND));
         } else if (pos + RENDER_BOUND > size) {
-            start += (size - (pos + RENDER_BOUND));
+            start = Math.max(0, start + (size - (pos + RENDER_BOUND)));
+            
         }
         return new Point(start, end);
     }
@@ -285,11 +287,11 @@ public class PlayView extends JPanel implements ChangeListener {
         return statusLabel;
     }
 
-    public CreatureStats getHeroStats() {
+    public CreatureView getHeroStats() {
         return heroStats;
     }
 
-    public CreatureStats getEnnemyStats() {
+    public CreatureView getEnnemyStats() {
         return ennemyStats;
     }
 }

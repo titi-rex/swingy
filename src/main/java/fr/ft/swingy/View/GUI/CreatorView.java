@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingy.View;
+package fr.ft.swingy.View.GUI;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -34,12 +34,14 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 
 /**
  *
  * @author Pril Wolf
  */
-public class CreatorView extends JPanel {
+public class CreatorView extends JPanel implements ListDataListener {
 
     private JButton createButton;
     private JButton deleteButton;
@@ -47,7 +49,27 @@ public class CreatorView extends JPanel {
     private JComboBox rolesBox;
     private JTextField nameField;
     private JList characterList;
-    private CreatureStats infoStat;
+    private CreatureView infoStat;
+
+    /**
+     * must set model for roelsBox and characterlist
+     */
+    public CreatorView() {
+        setLayout(new BorderLayout());
+
+        nameField = new JTextField(12);
+        rolesBox = new JComboBox();
+        characterList = new JList();
+        createButton = new JButton("Create");
+        deleteButton = new JButton("Delete");
+        playButton = new JButton("Play");
+        infoStat = new CreatureView();
+
+        add(creationForm(), BorderLayout.PAGE_START);
+        add(characterList, BorderLayout.CENTER);
+        add(infoStat, BorderLayout.LINE_END);
+        add(buttonBox(), BorderLayout.PAGE_END);
+    }
 
     public CreatorView(ComboBoxModel rolesModel, ListModel characterModel) {
         setLayout(new BorderLayout());
@@ -58,7 +80,7 @@ public class CreatorView extends JPanel {
         createButton = new JButton("Create");
         deleteButton = new JButton("Delete");
         playButton = new JButton("Play");
-        infoStat = new CreatureStats();
+        infoStat = new CreatureView();
 
         add(creationForm(), BorderLayout.PAGE_START);
         add(characterList, BorderLayout.CENTER);
@@ -138,11 +160,26 @@ public class CreatorView extends JPanel {
         this.characterList = characterList;
     }
 
-    public CreatureStats getInfoStat() {
+    public CreatureView getInfoStat() {
         return infoStat;
     }
 
-    public void setInfoStat(CreatureStats infoStat) {
+    public void setInfoStat(CreatureView infoStat) {
         this.infoStat = infoStat;
+    }
+
+    @Override
+    public void intervalAdded(ListDataEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void intervalRemoved(ListDataEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void contentsChanged(ListDataEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
