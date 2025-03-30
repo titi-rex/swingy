@@ -21,43 +21,64 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingy;
+package fr.ft.swingy.Model;
 
-import fr.ft.swingy.Controller.Controller;
-import fr.ft.swingy.Controller.DefaultController;
-import fr.ft.swingy.Model.DefaultModel;
-import fr.ft.swingy.Model.Model;
-import fr.ft.swingy.View.GUI.GuiView;
-import javax.swing.JFrame;
-import fr.ft.swingy.View.View;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
+import java.io.Serializable;
 
 /**
  *
  * @author Pril Wolf
  */
-public class App {
+@Entity
+public class Artifact implements Serializable {
 
-    public static void main(String[] args) {
-//        catch runtime exception + null ptr exception !!!
-        JFrame.setDefaultLookAndFeelDecorated(true);
-        Model model = new DefaultModel();
-        View view = new GuiView();
-        Controller controller = new DefaultController();
-        
-        view.setModel(model);
-        
-//        not used
-//        view.setController(controller);
-        model.setView(view);
-        
-//        not used
-//        model.setController(controller);
-        
-        controller.setView(view);
-        controller.setModel(model);
-        controller.init();
-        
-        view.start();
-        System.out.println("main end");
+    @Id
+    @GeneratedValue
+    private long id;
+    
+    @Transient
+    public static final int BASE_POWER = 2;
+    public enum Types {
+        HELM, ARMOR, WEAPON
+    };
+
+    private Types type;
+    private int power;
+
+    public Artifact(Types type) {
+        this.type = type;
+        this.power = BASE_POWER;
+    }
+
+    public String toString() {
+        return this.type.toString();
+    }
+    
+    public Types getType() {
+        return type;
+    }
+
+    public void setType(Types type) {
+        this.type = type;
+    }
+
+    public int getPower() {
+        return power;
+    }
+
+    public void setPower(int power) {
+        this.power = power;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

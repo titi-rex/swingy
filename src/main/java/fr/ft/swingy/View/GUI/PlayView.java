@@ -25,9 +25,9 @@ package fr.ft.swingy.View.GUI;
 
 import fr.ft.swingy.Model.Cell;
 import fr.ft.swingy.Model.PlayModel;
-import fr.ft.swingy.Model.Roles;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Point;
 import java.net.URL;
@@ -36,6 +36,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -43,7 +45,7 @@ import javax.swing.event.ChangeListener;
  *
  * @author Pril Wolf
  */
-public class GameView extends JPanel implements ChangeListener {
+public class PlayView extends JPanel implements ChangeListener {
 
     public static final int MIN_RENDER_SIZE = 3;
     public static final int MAX_RENDER_SIZE = 15;
@@ -55,7 +57,8 @@ public class GameView extends JPanel implements ChangeListener {
 
     private PlayModel model;
     private JPanel map;
-    private final JLabel statusLabel;
+    private final JTextArea logArea;
+
     private final CreatureView heroStats;
     private final CreatureView ennemyStats;
     private final CommandBar commandBar;
@@ -63,13 +66,24 @@ public class GameView extends JPanel implements ChangeListener {
     /**
      * MUST set model after constructor
      */
-    public GameView() {
+    public PlayView() {
         super();
         setLayout(new BorderLayout());
 
         JPanel header = new JPanel(new FlowLayout());
-        statusLabel = new JLabel("PLAYING");
-        header.add(statusLabel);
+        JLabel logLabel = new JLabel("Game Logs:");
+        logArea = new JTextArea(6, 100);
+        logArea.setEditable(false);
+        logArea.setLineWrap(true);
+        logArea.setWrapStyleWord(true);
+        logArea.setBackground(Color.white);
+        logArea.setSize(200, 50);
+        JScrollPane scrollPane = new JScrollPane(logArea);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        
+        header.add(logLabel);
+        header.add(scrollPane);
 
         heroStats = new CreatureView();
         ennemyStats = new CreatureView();
@@ -81,6 +95,21 @@ public class GameView extends JPanel implements ChangeListener {
         add(commandBar, BorderLayout.PAGE_END);
     }
 
+    /**
+     *
+     * @param e
+     */
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        logArea.setCaretPosition(logArea.getDocument().getLength());
+        clearMap();
+        renderMap();
+        renderCommandBar();
+        renderHeroStats();
+        renderEnnemyStats();
+        this.revalidate();
+    }
+
     private Point getRenderPosition(int pos, int size) {
         int start = Integer.max(pos - RENDER_BOUND, 0);
         int end = Integer.min(pos + RENDER_BOUND + 1, size);
@@ -90,7 +119,7 @@ public class GameView extends JPanel implements ChangeListener {
             end = Math.min(size, end + Math.abs(pos - RENDER_BOUND));
         } else if (pos + RENDER_BOUND > size) {
             start = Math.max(0, start + (size - (pos + RENDER_BOUND)));
-            
+
         }
         return new Point(start, end);
     }
@@ -149,11 +178,13 @@ public class GameView extends JPanel implements ChangeListener {
     }
 
     public void renderCommandBar() {
-        Point hero = model.getHeroCoordinate();
-        if (model.getCellAt(hero.y, hero.x).getType() == Cell.Type.ENNEMY) {
+        Point heroPos = model.getHeroCoordinate();
+        if (model.getCellAt(heroPos.y, heroPos.x).getType() == Cell.Type.ENNEMY) {
             commandBar.showFightCommand();
-        } else {
+        } else if (model.getDropped() == null) {
             commandBar.showMoveCommand();
+        } else {
+            commandBar.showArtifactCommand();
         }
     }
 
@@ -170,22 +201,6 @@ public class GameView extends JPanel implements ChangeListener {
         }
     }
 
-    /**
-     *
-     * @param e
-     */
-    @Override
-    public void stateChanged(ChangeEvent e) {
-        clearMap();
-        renderMap();
-        renderCommandBar();
-        renderHeroStats();
-        renderEnnemyStats();
-        if (model.isRunning() == false) {
-            statusLabel.setText("END OF GAME");
-        }
-        this.revalidate();
-    }
 
     /**
      * class holding possible command and button for user
@@ -194,6 +209,7 @@ public class GameView extends JPanel implements ChangeListener {
 
         public static final String MOVE_COMMAND = "move";
         public static final String FIGHT_COMMAND = "fight";
+        public static final String ARTIFACT_COMMAND = "artifact";
 
         private final JButton northButton;
         private final JButton eastButton;
@@ -201,6 +217,9 @@ public class GameView extends JPanel implements ChangeListener {
         private final JButton westButton;
         private final JButton fightButton;
         private final JButton runButton;
+        private final JButton yesButton;
+        private final JButton noButton;
+
         private final CardLayout layout;
 
         /**
@@ -228,6 +247,13 @@ public class GameView extends JPanel implements ChangeListener {
             fightPanel.add(fightButton);
             fightPanel.add(runButton);
             this.add(fightPanel, FIGHT_COMMAND);
+
+            JPanel artifactPanel = new JPanel(new FlowLayout());
+            yesButton = new JButton("Take Artifact");
+            noButton = new JButton("Leave");
+            artifactPanel.add(yesButton);
+            artifactPanel.add(noButton);
+            this.add(artifactPanel, ARTIFACT_COMMAND);
         }
 
         public void showMoveCommand() {
@@ -238,6 +264,11 @@ public class GameView extends JPanel implements ChangeListener {
             layout.show(this, FIGHT_COMMAND);
         }
 
+        public void showArtifactCommand() {
+            layout.show(this, ARTIFACT_COMMAND);
+        }
+
+        //    Getter and Setter
         public JButton getNorthButton() {
             return northButton;
         }
@@ -261,8 +292,18 @@ public class GameView extends JPanel implements ChangeListener {
         public JButton getRunButton() {
             return runButton;
         }
+
+        public JButton getYesButton() {
+            return yesButton;
+        }
+
+        public JButton getNoButton() {
+            return noButton;
+        }
+
     }
 
+    //    Getter and Setter
     public CommandBar getCommandBar() {
         return commandBar;
     }
@@ -273,6 +314,8 @@ public class GameView extends JPanel implements ChangeListener {
 
     public void setModel(PlayModel model) {
         this.model = model;
+        logArea.setDocument(model.getGameLogs());
+
     }
 
     public JPanel getMap() {
@@ -281,10 +324,6 @@ public class GameView extends JPanel implements ChangeListener {
 
     public void setMap(JPanel map) {
         this.map = map;
-    }
-
-    public JLabel getStatusLabel() {
-        return statusLabel;
     }
 
     public CreatureView getHeroStats() {

@@ -25,7 +25,7 @@ package fr.ft.swingy.Controller;
 
 import fr.ft.swingy.Model.PlayModel;
 import fr.ft.swingy.View.GUI.GuiView;
-import fr.ft.swingy.View.GUI.GameView;
+import fr.ft.swingy.View.GUI.PlayView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -36,7 +36,7 @@ import javax.swing.JButton;
  */
 public class PlayController {
 
-    private GameView view;
+    private PlayView view;
     private PlayModel model;
 
     public PlayController() {
@@ -49,7 +49,8 @@ public class PlayController {
         view.getCommandBar().getWestButton().addActionListener(new WestAction());
         view.getCommandBar().getFightButton().addActionListener(new FightAction());
         view.getCommandBar().getRunButton().addActionListener(new RunAction());
-
+        view.getCommandBar().getYesButton().addActionListener(new YesAction());
+        view.getCommandBar().getNoButton().addActionListener(new NoAction());
     }
 
     private class NorthAction implements ActionListener {
@@ -89,7 +90,6 @@ public class PlayController {
         @Override
         public void actionPerformed(ActionEvent e) {
             model.resolveFight();
-
         }
     }
 
@@ -101,6 +101,23 @@ public class PlayController {
         }
     }
 
+    private class YesAction implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            model.takeDropped();
+        }
+    }
+
+    private class NoAction implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            model.discardDropped();
+        }
+    }
+
+    //    Getter and Setter
     public PlayModel getModel() {
         return model;
     }
@@ -109,11 +126,11 @@ public class PlayController {
         this.model = model;
     }
 
-    public GameView getView() {
+    public PlayView getView() {
         return view;
     }
 
-    public void setView(GameView view) {
+    public void setView(PlayView view) {
         this.view = view;
     }
 

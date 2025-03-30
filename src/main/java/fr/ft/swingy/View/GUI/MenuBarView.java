@@ -38,7 +38,6 @@ public class MenuBarView extends JMenuBar {
 
     public JMenuItem switchItem;
     public JMenuItem saveItem;
-    public JMenuItem selectItem;
     public JMenuItem exitItem;
 
     public MenuBarView() {
@@ -49,7 +48,6 @@ public class MenuBarView extends JMenuBar {
         saveItem.setEnabled(false);
         saveItem.setMnemonic(KeyEvent.VK_S);
 
-        selectItem = new JMenuItem("Selector");
         exitItem = new JMenuItem("Exit");
 
         JMenu menu = new JMenu("Settings");
@@ -57,7 +55,6 @@ public class MenuBarView extends JMenuBar {
 
         menu.add(switchItem);
         menu.add(saveItem);
-        menu.add(selectItem);
         menu.add(exitItem);
 
         add(menu);

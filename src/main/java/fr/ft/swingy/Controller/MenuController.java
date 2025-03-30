@@ -48,7 +48,6 @@ public class MenuController {
     public void init() {
         view.switchItem.addActionListener(new SwitchAction());
         view.saveItem.addActionListener(new SaveAction());
-        view.selectItem.addActionListener(new SelectAction());
         view.exitItem.addActionListener(new ExitAction());
     }
 

@@ -29,16 +29,16 @@ package fr.ft.swingy.Model;
  */
 public enum Roles {
 
-    SENTINEL(10, 3, 10, 3, 10, 3),
-    PRIESTESS(10, 3, 10, 3, 10, 3),
-    VALKYRIE(10, 5, 10, 5, 10, 5),
+    SENTINEL(10, 3, 15, 3, 10, 3),
+    PRIESTESS(13, 3, 5, 3, 10, 3),
+    VALKYRIE(13, 5, 9, 5, 9, 5),
     EMPRESS(25, 2, 20, 2, 20, 2),
-    PRODIGE(5, 5, 5, 5, 5, 5),
-    LICH(10, 3, 10, 3, 10, 3),
+    PRODIGE(5, 7, 5, 7, 5, 7),
+    LICH(3, 3, 3, 3, 3, 3),
     BONEWALKER(10, 3, 10, 3, 10, 3),
-    ARCANIST(10, 3, 10, 3, 10, 3),
+    ARCANIST(5, 3, 1, 3, 3, 3),
     FELL_GOD(10, 3, 10, 3, 10, 3),
-    CORRUPTED(10, 3, 10, 3, 10, 3);
+    CORRUPTED(1, 3, 5, 3, 5, 3);
 
     public final int attack;
     public final int aGrowth;

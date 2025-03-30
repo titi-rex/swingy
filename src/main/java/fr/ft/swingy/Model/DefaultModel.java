@@ -25,7 +25,12 @@ package fr.ft.swingy.Model;
 
 import fr.ft.swingy.Controller.Controller;
 import fr.ft.swingy.View.View;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import java.util.List;
+import java.util.Set;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
@@ -42,16 +47,20 @@ public class DefaultModel implements Model, AutoCloseable {
     private Controller controller;
 
     private SessionFactory sessionFactory;
+    private static Validator validator;
 
     private final CreatorModel creatorModel;
     private final ComboBoxModel rolesBoxModel;
-    private DefaultListModel charactersListModel;
+    private final DefaultListModel charactersListModel;
 
     private PlayModel playModel;
 
     public DefaultModel() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
         sessionFactory = new Configuration().configure().buildSessionFactory();
-        creatorModel = new CreatorModel();
+        creatorModel = new CreatorModel(validator);
+        
         rolesBoxModel = new DefaultComboBoxModel(Roles.heroes());
 
         List<Creature> data = sessionFactory.fromSession(session -> {
@@ -63,12 +72,11 @@ public class DefaultModel implements Model, AutoCloseable {
         charactersListModel = new DefaultListModel();
         charactersListModel.addAll(data);
 
-        Creature.setUpValidator();
     }
 
     @Override
     public void createNewGame(Creature hero) {
-        playModel = new PlayModel(hero);
+        playModel = new PlayModel(sessionFactory, hero);
         playModel.setView(view.getPlayPanel());
         view.getPlayPanel().setModel(getPlayModel());
         view.getPlayPanel().stateChanged(null);

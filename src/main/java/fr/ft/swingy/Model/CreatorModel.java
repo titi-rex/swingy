@@ -23,7 +23,10 @@
  */
 package fr.ft.swingy.Model;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import java.util.List;
+import java.util.Set;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import org.hibernate.SessionFactory;
@@ -35,11 +38,13 @@ import org.hibernate.cfg.Configuration;
  */
 public class CreatorModel implements AutoCloseable {
 
+    private final Validator validator;
     public DefaultComboBoxModel roles;
     public DefaultListModel characters;
     SessionFactory sessionFactory;
 
-    public CreatorModel() {
+    public CreatorModel(Validator validator) {
+        this.validator = validator;
         sessionFactory = new Configuration().configure().buildSessionFactory();
         roles = new DefaultComboBoxModel(Roles.heroes());
         characters = new DefaultListModel();
@@ -50,12 +55,16 @@ public class CreatorModel implements AutoCloseable {
                     .getResultList();
         });
         characters.addAll(data);
-        Creature.setUpValidator();
+    }
+
+    public boolean validateHero(Creature hero) {
+        Set<ConstraintViolation<Creature>> constraintViolations = validator.validate(hero);
+        return constraintViolations.isEmpty();
     }
 
     public void create(String name, Roles role) {
         Creature newBorn = Creature.invoke(name, role);
-        if (newBorn.validate() == true) {
+        if (validateHero(newBorn) == true) {
             try {
                 sessionFactory.inTransaction(session -> {
                     session.persist(newBorn);

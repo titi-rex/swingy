@@ -64,7 +64,7 @@ public class GuiView extends JFrame implements View {
 
     private final MenuBarView menuView;
     private final CreatorView creatorPanel;
-    private final GameView playPanel;
+    private final PlayView playPanel;
     private final JPanel cards;
     private final CardLayout cLayout;
 
@@ -92,7 +92,7 @@ public class GuiView extends JFrame implements View {
         creatorPanel = new CreatorView();
         cards.add(creatorPanel, CREATE_VIEW_NAME);
 
-        playPanel = new GameView();
+        playPanel = new PlayView();
         cards.add(playPanel, PLAY_VIEW_NAME);
     }
 
@@ -167,7 +167,7 @@ public class GuiView extends JFrame implements View {
     }
 
     @Override
-    public GameView getPlayPanel() {
+    public PlayView getPlayPanel() {
         return playPanel;
     }
 

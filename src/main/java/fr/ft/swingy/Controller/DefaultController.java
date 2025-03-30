@@ -108,7 +108,6 @@ public class DefaultController implements Controller {
             MenuBarView menuBarView = view.getMenuBarView();
             menuBarView.switchItem.addActionListener(new SwitchAction());
             menuBarView.saveItem.addActionListener(new SaveAction());
-            menuBarView.selectItem.addActionListener(new SelectAction());
             menuBarView.exitItem.addActionListener(new ExitAction());
         }
 
@@ -124,19 +123,7 @@ public class DefaultController implements Controller {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-//                model.save();
-            }
-        }
-
-        private class SelectAction implements ActionListener {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-//                model.close();
-                menuController.enabledSave(false);
-
-                view.showCreatorView();
-                System.out.println("switch to selector requested");
+                model.getPlayModel().save();
             }
         }
 

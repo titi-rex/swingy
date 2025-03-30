@@ -27,14 +27,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
-import jakarta.persistence.Transient;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import java.util.Set;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 /**
  *
@@ -45,7 +40,8 @@ public class Creature {
 
     @Id
     @NotNull
-    @NotEmpty
+    @Size(min = 1, max = 20)
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "Must contain only letters")
     private String name;
 
     private int level = 1;
@@ -56,10 +52,8 @@ public class Creature {
     private int attack;
     private int defense;
     private int hitPoint;
-//  private Artifact artifact;
 
-    @Transient
-    private static Validator validator;
+    private Artifact artifact;
 
     public Creature() {
     }
@@ -70,53 +64,7 @@ public class Creature {
         this.attack = attack;
         this.defense = defense;
         this.hitPoint = hitPoint;
-    }
-
-    public static void setUpValidator() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
-    }
-
-    public boolean validate() {
-        Set<ConstraintViolation<Creature>> constraintViolations
-                = validator.validate(this);
-        return constraintViolations.isEmpty();
-    }
-
-    public void gainXp(int value) {
-        xp += value;
-        checkLevel();
-    }
-
-    private void checkLevel() {
-        int nextLevel = level * 1000 + (level - 1) * (level - 1) * 450;
-        if (xp >= nextLevel) {
-            levelUp();
-            xp -= nextLevel;
-            checkLevel();
-        }
-    }
-
-    public void levelUp() {
-        level += 1;
-        attack += 1;
-        defense += 1;
-        hitPoint += 5;
-
-//        attack.growth();
-//        defense.growth();
-//        hitPoint.growth();
-    }
-
-    public void takeDamage(int value) {
-        int damage = Math.max(value - this.defense, 1);
-        this.hitPoint -= damage;
-        System.err.println(this + " take " + damage + " damage");
-    }
-
-    public void attack(Creature opponent) {
-        System.err.println(this + " attack " + opponent + " with " + this.getAttack() + " attack");
-        opponent.takeDamage(this.getAttack());
+        this.artifact = null;
     }
 
     static public Creature invoke(String p_name, Roles p_role) {
@@ -126,15 +74,79 @@ public class Creature {
                 p_role.hitPoint);
     }
 
+    public boolean gainXp(int value) {
+        xp += value;
+        return checkLevel();
+    }
+
+    private boolean checkLevel() {
+        int nextLevel = level * 1000 + (level - 1) * (level - 1) * 450;
+        boolean leveled = false;
+        if (xp >= nextLevel) {
+            leveled = true;
+            levelUp();
+            xp -= nextLevel;
+            checkLevel();
+        }
+        return leveled;
+    }
+
+    public void levelUp() {
+        level += 1;
+        attack += role.aGrowth;
+        defense += role.dGrowth;
+        hitPoint += role.hGrowth;
+    }
+
+    public void levelUp(int n) {
+        for (int i = 0; i < n; i++) {
+            this.levelUp();
+        }
+    }
+
+    public void attack(Creature opponent) {
+        System.err.println(this + " attack " + opponent + " with " + this.getAttack() + " attack");
+        opponent.takeDamage(this.getAttack());
+    }
+
+    public void takeDamage(int value) {
+        int damage = Math.max(value - this.defense, 1);
+        this.hitPoint -= damage;
+        System.err.println(this + " take " + damage + " damage");
+    }
+
     public boolean isAlive() {
         return getHitPoint() >= 0;
     }
 
-    @Override
-    public String toString() {
-        return name + " the " + role.name();
+    public void applyArtifact() {
+        switch (artifact.getType()) {
+            case Artifact.Types.ARMOR ->
+                defense += artifact.getPower();
+            case Artifact.Types.HELM ->
+                hitPoint += artifact.getPower();
+            case Artifact.Types.WEAPON ->
+                attack += artifact.getPower();
+        }
     }
 
+    public void discardArtifact() {
+        switch (artifact.getType()) {
+            case Artifact.Types.ARMOR ->
+                defense = Math.max(0, defense - artifact.getPower());
+            case Artifact.Types.HELM ->
+                hitPoint = Math.max(1, hitPoint - artifact.getPower());
+            case Artifact.Types.WEAPON ->
+                attack = Math.max(1, attack - artifact.getPower());
+        }
+    }
+
+    @Override
+    public String toString() {
+        return name + " the " + role.toString();
+    }
+
+    // Getter and Setter        
     public String getName() {
         return name;
     }
@@ -189,5 +201,17 @@ public class Creature {
 
     public void setHitPoint(int hitPoint) {
         this.hitPoint = hitPoint;
+    }
+
+    public Artifact getArtifact() {
+        return artifact;
+    }
+
+    public void setArtifact(Artifact artifact) {
+        if (this.artifact != null) {
+            discardArtifact();
+        }
+        this.artifact = artifact;
+        applyArtifact();
     }
 }

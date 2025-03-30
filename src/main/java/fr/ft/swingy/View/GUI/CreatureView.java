@@ -23,6 +23,7 @@
  */
 package fr.ft.swingy.View.GUI;
 
+import fr.ft.swingy.Model.Artifact;
 import fr.ft.swingy.Model.Creature;
 import fr.ft.swingy.Model.Roles;
 import java.awt.Color;
@@ -42,12 +43,13 @@ public class CreatureView extends JPanel {
     public static final int P_WIDTH = 130;
     public static final int P_HEIGHT = 300;
 
-    private JLabel nameValue;
-    private JLabel levelValue;
-    private JLabel roleValue;
-    private JLabel attackValue;
-    private JLabel defenseValue;
-    private JLabel hitPointValue;
+    private final JLabel nameValue;
+    private final JLabel levelValue;
+    private final JLabel roleValue;
+    private final JLabel attackValue;
+    private final JLabel defenseValue;
+    private final JLabel hitPointValue;
+    private final JLabel artifactValue;
 
     public CreatureView() {
         super();
@@ -65,6 +67,7 @@ public class CreatureView extends JPanel {
         JLabel attack = new JLabel("Attack: ");
         JLabel defense = new JLabel("Defense: ");
         JLabel hitPoint = new JLabel("Hit Point: ");
+        JLabel artifact = new JLabel("Artifact: ");
 
         nameValue = new JLabel("No Selection");
         levelValue = new JLabel("");
@@ -72,6 +75,7 @@ public class CreatureView extends JPanel {
         attackValue = new JLabel("");
         defenseValue = new JLabel("");
         hitPointValue = new JLabel("");
+        artifactValue = new JLabel("");
 
         add(statBox(nameValue, null));
         add(statBox(role, roleValue));
@@ -79,24 +83,34 @@ public class CreatureView extends JPanel {
         add(statBox(attack, attackValue));
         add(statBox(defense, defenseValue));
         add(statBox(hitPoint, hitPointValue));
+        add(statBox(artifact, artifactValue));
+
     }
 
     public void update(Creature creature) {
         nameValue.setText(creature.getName());
-        roleValue.setText(creature.getRole().name());
+        roleValue.setText(creature.getRole().toString());
         levelValue.setText(String.valueOf(creature.getLevel()));
         attackValue.setText(String.valueOf(creature.getAttack()));
         defenseValue.setText(String.valueOf(creature.getDefense()));
         hitPointValue.setText(String.valueOf(creature.getHitPoint()));
+
+        Artifact artifact = creature.getArtifact();
+        if (artifact != null) {
+            artifactValue.setText(artifact.toString());
+        } else {
+            artifactValue.setText("");
+        }
     }
 
     public void update(Roles role) {
         nameValue.setText("");
-        roleValue.setText(role.name());
+        roleValue.setText(role.toString());
         levelValue.setText("1");
         attackValue.setText(String.valueOf(role.attack));
         defenseValue.setText(String.valueOf(role.defense));
         hitPointValue.setText(String.valueOf(role.hitPoint));
+        artifactValue.setText("");
     }
 
     public void clear() {
@@ -106,6 +120,7 @@ public class CreatureView extends JPanel {
         attackValue.setText("");
         defenseValue.setText("");
         hitPointValue.setText("");
+        artifactValue.setText("");
     }
 
     private JPanel statBox(JLabel name, JLabel value) {
@@ -118,43 +133,33 @@ public class CreatureView extends JPanel {
         return box;
     }
 
+    //    Getter and Setter
     public JLabel getNameValue() {
         return nameValue;
-    }
-
-    public void setNameValue(JLabel nameValue) {
-        this.nameValue = nameValue;
     }
 
     public JLabel getRoleValue() {
         return roleValue;
     }
 
-    public void setRoleValue(JLabel roleValue) {
-        this.roleValue = roleValue;
-    }
-
     public JLabel getAttackValue() {
         return attackValue;
-    }
-
-    public void setAttackValue(JLabel attackValue) {
-        this.attackValue = attackValue;
     }
 
     public JLabel getDefenseValue() {
         return defenseValue;
     }
 
-    public void setDefenseValue(JLabel defenseValue) {
-        this.defenseValue = defenseValue;
-    }
-
     public JLabel getHitPointValue() {
         return hitPointValue;
     }
 
-    public void setHitPointValue(JLabel hitPointValue) {
-        this.hitPointValue = hitPointValue;
+    public JLabel getLevelValue() {
+        return levelValue;
     }
+
+    public JLabel getArtifactValue() {
+        return artifactValue;
+    }
+
 }

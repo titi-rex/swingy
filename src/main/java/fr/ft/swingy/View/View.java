@@ -27,7 +27,7 @@ import fr.ft.swingy.Controller.Controller;
 import fr.ft.swingy.Model.Model;
 import fr.ft.swingy.Model.PlayModel;
 import fr.ft.swingy.View.GUI.CreatorView;
-import fr.ft.swingy.View.GUI.GameView;
+import fr.ft.swingy.View.GUI.PlayView;
 import fr.ft.swingy.View.GUI.MenuBarView;
 
 /**
@@ -52,6 +52,6 @@ public interface View {
 
     MenuBarView getMenuBarView();
 
-    GameView getPlayPanel();
+    PlayView getPlayPanel();
 
 }
