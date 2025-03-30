@@ -23,16 +23,11 @@
  */
 package fr.ft.swingy.View.GUI;
 
-import fr.ft.swingy.Controller.Controller;
-import fr.ft.swingy.Controller.DefaultController;
-import fr.ft.swingy.Controller.CreatorController;
-import fr.ft.swingy.Controller.MenuController;
-import fr.ft.swingy.Controller.PlayController;
-import fr.ft.swingy.Model.CreatorModel;
-import fr.ft.swingy.Model.Creature;
-import fr.ft.swingy.Model.DefaultModel;
+import fr.ft.swingy.View.GUI.Component.SwingyComboBox;
+import fr.ft.swingy.View.GUI.Component.SwingyList;
 import fr.ft.swingy.Model.Model;
-import fr.ft.swingy.Model.PlayModel;
+import fr.ft.swingy.Model.Entity.Roles;
+import fr.ft.swingy.View.ViewElement;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
@@ -45,6 +40,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import fr.ft.swingy.View.View;
+import javax.swing.ComboBoxModel;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.ChangeListener;
 
 /**
  *
@@ -53,89 +51,181 @@ import fr.ft.swingy.View.View;
 public class GuiView extends JFrame implements View {
 
     private Model model;
-    private Controller controller;
 
     public static final int WINDOW_SIZE = 800;
     public static final int WINDOW_SIZE_MIN = 500;
 
     public static final String TITLE = "Swingy - The best RPG you never played";
-    public static final String CREATE_VIEW_NAME = "create";
-    public static final String PLAY_VIEW_NAME = "play";
 
-    private final MenuBarView menuView;
+    private final MenuBarPanel menuPanel;
     private final CreatorView creatorPanel;
     private final PlayView playPanel;
     private final JPanel cards;
     private final CardLayout cLayout;
 
-    public GuiView() throws HeadlessException {
+    /*
+javax.swing.UIManager$LookAndFeelInfo[Metal javax.swing.plaf.metal.MetalLookAndFeel]
+javax.swing.UIManager$LookAndFeelInfo[Nimbus javax.swing.plaf.nimbus.NimbusLookAndFeel]
+javax.swing.UIManager$LookAndFeelInfo[CDE/Motif com.sun.java.swing.plaf.motif.MotifLookAndFeel]
+javax.swing.UIManager$LookAndFeelInfo[GTK+ com.sun.java.swing.plaf.gtk.GTKLookAndFeel]
+     */
+    public GuiView(Model model) throws HeadlessException {
         super(TITLE);
-        setSize(new Dimension(WINDOW_SIZE, WINDOW_SIZE));
-        setMinimumSize(new Dimension(WINDOW_SIZE_MIN, WINDOW_SIZE_MIN));
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setLocationRelativeTo(null);
-
-        try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
-        } catch (Exception ex) {
-            Logger.getLogger(GuiView.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        addWindowListener(new windowHandler());
+        this.model = model;
+        initWindow();
 
         cLayout = new CardLayout();
         cards = new JPanel(cLayout);
         add(cards);
-        
-        menuView = new MenuBarView();
-        setJMenuBar(menuView);
-        
+
+        menuPanel = new MenuBarPanel();
+        setJMenuBar(menuPanel);
+
         creatorPanel = new CreatorView();
-        cards.add(creatorPanel, CREATE_VIEW_NAME);
+        creatorPanel.getCharacterList().setModel(model.getCharactersListModel());
+        creatorPanel.getRolesBox().setModel((ComboBoxModel) model.getRolesModel());
+        cards.add(creatorPanel, ViewName.CREATOR.name());
 
         playPanel = new PlayView();
-        cards.add(playPanel, PLAY_VIEW_NAME);
+        playPanel.setModel(model);
+        cards.add(playPanel, ViewName.PLAY.name());
+
+    }
+
+    private void initWindow() {
+        setSize(new Dimension(WINDOW_SIZE, WINDOW_SIZE));
+        setMinimumSize(new Dimension(WINDOW_SIZE, WINDOW_SIZE));
+        setMaximumSize(new Dimension(WINDOW_SIZE, WINDOW_SIZE));
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setLocationRelativeTo(null);
+        addWindowListener(new windowHandler());
+
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(GuiView.class.getName()).log(Level.WARNING, null, ex);
+        }
     }
 
     @Override
     public void start() {
         setVisible(true);
-        showCreatorView();
+        showView(ViewName.CREATOR);
     }
 
     @Override
-    public void showCreatorView() {
-//        menuController.unsetModel();
-//        creatorModel.refresh();
-        cLayout.show(cards, CREATE_VIEW_NAME);
+    public void showView(ViewName viewName) {
+        cLayout.show(cards, viewName.name());
     }
 
     @Override
-    public void showPlayView() {
-        playPanel.stateChanged(null); // -> should be called by model
-        cLayout.show(cards, PLAY_VIEW_NAME);
-    }
-
-    @Override
-    public void setModel(Model model) {
-        this.model = model;
-        creatorPanel.getCharacterList().setModel(model.getCreatorModel().characters);
-        creatorPanel.getRolesBox().setModel(model.getCreatorModel().roles);
-    }
-
-    @Override
-    public void setController(Controller controller) {
-        this.controller = controller;
-    }
-
-    @Override
-    public MenuBarView getMenuBarView() {
-        return menuView;
+    public ChangeListener getPlayViewListener() {
+        return playPanel;
     }
 
     @Override
     public void requestClose() {
         this.dispatchEvent(
-                        new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+                new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+    }
+
+    @Override
+    public CreatureView getInfoCreature() {
+        return creatorPanel.getInfoStat();
+    }
+
+    @Override
+    public SwingyComboBox getRoles() {
+        return creatorPanel.getRolesBox();
+    }
+
+    @Override
+    public SwingyList getCharacters() {
+        return creatorPanel.getCharacterList();
+    }
+
+    @Override
+    public String getNameSelected() {
+        String name = creatorPanel.getNameField().getText();
+        creatorPanel.getNameField().setText("");
+        return name;
+    }
+
+    @Override
+    public Roles getRoleSelected() {
+        return (Roles) creatorPanel.getRolesBox().getSelectedItem();
+    }
+
+    @Override
+    public ViewElement getCreate() {
+        return creatorPanel.getCreateButton();
+    }
+
+    @Override
+    public ViewElement getDelete() {
+        return creatorPanel.getDeleteButton();
+    }
+
+    @Override
+    public ViewElement getPlay() {
+        return creatorPanel.getPlayButton();
+    }
+
+    @Override
+    public ViewElement getSwitch() {
+        return menuPanel.getSwitchItem();
+    }
+
+    @Override
+    public ViewElement getExit() {
+        return menuPanel.getExitItem();
+    }
+
+    @Override
+    public ViewElement getNorth() {
+        return playPanel.getCommandBar().getNorthButton();
+    }
+
+    @Override
+    public ViewElement getEast() {
+        return playPanel.getCommandBar().getEastButton();
+
+    }
+
+    @Override
+    public ViewElement getSouth() {
+        return playPanel.getCommandBar().getSouthButton();
+
+    }
+
+    @Override
+    public ViewElement getWest() {
+        return playPanel.getCommandBar().getWestButton();
+    }
+
+    @Override
+    public ViewElement getFight() {
+        return playPanel.getCommandBar().getFightButton();
+    }
+
+    @Override
+    public ViewElement getRun() {
+        return playPanel.getCommandBar().getRunButton();
+    }
+
+    @Override
+    public ViewElement getYes() {
+        return playPanel.getCommandBar().getYesButton();
+    }
+
+    @Override
+    public ViewElement getNo() {
+        return playPanel.getCommandBar().getNoButton();
+    }
+
+    @Override
+    public ViewElement getHelp() {
+        return null;
     }
 
     private class windowHandler extends WindowAdapter {
@@ -161,22 +251,4 @@ public class GuiView extends JFrame implements View {
         }
     }
 
-    @Override
-    public CreatorView getCreatorPanel() {
-        return creatorPanel;
-    }
-
-    @Override
-    public PlayView getPlayPanel() {
-        return playPanel;
-    }
-
 }
-
-
-/*
-javax.swing.UIManager$LookAndFeelInfo[Metal javax.swing.plaf.metal.MetalLookAndFeel]
-javax.swing.UIManager$LookAndFeelInfo[Nimbus javax.swing.plaf.nimbus.NimbusLookAndFeel]
-javax.swing.UIManager$LookAndFeelInfo[CDE/Motif com.sun.java.swing.plaf.motif.MotifLookAndFeel]
-javax.swing.UIManager$LookAndFeelInfo[GTK+ com.sun.java.swing.plaf.gtk.GTKLookAndFeel]
- */

@@ -23,70 +23,26 @@
  */
 package fr.ft.swingy.Model;
 
-import fr.ft.swingy.Model.Entity.Cell;
-import fr.ft.swingy.Model.Entity.Creature;
-import fr.ft.swingy.Model.Entity.Roles;
-import fr.ft.swingy.Model.Entity.Artifact;
-import fr.ft.swingy.Controller.Controller;
-import fr.ft.swingy.View.View;
-import java.awt.Point;
-import javax.swing.ListModel;
-import javax.swing.text.Document;
-
 /**
  *
  * @author Pril Wolf
  */
-public interface Model {
+public class InvalidHeroException extends Exception {
 
     /**
-     * enum representing possible movement for hero
+     * Creates a new instance of <code>InvalidHeroName</code> without detail
+     * message.
      */
-    public enum Direction {
-        NORTH, EAST, WEST, SOUTH, CENTER
+    public InvalidHeroException() {
     }
 
     /**
-     * enum representing possible action for hero
+     * Constructs an instance of <code>InvalidHeroName</code> with the specified
+     * detail message.
+     *
+     * @param msg the detail message.
      */
-    public enum Action {
-        MOVE, FIGHT, RUN, TAKE, DISCARD
+    public InvalidHeroException(String msg) {
+        super(msg);
     }
-
-    void setView(View view);
-
-    void setController(Controller controller);
-
-    void createNewHero(String name, Roles role) throws InvalidHeroException;
-
-    void deleteHero(Creature hero);
-
-    void createNewGame(Creature hero);
-
-    void actionHero(Model.Action action, Model.Direction direction);
-
-    void saveGame();
-
-    boolean isRunning();
-
-    void closeGame();
-
-    ListModel getRolesModel();
-
-    ListModel getCharactersListModel();
-
-    int getSize();
-
-    Cell getCellAt(int x, int y);
-
-    Cell getCellAt(Point position);
-
-    Creature getHero();
-
-    Point getHeroCoordinate();
-
-    Artifact getDropped();
-
-    Document getGameLogs();
-
 }

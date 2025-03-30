@@ -23,21 +23,12 @@
  */
 package fr.ft.swingy.Controller;
 
-import fr.ft.swingy.Model.Model;
-import fr.ft.swingy.View.View;
-
 /**
  *
  * @author Pril Wolf
  */
 public interface Controller {
 
-    void setModel(Model model);
-
-    void setView(View view);
-
     void init();
-
-    void loadNewGame();
 
 }

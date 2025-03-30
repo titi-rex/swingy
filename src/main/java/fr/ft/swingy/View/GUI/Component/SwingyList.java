@@ -21,72 +21,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingy.Model;
+package fr.ft.swingy.View.GUI.Component;
 
-import fr.ft.swingy.Model.Entity.Cell;
 import fr.ft.swingy.Model.Entity.Creature;
-import fr.ft.swingy.Model.Entity.Roles;
-import fr.ft.swingy.Model.Entity.Artifact;
-import fr.ft.swingy.Controller.Controller;
-import fr.ft.swingy.View.View;
-import java.awt.Point;
+import javax.swing.JList;
+
+import fr.ft.swingy.View.ViewElement;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Vector;
 import javax.swing.ListModel;
-import javax.swing.text.Document;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  *
  * @author Pril Wolf
  */
-public interface Model {
+public class SwingyList extends JList implements ViewElement {
 
-    /**
-     * enum representing possible movement for hero
-     */
-    public enum Direction {
-        NORTH, EAST, WEST, SOUTH, CENTER
+    @Override
+    public void addActionListener(ActionListener l) {
+        addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                l.actionPerformed(new ActionEvent(e.getSource(), 1, "converted ActionListener"));
+            }
+        });
     }
 
-    /**
-     * enum representing possible action for hero
-     */
-    public enum Action {
-        MOVE, FIGHT, RUN, TAKE, DISCARD
+    public SwingyList(ListModel dataModel) {
+        super(dataModel);
     }
 
-    void setView(View view);
+    public SwingyList(Object[] listData) {
+        super(listData);
+    }
 
-    void setController(Controller controller);
+    public SwingyList(Vector listData) {
+        super(listData);
+    }
 
-    void createNewHero(String name, Roles role) throws InvalidHeroException;
-
-    void deleteHero(Creature hero);
-
-    void createNewGame(Creature hero);
-
-    void actionHero(Model.Action action, Model.Direction direction);
-
-    void saveGame();
-
-    boolean isRunning();
-
-    void closeGame();
-
-    ListModel getRolesModel();
-
-    ListModel getCharactersListModel();
-
-    int getSize();
-
-    Cell getCellAt(int x, int y);
-
-    Cell getCellAt(Point position);
-
-    Creature getHero();
-
-    Point getHeroCoordinate();
-
-    Artifact getDropped();
-
-    Document getGameLogs();
+    public SwingyList() {
+    }
 
 }

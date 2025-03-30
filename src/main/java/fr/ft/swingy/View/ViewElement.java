@@ -23,67 +23,14 @@
  */
 package fr.ft.swingy.View;
 
-import fr.ft.swingy.Model.Model;
-import fr.ft.swingy.Model.Entity.Roles;
-import fr.ft.swingy.View.GUI.CreatureView;
-import fr.ft.swingy.View.GUI.Component.SwingyComboBox;
-import fr.ft.swingy.View.GUI.Component.SwingyList;
-import javax.swing.event.ChangeListener;
+import java.awt.event.ActionListener;
+import java.util.EventListener;
 
 /**
  *
  * @author Pril Wolf
  */
-public interface View {
-
-    enum ViewName {
-        CREATOR, PLAY
-    };
-
-    void start();
-
-    void showView(ViewName viewName);
-
-    void requestClose();
-
-    ChangeListener getPlayViewListener();
-
-    SwingyComboBox getRoles();
-
-    SwingyList getCharacters();
-
-    String getNameSelected();
-
-    Roles getRoleSelected();
-
-    CreatureView getInfoCreature();
-
-    ViewElement getHelp();
-
-    ViewElement getSwitch();
-
-    ViewElement getExit();
-
-    ViewElement getCreate();
-
-    ViewElement getDelete();
-
-    ViewElement getPlay();
-
-    ViewElement getNorth();
-
-    ViewElement getEast();
-
-    ViewElement getSouth();
-
-    ViewElement getWest();
-
-    ViewElement getFight();
-
-    ViewElement getRun();
-
-    ViewElement getYes();
-
-    ViewElement getNo();
-
+public interface ViewElement {
+    
+    void addActionListener(ActionListener l);
 }

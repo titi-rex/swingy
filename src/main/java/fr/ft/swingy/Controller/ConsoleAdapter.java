@@ -1,0 +1,82 @@
+/*
+ * The MIT License
+ *
+ * Copyright 2025 Pril Wolf.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+package fr.ft.swingy.Controller;
+
+import fr.ft.swingy.View.Console.ConsoleView;
+import fr.ft.swingy.View.View;
+
+/**
+ *
+ * @author Pril Wolf
+ */
+public class ConsoleAdapter {
+
+    private final View view;
+
+    public ConsoleAdapter(View view) {
+        this.view = view;
+    }
+
+    public void parse(ConsoleView.Scenes currentScene, String input) {
+        if (parseMeta(input) == false) {
+            switch (currentScene) {
+                case ConsoleView.Scenes.CREATOR ->
+                    parseCreator(input);
+                case ConsoleView.Scenes.PLAY ->
+                    parsePlay(input);
+                default ->
+                    throw new UnsupportedOperationException("enum switch not fully handled");
+            }
+        }
+    }
+
+    private boolean parseMeta(String input) {
+        if (null != input) switch (input) {
+            case "help" -> {
+                return true;
+            }
+            case "save" -> {
+                return true;
+            }
+            case "quit" -> {
+                return true;
+            }
+            case "gui" -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    private void parseCreator(String input) {
+
+    }
+
+    private void parsePlay(String input) {
+
+    }
+
+}

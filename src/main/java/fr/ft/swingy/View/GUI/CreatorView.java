@@ -23,63 +23,42 @@
  */
 package fr.ft.swingy.View.GUI;
 
+import fr.ft.swingy.View.GUI.Component.SwingyComboBox;
+import fr.ft.swingy.View.GUI.Component.SwingyList;
+import fr.ft.swingy.View.GUI.Component.SwingyButton;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import javax.swing.ComboBoxModel;
 import javax.swing.GroupLayout;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.ListModel;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 
 /**
  *
  * @author Pril Wolf
  */
-public class CreatorView extends JPanel implements ListDataListener {
+public class CreatorView extends JPanel {
 
-    private JButton createButton;
-    private JButton deleteButton;
-    private JButton playButton;
-    private JComboBox rolesBox;
+    private final SwingyButton createButton;
+    private final SwingyButton deleteButton;
+    private final SwingyButton playButton;
+    private final SwingyComboBox rolesBox;
     private JTextField nameField;
-    private JList characterList;
-    private CreatureView infoStat;
+    private final SwingyList characterList;
+    private final CreatureView infoStat;
 
     /**
-     * must set model for roelsBox and characterlist
+     * must set model for characterList
      */
     public CreatorView() {
         setLayout(new BorderLayout());
 
         nameField = new JTextField(12);
-        rolesBox = new JComboBox();
-        characterList = new JList();
-        createButton = new JButton("Create");
-        deleteButton = new JButton("Delete");
-        playButton = new JButton("Play");
-        infoStat = new CreatureView();
-
-        add(creationForm(), BorderLayout.PAGE_START);
-        add(characterList, BorderLayout.CENTER);
-        add(infoStat, BorderLayout.LINE_END);
-        add(buttonBox(), BorderLayout.PAGE_END);
-    }
-
-    public CreatorView(ComboBoxModel rolesModel, ListModel characterModel) {
-        setLayout(new BorderLayout());
-
-        nameField = new JTextField(12);
-        rolesBox = new JComboBox(rolesModel);
-        characterList = new JList(characterModel);
-        createButton = new JButton("Create");
-        deleteButton = new JButton("Delete");
-        playButton = new JButton("Play");
+        rolesBox = new SwingyComboBox();
+        characterList = new SwingyList();
+        createButton = new SwingyButton("Create");
+        deleteButton = new SwingyButton("Delete");
+        playButton = new SwingyButton("Play");
         infoStat = new CreatureView();
 
         add(creationForm(), BorderLayout.PAGE_START);
@@ -112,36 +91,21 @@ public class CreatorView extends JPanel implements ListDataListener {
         return creationForm;
     }
 
-    public JButton getCreateButton() {
+    // Getter and Setter
+    public SwingyButton getCreateButton() {
         return createButton;
     }
 
-    public void setCreateButton(JButton createButton) {
-        this.createButton = createButton;
-    }
-
-    public JButton getDeleteButton() {
+    public SwingyButton getDeleteButton() {
         return deleteButton;
     }
 
-    public void setDeleteButton(JButton deleteButton) {
-        this.deleteButton = deleteButton;
-    }
-
-    public JButton getPlayButton() {
+    public SwingyButton getPlayButton() {
         return playButton;
     }
 
-    public void setPlayButton(JButton playButton) {
-        this.playButton = playButton;
-    }
-
-    public JComboBox getRolesBox() {
+    public SwingyComboBox getRolesBox() {
         return rolesBox;
-    }
-
-    public void setRolesBox(JComboBox rolesBox) {
-        this.rolesBox = rolesBox;
     }
 
     public JTextField getNameField() {
@@ -152,34 +116,12 @@ public class CreatorView extends JPanel implements ListDataListener {
         this.nameField = nameField;
     }
 
-    public JList getCharacterList() {
+    public SwingyList getCharacterList() {
         return characterList;
-    }
-
-    public void setCharacterList(JList characterList) {
-        this.characterList = characterList;
     }
 
     public CreatureView getInfoStat() {
         return infoStat;
     }
 
-    public void setInfoStat(CreatureView infoStat) {
-        this.infoStat = infoStat;
-    }
-
-    @Override
-    public void intervalAdded(ListDataEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void intervalRemoved(ListDataEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void contentsChanged(ListDataEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 }

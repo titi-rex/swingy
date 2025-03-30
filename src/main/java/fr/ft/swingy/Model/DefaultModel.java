@@ -23,17 +23,23 @@
  */
 package fr.ft.swingy.Model;
 
+import fr.ft.swingy.Model.Entity.Cell;
+import fr.ft.swingy.Model.Entity.Creature;
+import fr.ft.swingy.Model.Entity.Roles;
+import fr.ft.swingy.Model.Entity.Artifact;
+import static fr.ft.swingy.App.ERROR_ENUM_SWITCH;
 import fr.ft.swingy.Controller.Controller;
 import fr.ft.swingy.View.View;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import java.awt.Point;
 import java.util.List;
-import java.util.Set;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.ListModel;
+import javax.swing.text.Document;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
@@ -49,18 +55,19 @@ public class DefaultModel implements Model, AutoCloseable {
     private SessionFactory sessionFactory;
     private static Validator validator;
 
-    private final CreatorModel creatorModel;
     private final ComboBoxModel rolesBoxModel;
     private final DefaultListModel charactersListModel;
 
+    private final CreatorModel creatorModel;
     private PlayModel playModel;
 
     public DefaultModel() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
         sessionFactory = new Configuration().configure().buildSessionFactory();
-        creatorModel = new CreatorModel(validator);
-        
+        creatorModel = new CreatorModel(sessionFactory, validator);
+        playModel = new PlayModel(sessionFactory);
+
         rolesBoxModel = new DefaultComboBoxModel(Roles.heroes());
 
         List<Creature> data = sessionFactory.fromSession(session -> {
@@ -71,23 +78,56 @@ public class DefaultModel implements Model, AutoCloseable {
 
         charactersListModel = new DefaultListModel();
         charactersListModel.addAll(data);
+    }
 
+    @Override
+    public void createNewHero(String name, Roles role) throws InvalidHeroException {
+        creatorModel.create(name, role);
+    }
+    
+    @Override
+    public void deleteHero(Creature hero) {
+        creatorModel.delete(hero);
     }
 
     @Override
     public void createNewGame(Creature hero) {
-        playModel = new PlayModel(sessionFactory, hero);
-        playModel.setView(view.getPlayPanel());
-        view.getPlayPanel().setModel(getPlayModel());
-        view.getPlayPanel().stateChanged(null);
+        playModel.invokeHero(hero);
+        playModel.generateWorld();
+        playModel.startGame();
+//        playModel.setView(view.getPlayViewListener());
+//        view.getPlayPanel().setModel(getPlayModel());
+        playModel.getView().stateChanged(null);
+    }
+
+    @Override
+    public void actionHero(Model.Action action, Model.Direction direction) {
+        switch (action) {
+            case Model.Action.MOVE ->
+                playModel.moveHero(direction);
+            case Model.Action.FIGHT ->
+                playModel.resolveFight();
+            case Model.Action.RUN ->
+                playModel.resolveRun();
+            case Model.Action.TAKE ->
+                playModel.takeDropped();
+            case Model.Action.DISCARD ->
+                playModel.discardDropped();
+            default ->
+                throw new UnsupportedOperationException(ERROR_ENUM_SWITCH);
+        }
     }
 
     @Override
     public void saveGame() {
         if (playModel != null) {
             playModel.save();
-            System.out.println("game saved");
         }
+    }
+    
+    @Override
+    public boolean isRunning() {
+        return playModel.isRunning();
     }
 
     @Override
@@ -95,19 +135,31 @@ public class DefaultModel implements Model, AutoCloseable {
         if (playModel != null) {
             playModel.close();
             playModel = null;
-            System.out.println("game closed");
         }
     }
 
     @Override
     public void close() {
+        closeGame();
         sessionFactory.close();
+    }
+
+    @Override
+    public ListModel getRolesModel() {
+        return rolesBoxModel;
+    }
+
+    @Override
+    public ListModel getCharactersListModel() {
+        return creatorModel.getCharacters();
     }
 
     @Override
     public void setView(View view) {
         this.view = view;
-        charactersListModel.addListDataListener(view.getCreatorPanel());
+        playModel.setView(view.getPlayViewListener());
+
+//        charactersListModel.addListDataListener(view.getCreatorPanel());
     }
 
     @Override
@@ -116,25 +168,38 @@ public class DefaultModel implements Model, AutoCloseable {
     }
 
     @Override
-    public PlayModel getPlayModel() {
-        return playModel;
-    }
-
-    public void setPlayModel(PlayModel playModel) {
-        this.playModel = playModel;
+    public int getSize() {
+        return playModel.getSize();
     }
 
     @Override
-    public CreatorModel getCreatorModel() {
-        return creatorModel;
+    public Cell getCellAt(int y, int x) {
+        return playModel.getCellAt(y, x);
     }
 
-    public ComboBoxModel getRolesBoxModel() {
-        return rolesBoxModel;
+    @Override
+    public Cell getCellAt(Point position) {
+        return playModel.getCellAt(position);
     }
 
-    public DefaultListModel getCharactersListModel() {
-        return charactersListModel;
+    @Override
+    public Creature getHero() {
+        return playModel.getHero();
+    }
+
+    @Override
+    public Point getHeroCoordinate() {
+        return playModel.getHeroCoordinate();
+    }
+
+    @Override
+    public Artifact getDropped() {
+        return playModel.getDropped();
+    }
+
+    @Override
+    public Document getGameLogs() {
+        return playModel.getGameLogs();
     }
 
 }

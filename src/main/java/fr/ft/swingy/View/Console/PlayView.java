@@ -21,69 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingy.View;
+package fr.ft.swingy.View.Console;
 
 import fr.ft.swingy.Model.Model;
-import fr.ft.swingy.Model.Entity.Roles;
-import fr.ft.swingy.View.GUI.CreatureView;
-import fr.ft.swingy.View.GUI.Component.SwingyComboBox;
-import fr.ft.swingy.View.GUI.Component.SwingyList;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
  *
  * @author Pril Wolf
  */
-public interface View {
+public class PlayView implements ChangeListener {
 
-    enum ViewName {
-        CREATOR, PLAY
-    };
+    private final Model model;
 
-    void start();
+    public PlayView(Model model) {
+        this.model = model;
+    }
 
-    void showView(ViewName viewName);
-
-    void requestClose();
-
-    ChangeListener getPlayViewListener();
-
-    SwingyComboBox getRoles();
-
-    SwingyList getCharacters();
-
-    String getNameSelected();
-
-    Roles getRoleSelected();
-
-    CreatureView getInfoCreature();
-
-    ViewElement getHelp();
-
-    ViewElement getSwitch();
-
-    ViewElement getExit();
-
-    ViewElement getCreate();
-
-    ViewElement getDelete();
-
-    ViewElement getPlay();
-
-    ViewElement getNorth();
-
-    ViewElement getEast();
-
-    ViewElement getSouth();
-
-    ViewElement getWest();
-
-    ViewElement getFight();
-
-    ViewElement getRun();
-
-    ViewElement getYes();
-
-    ViewElement getNo();
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 
 }

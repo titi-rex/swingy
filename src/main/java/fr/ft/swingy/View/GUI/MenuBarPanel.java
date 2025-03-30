@@ -21,69 +21,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingy.View;
+package fr.ft.swingy.View.GUI;
 
-import fr.ft.swingy.Model.Model;
-import fr.ft.swingy.Model.Entity.Roles;
-import fr.ft.swingy.View.GUI.CreatureView;
-import fr.ft.swingy.View.GUI.Component.SwingyComboBox;
-import fr.ft.swingy.View.GUI.Component.SwingyList;
-import javax.swing.event.ChangeListener;
+import fr.ft.swingy.View.GUI.Component.SwingyMenuItem;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
 /**
  *
  * @author Pril Wolf
  */
-public interface View {
+public class MenuBarPanel extends JMenuBar {
 
-    enum ViewName {
-        CREATOR, PLAY
-    };
+    private final SwingyMenuItem switchItem;
+    private final SwingyMenuItem exitItem;
 
-    void start();
+    public MenuBarPanel() {
+        switchItem = new SwingyMenuItem("Switch");
+        switchItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.ALT_MASK));
 
-    void showView(ViewName viewName);
+        exitItem = new SwingyMenuItem("Exit");
 
-    void requestClose();
+        JMenu menu = new JMenu("Settings");
+        menu.setMnemonic(KeyEvent.VK_M);
 
-    ChangeListener getPlayViewListener();
+        menu.add(switchItem);
+        menu.add(exitItem);
 
-    SwingyComboBox getRoles();
+        add(menu);
+    }
 
-    SwingyList getCharacters();
+    // Getter and Setter
+    public SwingyMenuItem getSwitchItem() {
+        return switchItem;
+    }
 
-    String getNameSelected();
-
-    Roles getRoleSelected();
-
-    CreatureView getInfoCreature();
-
-    ViewElement getHelp();
-
-    ViewElement getSwitch();
-
-    ViewElement getExit();
-
-    ViewElement getCreate();
-
-    ViewElement getDelete();
-
-    ViewElement getPlay();
-
-    ViewElement getNorth();
-
-    ViewElement getEast();
-
-    ViewElement getSouth();
-
-    ViewElement getWest();
-
-    ViewElement getFight();
-
-    ViewElement getRun();
-
-    ViewElement getYes();
-
-    ViewElement getNo();
-
+    public SwingyMenuItem getExitItem() {
+        return exitItem;
+    }
 }

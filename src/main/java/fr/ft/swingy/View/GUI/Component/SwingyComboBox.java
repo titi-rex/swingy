@@ -21,69 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingy.View;
+package fr.ft.swingy.View.GUI.Component;
 
-import fr.ft.swingy.Model.Model;
-import fr.ft.swingy.Model.Entity.Roles;
-import fr.ft.swingy.View.GUI.CreatureView;
-import fr.ft.swingy.View.GUI.Component.SwingyComboBox;
-import fr.ft.swingy.View.GUI.Component.SwingyList;
-import javax.swing.event.ChangeListener;
+import javax.swing.JComboBox;
+
+import fr.ft.swingy.View.ViewElement;
+import java.util.Vector;
+import javax.swing.ComboBoxModel;
 
 /**
  *
  * @author Pril Wolf
  */
-public interface View {
+public class SwingyComboBox extends JComboBox implements ViewElement {
 
-    enum ViewName {
-        CREATOR, PLAY
-    };
+    public SwingyComboBox(ComboBoxModel aModel) {
+        super(aModel);
+    }
 
-    void start();
+    public SwingyComboBox(Object[] items) {
+        super(items);
+    }
 
-    void showView(ViewName viewName);
+    public SwingyComboBox(Vector items) {
+        super(items);
+    }
 
-    void requestClose();
-
-    ChangeListener getPlayViewListener();
-
-    SwingyComboBox getRoles();
-
-    SwingyList getCharacters();
-
-    String getNameSelected();
-
-    Roles getRoleSelected();
-
-    CreatureView getInfoCreature();
-
-    ViewElement getHelp();
-
-    ViewElement getSwitch();
-
-    ViewElement getExit();
-
-    ViewElement getCreate();
-
-    ViewElement getDelete();
-
-    ViewElement getPlay();
-
-    ViewElement getNorth();
-
-    ViewElement getEast();
-
-    ViewElement getSouth();
-
-    ViewElement getWest();
-
-    ViewElement getFight();
-
-    ViewElement getRun();
-
-    ViewElement getYes();
-
-    ViewElement getNo();
+    public SwingyComboBox() {
+    }
 
 }

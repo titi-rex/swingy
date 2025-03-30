@@ -27,9 +27,11 @@ import fr.ft.swingy.Controller.Controller;
 import fr.ft.swingy.Controller.DefaultController;
 import fr.ft.swingy.Model.DefaultModel;
 import fr.ft.swingy.Model.Model;
+import fr.ft.swingy.View.Console.ConsoleView;
 import fr.ft.swingy.View.GUI.GuiView;
 import javax.swing.JFrame;
 import fr.ft.swingy.View.View;
+import java.util.logging.Level;
 
 /**
  *
@@ -37,27 +39,36 @@ import fr.ft.swingy.View.View;
  */
 public class App {
 
+    public static final String ERROR_ENUM_SWITCH = "fatal: missing enum handling in switch";
+    
     public static void main(String[] args) {
-//        catch runtime exception + null ptr exception !!!
+        if (args.length != 1) {
+            System.err.println("Usage: java -jar swingy.jar gui/consol");
+            return;
+        }
         JFrame.setDefaultLookAndFeelDecorated(true);
-        Model model = new DefaultModel();
-        View view = new GuiView();
-        Controller controller = new DefaultController();
-        
-        view.setModel(model);
-        
-//        not used
-//        view.setController(controller);
-        model.setView(view);
-        
-//        not used
-//        model.setController(controller);
-        
-        controller.setView(view);
-        controller.setModel(model);
-        controller.init();
-        
-        view.start();
-        System.out.println("main end");
+
+        try {
+
+            View view;
+            Model model = new DefaultModel();
+            if ("gui".equals(args[0])) {
+                view = new GuiView(model);
+            } else {
+                view = new ConsoleView(model);
+                java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
+            }
+
+            model.setView(view);
+            
+            Controller controller = new DefaultController(view, model);
+            controller.init();
+
+            view.start();
+            System.out.println("main end");
+
+        } catch (RuntimeException e) {
+            System.err.println("runtime error: " + e.getLocalizedMessage());
+        }
     }
 }

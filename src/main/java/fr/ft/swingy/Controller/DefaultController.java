@@ -23,9 +23,11 @@
  */
 package fr.ft.swingy.Controller;
 
-import fr.ft.swingy.Model.Creature;
+import static fr.ft.swingy.App.ERROR_ENUM_SWITCH;
+import fr.ft.swingy.Model.Entity.Creature;
+import fr.ft.swingy.Model.InvalidHeroException;
 import fr.ft.swingy.Model.Model;
-import fr.ft.swingy.View.GUI.MenuBarView;
+import fr.ft.swingy.Model.Entity.Roles;
 import fr.ft.swingy.View.View;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,109 +38,190 @@ import java.awt.event.ActionListener;
  */
 public class DefaultController implements Controller {
 
-    private View view;
-    private Model model;
+    private final View view;
+    private final Model model;
 
-    private final MenuController menuController;
-    private final CreatorController creatorController;
-    private final PlayController playController;
-
-    public DefaultController() {
-        this.menuController = new MenuController();
-        this.creatorController = new CreatorController();
-        this.playController = new PlayController();
-
+    public DefaultController(View view, Model model) {
+        this.view = view;
+        this.model = model;
     }
 
     @Override
     public void init() {
-        creatorController.setMain(this);
-        menuController.init();
-        creatorController.init();
-        playController.init();
+        view.getSwitch().addActionListener(new MetaAction(MetaAction.Types.SWITCH));
+        view.getExit().addActionListener(new MetaAction(MetaAction.Types.EXIT));
+        view.getCreate().addActionListener(new CreatorAction(CreatorAction.Types.CREATE));
+        view.getDelete().addActionListener(new CreatorAction(CreatorAction.Types.DELETE));
+        view.getPlay().addActionListener(new CreatorAction(CreatorAction.Types.PLAY));
+        view.getCharacters().addActionListener(new CreatorAction(CreatorAction.Types.SELECT_HERO));
+        view.getRoles().addActionListener(new CreatorAction(CreatorAction.Types.SELECT_ROLE));
+        view.getNorth().addActionListener(new HeroAction(Model.Action.MOVE, Model.Direction.NORTH));
+        view.getEast().addActionListener(new HeroAction(Model.Action.MOVE, Model.Direction.EAST));
+        view.getSouth().addActionListener(new HeroAction(Model.Action.MOVE, Model.Direction.SOUTH));
+        view.getWest().addActionListener(new HeroAction(Model.Action.MOVE, Model.Direction.WEST));
+        view.getFight().addActionListener(new HeroAction(Model.Action.FIGHT, null));
+        view.getRun().addActionListener(new HeroAction(Model.Action.RUN, null));
+        view.getYes().addActionListener(new HeroAction(Model.Action.TAKE, null));
+        view.getNo().addActionListener(new HeroAction(Model.Action.DISCARD, null));
     }
 
-    @Override
-    public void loadNewGame() {
-        Creature heroSelected = (Creature) view
-                .getCreatorPanel()
-                .getCharacterList()
-                .getSelectedValue();
-        model.createNewGame(heroSelected);
-        playController.setModel(model.getPlayModel());
-        menuController.enabledSave(true);
-        view.showPlayView();
-    }
+    // Meta Actions
+    private class MetaAction implements ActionListener {
 
-    public View getView() {
-        return view;
-    }
+        public enum Types {
+            HELP, SWITCH, EXIT
+        };
 
-    @Override
-    public void setView(View view) {
-        this.view = view;
-        creatorController.setView(view.getCreatorPanel());
-        playController.setView(view.getPlayPanel());
-    }
+        private interface ActionPtr {
 
-    public Model getModel() {
-        return model;
-    }
-
-    @Override
-    public void setModel(Model model) {
-        this.model = model;
-        creatorController.setModel(model.getCreatorModel());
-    }
-
-    public CreatorController getCreatorController() {
-        return creatorController;
-    }
-
-    public PlayController getPlayController() {
-        return playController;
-    }
-
-    private class MenuController {
-
-        public MenuController() {
+            void action();
         }
 
-        public void init() {
-            MenuBarView menuBarView = view.getMenuBarView();
-            menuBarView.switchItem.addActionListener(new SwitchAction());
-            menuBarView.saveItem.addActionListener(new SaveAction());
-            menuBarView.exitItem.addActionListener(new ExitAction());
+        private final Types actionType;
+        private final ActionPtr actionPtr;
+
+        public MetaAction(Types actionType) {
+            this.actionType = actionType;
+            this.actionPtr = assignAction();
         }
 
-        private class SwitchAction implements ActionListener {
+        private ActionPtr assignAction() {
+            switch (actionType) {
+                case Types.HELP -> {
+                    return () -> {
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("switch to cli requested");
+                    };
+                }
+                case Types.SWITCH -> {
+                    return () -> {
+                        System.out.println("switch to cli requested");
+                    };
+                }
+                case Types.EXIT -> {
+                    return () -> {
+                        model.saveGame();
+                        view.requestClose();
+                    };
+                }
+                default ->
+                    throw new UnsupportedOperationException(ERROR_ENUM_SWITCH);
             }
         }
 
-        private class SaveAction implements ActionListener {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                model.getPlayModel().save();
-            }
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            actionPtr.action();
         }
-
-        private class ExitAction implements ActionListener {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("exit requested");
-                view.requestClose();
-            }
-        }
-
-        public void enabledSave(boolean bool) {
-            view.getMenuBarView().saveItem.setEnabled(bool);
-        }
-
     }
+
+    // Creation Actions
+    private class CreatorAction implements ActionListener {
+
+        public enum Types {
+            CREATE, DELETE, PLAY, SELECT_ROLE, SELECT_HERO
+        };
+
+        private interface ActionPtr {
+
+            void action();
+        }
+
+        private final Types actionType;
+        private final ActionPtr actionPtr;
+
+        public CreatorAction(Types actionType) {
+            this.actionType = actionType;
+            this.actionPtr = assignAction();
+        }
+
+        private ActionPtr assignAction() {
+            switch (actionType) {
+                case Types.CREATE -> {
+                    return () -> {
+                        String name = view.getNameSelected();
+                        Roles role = (Roles) view.getRoleSelected();
+                        try {
+                            model.createNewHero(name, role);
+                        } catch (InvalidHeroException ex) {
+                            System.err.println(ex.getMessage());
+                        }
+                    };
+                }
+                case Types.DELETE -> {
+                    return () -> {
+                        if (view.getCharacters().isSelectionEmpty()) {
+                            throw new UnsupportedOperationException("implmentd error user");
+                        } else {
+                            model.deleteHero((Creature) view.getCharacters().getSelectedValue());
+                        }
+                    };
+                }
+                case Types.PLAY -> {
+                    return () -> {
+                        if (view.getCharacters().isSelectionEmpty()) {
+                            throw new UnsupportedOperationException("implmentd error user");
+                        } else {
+                            model.createNewGame((Creature) view.getCharacters().getSelectedValue());
+                            view.showView(View.ViewName.PLAY);
+                        }
+                    };
+                }
+                case Types.SELECT_HERO -> {
+                    return () -> {
+                        view.getInfoCreature().update((Creature) view.getCharacters().getSelectedValue());
+                    };
+                }
+                case Types.SELECT_ROLE -> {
+                    return () -> {
+                        view.getInfoCreature().update(view.getRoleSelected());
+                    };
+                }
+                default ->
+                    throw new UnsupportedOperationException(ERROR_ENUM_SWITCH);
+            }
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            actionPtr.action();
+        }
+    }
+
+    // In Game Actions
+    private class HeroAction implements ActionListener {
+
+        private interface ActionPtr {
+
+            void action();
+        }
+
+        private final Model.Action actionType;
+        private final Model.Direction direction;
+        private final ActionPtr actionPtr;
+
+        public HeroAction(Model.Action actionType, Model.Direction direction) {
+            this.actionType = actionType;
+            this.direction = direction;
+            this.actionPtr = assignAction();
+        }
+
+        private ActionPtr assignAction() {
+            switch (actionType) {
+                case Model.Action.MOVE -> {
+                    return () -> model.actionHero(actionType, direction);
+                }
+                case Model.Action.FIGHT, Model.Action.RUN, Model.Action.TAKE, Model.Action.DISCARD -> {
+                    return () -> model.actionHero(actionType, null);
+                }
+                default ->
+                    throw new UnsupportedOperationException(ERROR_ENUM_SWITCH);
+            }
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            actionPtr.action();
+        }
+    }
+
 }

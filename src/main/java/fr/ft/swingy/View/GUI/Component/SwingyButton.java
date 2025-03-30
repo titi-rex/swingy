@@ -21,45 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingy.Model;
+package fr.ft.swingy.View.GUI.Component;
+
+import fr.ft.swingy.View.ViewElement;
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JButton;
 
 /**
  *
  * @author Pril Wolf
  */
-public class Cell {
+public class SwingyButton extends JButton implements ViewElement {
 
-    public enum Type {
-        EMPTY, HERO, ENNEMY
-    };
-
-    private Type type;
-    private Creature creature;
-
-    public Cell() {
-        this.type = Type.EMPTY;
-        this.creature = null;
+    public SwingyButton() {
     }
 
-    public Cell(Type type, Creature creature) {
-        this.type = type;
-        this.creature = creature;
+    public SwingyButton(Icon icon) {
+        super(icon);
     }
 
-    public Type getType() {
-        return type;
+    public SwingyButton(String text) {
+        super(text);
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    public SwingyButton(Action a) {
+        super(a);
     }
 
-    public Creature getCreature() {
-        return creature;
-    }
-
-    public void setCreature(Creature creature) {
-        this.creature = creature;
+    public SwingyButton(String text, Icon icon) {
+        super(text, icon);
     }
 
 }

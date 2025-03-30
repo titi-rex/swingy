@@ -23,6 +23,12 @@
  */
 package fr.ft.swingy.Model;
 
+import fr.ft.swingy.Model.Entity.Cell;
+import fr.ft.swingy.Model.Entity.Creature;
+import fr.ft.swingy.Model.Entity.Roles;
+import fr.ft.swingy.Model.Entity.Artifact;
+import static fr.ft.swingy.App.ERROR_ENUM_SWITCH;
+import fr.ft.swingy.Model.Model.Direction;
 import java.awt.Point;
 import java.util.Random;
 import javax.swing.event.ChangeListener;
@@ -30,7 +36,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 /**
  * Main Model for the swingy game
@@ -39,13 +44,6 @@ import org.hibernate.cfg.Configuration;
  */
 public final class PlayModel implements AutoCloseable {
 
-    /**
-     * enum representing possible movement for hero
-     */
-    public enum Direction {
-        NORTH, EAST, WEST, SOUTH, CENTER
-    };
-
     private final static String NEW_LINE = "\n";
 
     private Cell[][] cells;
@@ -53,10 +51,10 @@ public final class PlayModel implements AutoCloseable {
     private int level;
     private boolean running;
     private ChangeListener view;
-    private Point heroCoordinate;
     private final SessionFactory sessionFactory;
-    private final Creature hero;
     private final Random randGen;
+    private Creature hero;
+    private Point heroCoordinate;
     private Artifact dropped;
     private Direction heroDirectionFrom;
     private Document gameLogs;
@@ -66,29 +64,14 @@ public final class PlayModel implements AutoCloseable {
      * {@link fr.ft.swingo.Model.PlayModel#setView}
      *
      * @param sessionFactory
-     * @param newHero
      */
-    public PlayModel(SessionFactory sessionFactory, Creature newHero) {
+    public PlayModel(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
         this.running = false;
         this.randGen = new Random();
         this.heroDirectionFrom = Direction.CENTER;
         this.dropped = null;
         this.gameLogs = new PlainDocument();
-
-        hero = sessionFactory.fromSession(session -> {
-            return session
-                    .get(Creature.class, newHero.getName());
-        });
-
-        if (hero == null) {
-            throw new RuntimeException("fatal: can't get hero from DB");
-        }
-        addLog("Generating World...");
-        this.level = hero.getLevel();
-        generateWorld();
-        running = true;
-        addLog("Game Start!");
     }
 
     public void addLog(String msg) {
@@ -99,19 +82,37 @@ public final class PlayModel implements AutoCloseable {
         }
     }
 
-    private void generateWorld() {
+    public void invokeHero(Creature newHero) {
+        hero = sessionFactory.fromSession(session -> {
+            return session
+                    .get(Creature.class, newHero.getName());
+        });
+
+        if (hero == null) {
+            throw new RuntimeException("fatal: can't get hero from DB");
+        }
+        this.level = hero.getLevel();
+    }
+
+    public void generateWorld() {
+        addLog("Generating World...");
+        if (hero == null) {
+            throw new RuntimeException("cant generate world without a hero!");
+        }
         size = (hero.getLevel() - 1) * 5 + 10 - (hero.getLevel() % 2);
         cells = new Cell[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                if (randGen.nextInt(100) < 33) {
+                if (i > 0 && i < size - 1
+                        && j > 0 && j < size - 1
+                        && randGen.nextInt(100) < 33) {
                     cells[i][j] = new Cell(Cell.Type.ENNEMY, invokeEnnemyRandom());
                 } else {
                     cells[i][j] = new Cell();
                 }
             }
         }
-        cells[size/2][size/2] = new Cell();
+        cells[size / 2][size / 2] = new Cell();
         heroCoordinate = new Point(size / 2, size / 2);
     }
 
@@ -142,6 +143,11 @@ public final class PlayModel implements AutoCloseable {
         return artifact;
     }
 
+    public void startGame() {
+        running = true;
+        addLog("Game Start!");
+    }
+
     public void save() {
         if (running == true) {
             addLog("Game Saved!");
@@ -153,12 +159,12 @@ public final class PlayModel implements AutoCloseable {
 
     /**
      * function to moddify hero position check if victory condition happen after
-     * move and call ChangeListener registered at
-     * {@link fr.ft.swingo.Model.PlayModel#view}
+     *
      *
      * @param dir where the hero should move
      */
     public void moveHero(Direction dir) {
+
         if (isRunning() == true) {
             addLog("Move to " + dir.toString());
             switch (dir) {
@@ -186,10 +192,8 @@ public final class PlayModel implements AutoCloseable {
 
                 }
                 default ->
-                    throw new RuntimeException("Direction enum not fully handled");
+                    throw new UnsupportedOperationException(ERROR_ENUM_SWITCH);
             }
-        } else {
-            System.out.println("cant move, game not running");
         }
     }
 
@@ -205,9 +209,11 @@ public final class PlayModel implements AutoCloseable {
     }
 
     public void resolveFight() {
-        Creature opponent = getCellAt(heroCoordinate.y, heroCoordinate.x).getCreature();
-        addLog(opponent.getName() + " approach you with murderous intent");
-
+        Creature opponent = getCellAt(heroCoordinate).getCreature();
+        if (opponent == null) {
+            throw new RuntimeException("fatal: try to resolve fight but no opponnent");
+        }
+        addLog("You fight");
         while (hero.isAlive() && opponent.isAlive()) {
             hero.attack(opponent);
             opponent.attack(hero);
@@ -220,7 +226,7 @@ public final class PlayModel implements AutoCloseable {
                 addLog("You gain leveled up!");
             }
             drop(opponent);
-            getCellAt(heroCoordinate.y, heroCoordinate.x).setType(Cell.Type.EMPTY);
+            getCellAt(heroCoordinate).setType(Cell.Type.EMPTY);
         } else {
             addLog("Sadly your journey stop here. Maybe you do better the next time.");
         }
@@ -247,6 +253,10 @@ public final class PlayModel implements AutoCloseable {
         checkEnd();
     }
 
+    /**
+     * call ChangeListener registered at
+     * {@link fr.ft.swingo.Model.PlayModel#view}
+     */
     private void checkEnd() {
         if (heroCoordinate.x == 0
                 || heroCoordinate.y == 0
@@ -255,6 +265,9 @@ public final class PlayModel implements AutoCloseable {
                 || hero.getHitPoint() <= 0) {
             running = false;
             addLog("Congratulation! You reached the end of the maze!");
+        } else if (getCellAt(heroCoordinate).getType() == Cell.Type.ENNEMY) {
+            addLog(getCellAt(heroCoordinate).getCreature().getName()
+                    + " approach you with murderous intent");
         }
         view.stateChanged(null);
     }
@@ -269,6 +282,10 @@ public final class PlayModel implements AutoCloseable {
     //    Getter and Setter
     public Cell getCellAt(int y, int x) {
         return cells[y][x];
+    }
+
+    public Cell getCellAt(Point pos) {
+        return cells[pos.y][pos.x];
     }
 
     public int getSize() {

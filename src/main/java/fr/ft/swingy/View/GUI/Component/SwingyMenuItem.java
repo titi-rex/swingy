@@ -21,42 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingy.View.GUI;
+package fr.ft.swingy.View.GUI.Component;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
+
+import fr.ft.swingy.View.ViewElement;
+import javax.swing.Action;
+import javax.swing.Icon;
 
 /**
  *
  * @author Pril Wolf
  */
-public class MenuBarView extends JMenuBar {
+public class SwingyMenuItem extends JMenuItem implements ViewElement {
 
-    public JMenuItem switchItem;
-    public JMenuItem saveItem;
-    public JMenuItem exitItem;
-
-    public MenuBarView() {
-        switchItem = new JMenuItem("Switch");
-        switchItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.ALT_MASK));
-
-        saveItem = new JMenuItem("Save");
-        saveItem.setEnabled(false);
-        saveItem.setMnemonic(KeyEvent.VK_S);
-
-        exitItem = new JMenuItem("Exit");
-
-        JMenu menu = new JMenu("Settings");
-        menu.setMnemonic(KeyEvent.VK_M);
-
-        menu.add(switchItem);
-        menu.add(saveItem);
-        menu.add(exitItem);
-
-        add(menu);
+    public SwingyMenuItem() {
     }
+
+    public SwingyMenuItem(Icon icon) {
+        super(icon);
+    }
+
+    public SwingyMenuItem(String text) {
+        super(text);
+    }
+
+    public SwingyMenuItem(Action a) {
+        super(a);
+    }
+
+    public SwingyMenuItem(String text, Icon icon) {
+        super(text, icon);
+    }
+
+    public SwingyMenuItem(String text, int mnemonic) {
+        super(text, mnemonic);
+    }
+
 }

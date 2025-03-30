@@ -21,41 +21,49 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingy.Model;
+package fr.ft.swingy.Model.Entity;
 
-/**
+/*
  *
  * @author Pril Wolf
  */
-public class Statistic {
+public enum Roles {
 
-    public int value;
-    public float growthRate;
+    SENTINEL(10, 3, 15, 3, 10, 3),
+    PRIESTESS(13, 3, 5, 3, 10, 3),
+    VALKYRIE(13, 5, 9, 5, 9, 5),
+    EMPRESS(25, 2, 20, 2, 20, 2),
+    PRODIGE(5, 7, 5, 7, 5, 7),
+    LICH(3, 3, 3, 3, 3, 3),
+    BONEWALKER(10, 3, 10, 3, 10, 3),
+    ARCANIST(5, 3, 1, 3, 3, 3),
+    FELL_GOD(10, 3, 10, 3, 10, 3),
+    CORRUPTED(1, 3, 5, 3, 5, 3);
 
-    public Statistic() {
-        this.value = 1;
-        this.growthRate = 1;
+    public final int attack;
+    public final int aGrowth;
+    public final int defense;
+    public final int dGrowth;
+    public final int hitPoint;
+    public final int hGrowth;
+
+    private Roles(int p_attack, int p_aGrowth, int p_defense, int p_dGrowth, int p_hitPoint, int p_hGrowth) {
+        attack = p_attack;
+        aGrowth = p_aGrowth;
+        defense = p_defense;
+        dGrowth = p_dGrowth;
+        hitPoint = p_hitPoint;
+        hGrowth = p_hGrowth;
     }
 
-    public Statistic(int value, float growthRate) {
-        this.value = value;
-        this.growthRate = growthRate;
+    public static Roles[] heroes() {
+        Roles[] heroes = {SENTINEL, PRIESTESS, VALKYRIE, EMPRESS, PRODIGE};
+        return heroes;
     }
 
-    public void growth() {
-        value += growthRate;
-    }
-
-    public void increase(int p_value) {
-        setValue(value + p_value);
-    }
-
-    public Statistic duplicate() {
-        return new Statistic(value, growthRate);
-    }
-
-    public void setValue(int value) {
-        this.value = value;
+    public static Roles[] monster() {
+        Roles[] monster = {LICH, ARCANIST, FELL_GOD, CORRUPTED};
+        return monster;
     }
 
 }

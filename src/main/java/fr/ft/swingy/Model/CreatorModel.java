@@ -23,30 +23,28 @@
  */
 package fr.ft.swingy.Model;
 
+import fr.ft.swingy.Model.Entity.Creature;
+import fr.ft.swingy.Model.Entity.Roles;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import java.util.List;
 import java.util.Set;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 /**
  *
  * @author Pril Wolf
  */
-public class CreatorModel implements AutoCloseable {
+public class CreatorModel {
 
+    private SessionFactory sessionFactory;
     private final Validator validator;
-    public DefaultComboBoxModel roles;
-    public DefaultListModel characters;
-    SessionFactory sessionFactory;
+    private DefaultListModel characters;
 
-    public CreatorModel(Validator validator) {
+    public CreatorModel(SessionFactory sessionFactory, Validator validator) {
+        this.sessionFactory = sessionFactory;
         this.validator = validator;
-        sessionFactory = new Configuration().configure().buildSessionFactory();
-        roles = new DefaultComboBoxModel(Roles.heroes());
         characters = new DefaultListModel();
 
         List<Creature> data = sessionFactory.fromSession(session -> {
@@ -62,7 +60,7 @@ public class CreatorModel implements AutoCloseable {
         return constraintViolations.isEmpty();
     }
 
-    public void create(String name, Roles role) {
+    public void create(String name, Roles role) throws InvalidHeroException {
         Creature newBorn = Creature.invoke(name, role);
         if (validateHero(newBorn) == true) {
             try {
@@ -74,7 +72,7 @@ public class CreatorModel implements AutoCloseable {
                 System.err.println("session throws: " + e.getMessage());
             }
         } else {
-            System.err.println("model not valid");
+            throw new InvalidHeroException();
         }
 
     }
@@ -89,16 +87,19 @@ public class CreatorModel implements AutoCloseable {
         characters.addAll(data);
     }
 
-    public void delete(int idx) {
-        Creature hero = (Creature) characters.remove(idx);
+    public void delete(Creature hero) {
         sessionFactory.inTransaction(session -> {
             session.remove(hero);
         });
+        refresh();
     }
 
-    @Override
-    public void close() {
-        sessionFactory.close();
+    public DefaultListModel getCharacters() {
+        return characters;
+    }
+
+    public void setCharacters(DefaultListModel characters) {
+        this.characters = characters;
     }
 
 }

@@ -23,12 +23,14 @@
  */
 package fr.ft.swingy.View.GUI;
 
-import fr.ft.swingy.Model.Artifact;
-import fr.ft.swingy.Model.Creature;
-import fr.ft.swingy.Model.Roles;
+import fr.ft.swingy.Model.Entity.Artifact;
+import fr.ft.swingy.Model.Entity.Creature;
+import fr.ft.swingy.Model.Entity.Roles;
+import fr.ft.swingy.View.ViewElement;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -38,7 +40,7 @@ import javax.swing.JPanel;
  *
  * @author Pril Wolf
  */
-public class CreatureView extends JPanel {
+public class CreatureView extends JPanel implements ViewElement {
 
     public static final int P_WIDTH = 130;
     public static final int P_HEIGHT = 300;
@@ -88,29 +90,37 @@ public class CreatureView extends JPanel {
     }
 
     public void update(Creature creature) {
-        nameValue.setText(creature.getName());
-        roleValue.setText(creature.getRole().toString());
-        levelValue.setText(String.valueOf(creature.getLevel()));
-        attackValue.setText(String.valueOf(creature.getAttack()));
-        defenseValue.setText(String.valueOf(creature.getDefense()));
-        hitPointValue.setText(String.valueOf(creature.getHitPoint()));
-
-        Artifact artifact = creature.getArtifact();
-        if (artifact != null) {
-            artifactValue.setText(artifact.toString());
+        if (creature == null) {
+            clear();
         } else {
-            artifactValue.setText("");
+            nameValue.setText(creature.getName());
+            roleValue.setText(creature.getRole().toString());
+            levelValue.setText(String.valueOf(creature.getLevel()));
+            attackValue.setText(String.valueOf(creature.getAttack()));
+            defenseValue.setText(String.valueOf(creature.getDefense()));
+            hitPointValue.setText(String.valueOf(creature.getHitPoint()));
+
+            Artifact artifact = creature.getArtifact();
+            if (artifact != null) {
+                artifactValue.setText(artifact.toString());
+            } else {
+                artifactValue.setText("");
+            }
         }
     }
 
     public void update(Roles role) {
-        nameValue.setText("");
-        roleValue.setText(role.toString());
-        levelValue.setText("1");
-        attackValue.setText(String.valueOf(role.attack));
-        defenseValue.setText(String.valueOf(role.defense));
-        hitPointValue.setText(String.valueOf(role.hitPoint));
-        artifactValue.setText("");
+        if (role == null) {
+            clear();
+        } else {
+            nameValue.setText("");
+            roleValue.setText(role.toString());
+            levelValue.setText("1");
+            attackValue.setText(String.valueOf(role.attack));
+            defenseValue.setText(String.valueOf(role.defense));
+            hitPointValue.setText(String.valueOf(role.hitPoint));
+            artifactValue.setText("");
+        }
     }
 
     public void clear() {
@@ -160,6 +170,11 @@ public class CreatureView extends JPanel {
 
     public JLabel getArtifactValue() {
         return artifactValue;
+    }
+
+    @Override
+    public void addActionListener(ActionListener l) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 }

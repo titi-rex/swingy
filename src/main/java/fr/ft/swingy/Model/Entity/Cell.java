@@ -21,69 +21,50 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingy.View;
-
-import fr.ft.swingy.Model.Model;
-import fr.ft.swingy.Model.Entity.Roles;
-import fr.ft.swingy.View.GUI.CreatureView;
-import fr.ft.swingy.View.GUI.Component.SwingyComboBox;
-import fr.ft.swingy.View.GUI.Component.SwingyList;
-import javax.swing.event.ChangeListener;
+package fr.ft.swingy.Model.Entity;
 
 /**
  *
  * @author Pril Wolf
  */
-public interface View {
+public class Cell {
 
-    enum ViewName {
-        CREATOR, PLAY
+    public enum Type {
+        EMPTY, HERO, ENNEMY
     };
 
-    void start();
+    private Type type;
+    private Creature creature;
 
-    void showView(ViewName viewName);
+    public Cell() {
+        this.type = Type.EMPTY;
+        this.creature = null;
+    }
 
-    void requestClose();
+    public Cell(Type type, Creature creature) {
+        this.type = type;
+        this.creature = creature;
+    }
 
-    ChangeListener getPlayViewListener();
+    @Override
+    public String toString() {
+        return type.toString() + " with " + creature;
+    }
+    
+    public Type getType() {
+        return type;
+    }
 
-    SwingyComboBox getRoles();
+    public void setType(Type type) {
+        this.type = type;
+    }
 
-    SwingyList getCharacters();
+    public Creature getCreature() {
+        return creature;
+    }
 
-    String getNameSelected();
-
-    Roles getRoleSelected();
-
-    CreatureView getInfoCreature();
-
-    ViewElement getHelp();
-
-    ViewElement getSwitch();
-
-    ViewElement getExit();
-
-    ViewElement getCreate();
-
-    ViewElement getDelete();
-
-    ViewElement getPlay();
-
-    ViewElement getNorth();
-
-    ViewElement getEast();
-
-    ViewElement getSouth();
-
-    ViewElement getWest();
-
-    ViewElement getFight();
-
-    ViewElement getRun();
-
-    ViewElement getYes();
-
-    ViewElement getNo();
+    public void setCreature(Creature creature) {
+        this.creature = creature;
+    }
 
 }
