@@ -23,14 +23,16 @@
  */
 package fr.ft.swingy.View;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.EventListener;
 
 /**
  *
  * @author Pril Wolf
  */
 public interface ViewElement {
-    
+
     void addActionListener(ActionListener l);
+
+    void triggerAction(ActionEvent e);
 }

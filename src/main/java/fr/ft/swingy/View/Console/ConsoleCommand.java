@@ -24,6 +24,7 @@
 package fr.ft.swingy.View.Console;
 
 import fr.ft.swingy.View.ViewElement;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
@@ -32,9 +33,17 @@ import java.awt.event.ActionListener;
  */
 public class ConsoleCommand implements ViewElement {
 
+    private String command;
+    private ActionListener action;
+    
     @Override
     public void addActionListener(ActionListener l) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        action = l;
+    }
+
+    @Override
+    public void triggerAction(ActionEvent e) {
+        action.actionPerformed(e);
     }
     
 }

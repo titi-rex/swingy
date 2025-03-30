@@ -26,6 +26,7 @@ package fr.ft.swingy.View.GUI.Component;
 import javax.swing.JMenuItem;
 
 import fr.ft.swingy.View.ViewElement;
+import java.awt.event.ActionEvent;
 import javax.swing.Action;
 import javax.swing.Icon;
 
@@ -56,6 +57,11 @@ public class SwingyMenuItem extends JMenuItem implements ViewElement {
 
     public SwingyMenuItem(String text, int mnemonic) {
         super(text, mnemonic);
+    }
+
+    @Override
+    public void triggerAction(ActionEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 }

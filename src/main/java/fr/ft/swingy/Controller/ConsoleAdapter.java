@@ -23,6 +23,8 @@
  */
 package fr.ft.swingy.Controller;
 
+import fr.ft.swingy.Model.Entity.Creature;
+import fr.ft.swingy.Model.Entity.Roles;
 import fr.ft.swingy.View.Console.ConsoleView;
 import fr.ft.swingy.View.View;
 
@@ -32,50 +34,67 @@ import fr.ft.swingy.View.View;
  */
 public class ConsoleAdapter {
 
-    private final View view;
+    public enum Input {
+        HELP,
+        GUI,
+        EXIT,
+        CREATE,
+        DELETE,
+        PLAY,
+        NORTH,
+        EAST,
+        SOUTH,
+        WEST,
+        FIGHT,
+        RUN,
+        YES,
+        NO
+    }
 
-    public ConsoleAdapter(View view) {
+    private final ConsoleView view;
+
+    public ConsoleAdapter(ConsoleView view) {
         this.view = view;
     }
 
     public void parse(ConsoleView.Scenes currentScene, String input) {
-        if (parseMeta(input) == false) {
-            switch (currentScene) {
-                case ConsoleView.Scenes.CREATOR ->
-                    parseCreator(input);
-                case ConsoleView.Scenes.PLAY ->
-                    parsePlay(input);
-                default ->
-                    throw new UnsupportedOperationException("enum switch not fully handled");
-            }
+        ConsoleAdapter.Input inputEnum;
+        try {
+            inputEnum = ConsoleAdapter.Input.valueOf(input);
+        } catch (IllegalArgumentException e) {
+            System.err.println("bad user input!");
+            return;
         }
-    }
 
-    private boolean parseMeta(String input) {
-        if (null != input) switch (input) {
-            case "help" -> {
-                return true;
+        switch (inputEnum) {
+            case ConsoleAdapter.Input.HELP -> {
+                view.getHelp().triggerAction(null);
             }
-            case "save" -> {
-                return true;
+            case ConsoleAdapter.Input.EXIT -> {
+                view.getExit().triggerAction(null);
             }
-            case "quit" -> {
-                return true;
+            case ConsoleAdapter.Input.GUI -> {
+                view.getSwitch().triggerAction(null);
             }
-            case "gui" -> {
-                return true;
+            // parse value and put them 
+            case ConsoleAdapter.Input.CREATE -> {
+                view.getNameSelected();
+                view.getRoleSelected();
+                view.getCreate().triggerAction(null);
             }
-            default -> {
+            // parse value and put them 
+            case ConsoleAdapter.Input.DELETE -> {
+                view.getCharacters().getSelectedValue();
+                view.getCreate().triggerAction(null);
             }
+            // parse value and put them 
+            case ConsoleAdapter.Input.PLAY -> {
+                view.getCharacters().getSelectedValue();
+                view.getCreate().triggerAction(null);
+            }
+            default ->
+                throw new UnsupportedOperationException("enum switch not fully handled");
         }
-        return false;
-    }
-
-    private void parseCreator(String input) {
-
-    }
-
-    private void parsePlay(String input) {
 
     }
 

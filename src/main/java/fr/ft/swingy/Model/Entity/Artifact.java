@@ -39,25 +39,35 @@ public class Artifact implements Serializable {
     @Id
     @GeneratedValue
     private long id;
-    
+
     @Transient
     public static final int BASE_POWER = 2;
+
     public enum Types {
-        HELM, ARMOR, WEAPON
-    };
+        HELM, ARMOR, WEAPON;
+
+        @Override
+        public String toString() {
+            return name().substring(0, 1) + name().substring(1).toLowerCase();
+        }
+    }
 
     private Types type;
     private int power;
 
+    public Artifact() {
+    }
+    
     public Artifact(Types type) {
         this.type = type;
         this.power = BASE_POWER;
     }
 
+    @Override
     public String toString() {
-        return this.type.toString();
+        return type.toString();
     }
-    
+
     public Types getType() {
         return type;
     }

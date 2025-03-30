@@ -23,7 +23,6 @@
  */
 package fr.ft.swingy.View.GUI.Component;
 
-import fr.ft.swingy.Model.Entity.Creature;
 import javax.swing.JList;
 
 import fr.ft.swingy.View.ViewElement;
@@ -63,6 +62,11 @@ public class SwingyList extends JList implements ViewElement {
     }
 
     public SwingyList() {
+    }
+
+    @Override
+    public void triggerAction(ActionEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 }

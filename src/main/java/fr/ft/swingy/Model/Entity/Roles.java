@@ -23,6 +23,8 @@
  */
 package fr.ft.swingy.Model.Entity;
 
+import org.sqlite.util.StringUtils;
+
 /*
  *
  * @author Pril Wolf
@@ -66,4 +68,9 @@ public enum Roles {
         return monster;
     }
 
+    @Override
+    public String toString() {
+        return name().substring(0, 1) + name().substring(1).toLowerCase();
+    }
+    
 }

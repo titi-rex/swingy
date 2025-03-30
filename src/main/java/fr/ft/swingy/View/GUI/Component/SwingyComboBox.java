@@ -26,6 +26,7 @@ package fr.ft.swingy.View.GUI.Component;
 import javax.swing.JComboBox;
 
 import fr.ft.swingy.View.ViewElement;
+import java.awt.event.ActionEvent;
 import java.util.Vector;
 import javax.swing.ComboBoxModel;
 
@@ -48,6 +49,11 @@ public class SwingyComboBox extends JComboBox implements ViewElement {
     }
 
     public SwingyComboBox() {
+    }
+
+    @Override
+    public void triggerAction(ActionEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 }

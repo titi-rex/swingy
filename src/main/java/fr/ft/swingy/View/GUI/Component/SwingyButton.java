@@ -24,6 +24,7 @@
 package fr.ft.swingy.View.GUI.Component;
 
 import fr.ft.swingy.View.ViewElement;
+import java.awt.event.ActionEvent;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -51,6 +52,11 @@ public class SwingyButton extends JButton implements ViewElement {
 
     public SwingyButton(String text, Icon icon) {
         super(text, icon);
+    }
+
+    @Override
+    public void triggerAction(ActionEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 }

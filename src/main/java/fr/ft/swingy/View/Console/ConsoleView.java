@@ -120,6 +120,7 @@ public class ConsoleView implements View {
                 System.out.print("> ");
                 String input = consoleReader.readLine();
                 System.out.print(" got: " + input);
+                adapter.parse(currentScene, input.trim().toUpperCase());
             }
 
         } catch (IOException | UnsupportedOperationException e) {
