@@ -21,39 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.ft.swingy.View.GUI.Component;
-
-import javax.swing.JComboBox;
-
-import fr.ft.swingy.View.ViewElement;
-import java.awt.event.ActionEvent;
-import java.util.Vector;
-import javax.swing.ComboBoxModel;
+package fr.ft.swingy.Controller;
 
 /**
  *
  * @author Pril Wolf
  */
-public class SwingyComboBox extends JComboBox implements ViewElement {
+public class InvalidCommandException extends RuntimeException {
 
-    public SwingyComboBox(ComboBoxModel aModel) {
-        super(aModel);
+    /**
+     * Creates a new instance of <code>InvalidCommandException</code> without
+     * detail message.
+     */
+    public InvalidCommandException() {
     }
 
-    public SwingyComboBox(Object[] items) {
-        super(items);
+    /**
+     * Constructs an instance of <code>InvalidCommandException</code> with the
+     * specified detail message.
+     *
+     * @param msg the detail message.
+     */
+    public InvalidCommandException(String msg) {
+        super(msg);
     }
-
-    public SwingyComboBox(Vector items) {
-        super(items);
-    }
-
-    public SwingyComboBox() {
-    }
-
-    @Override
-    public void triggerAction(ActionEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
 }

@@ -37,7 +37,6 @@ import java.awt.Point;
 import java.util.List;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
 import javax.swing.text.Document;
 import org.hibernate.SessionFactory;
@@ -50,13 +49,11 @@ import org.hibernate.cfg.Configuration;
 public class DefaultModel implements Model, AutoCloseable {
 
     private View view;
-    private Controller controller;
 
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory;
     private static Validator validator;
 
     private final ComboBoxModel rolesBoxModel;
-    private final DefaultListModel charactersListModel;
 
     private final CreatorModel creatorModel;
     private PlayModel playModel;
@@ -69,25 +66,24 @@ public class DefaultModel implements Model, AutoCloseable {
         playModel = new PlayModel(sessionFactory);
 
         rolesBoxModel = new DefaultComboBoxModel(Roles.heroes());
-
-        List<Creature> data = sessionFactory.fromSession(session -> {
-            return session
-                    .createSelectionQuery("from Creature", Creature.class)
-                    .getResultList();
-        });
-
-        charactersListModel = new DefaultListModel();
-        charactersListModel.addAll(data);
     }
 
     @Override
     public void createNewHero(String name, Roles role) throws InvalidHeroException {
-        creatorModel.create(name, role);
+        try {
+            creatorModel.create(name, role);
+        } catch (InvalidHeroException e) {
+            view.error("Error: invalid hero: " + e.getMessage());
+        }
     }
-    
+
     @Override
     public void deleteHero(Creature hero) {
-        creatorModel.delete(hero);
+        try {
+            creatorModel.delete(hero);
+        } catch (Exception e) {
+            view.error("Error: " + e.getMessage());
+        }
     }
 
     @Override
@@ -95,8 +91,6 @@ public class DefaultModel implements Model, AutoCloseable {
         playModel.invokeHero(hero);
         playModel.generateWorld();
         playModel.startGame();
-//        playModel.setView(view.getPlayViewListener());
-//        view.getPlayPanel().setModel(getPlayModel());
         playModel.getView().stateChanged(null);
     }
 
@@ -124,12 +118,22 @@ public class DefaultModel implements Model, AutoCloseable {
             playModel.save();
         }
     }
+
+    @Override
+    public boolean isFighting() {
+        return playModel.getCellAt(playModel.getHeroCoordinate()).getType() == Cell.Type.ENNEMY;
+    }
     
     @Override
-    public boolean isRunning() {
+    public boolean isPlaying() {
         return playModel.isRunning();
     }
 
+    @Override
+    public boolean hasDropped() {
+        return playModel.getDropped() != null;
+    }
+    
     @Override
     public void closeGame() {
         if (playModel != null) {
@@ -158,13 +162,6 @@ public class DefaultModel implements Model, AutoCloseable {
     public void setView(View view) {
         this.view = view;
         playModel.setView(view.getPlayViewListener());
-
-//        charactersListModel.addListDataListener(view.getCreatorPanel());
-    }
-
-    @Override
-    public void setController(Controller controller) {
-        this.controller = controller;
     }
 
     @Override

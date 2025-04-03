@@ -23,8 +23,9 @@
  */
 package fr.ft.swingy;
 
+import fr.ft.swingy.Controller.ConsoleController;
 import fr.ft.swingy.Controller.Controller;
-import fr.ft.swingy.Controller.DefaultController;
+import fr.ft.swingy.Controller.GuiController;
 import fr.ft.swingy.Model.DefaultModel;
 import fr.ft.swingy.Model.Model;
 import fr.ft.swingy.View.Console.ConsoleView;
@@ -32,6 +33,7 @@ import fr.ft.swingy.View.GUI.GuiView;
 import javax.swing.JFrame;
 import fr.ft.swingy.View.View;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -40,35 +42,81 @@ import java.util.logging.Level;
 public class App {
 
     public static final String ERROR_ENUM_SWITCH = "fatal: missing enum handling in switch";
-    
-    public static void main(String[] args) {
-        if (args.length != 1) {
-            System.err.println("Usage: java -jar swingy.jar gui/consol");
-            return;
-        }
+    public static final String ERROR_USAGE = "Usage: java -jar swingy.jar gui/consol";
+    public static final String ERROR_SWITCH = "Error: trying to switch view without an App instance";
+
+    private static App INSTANCE;
+
+    private final Model model;
+    private View view;
+    private Controller controller;
+    private boolean gui;
+
+    public App(boolean gui) {
+        this.gui = gui;
+        INSTANCE = this;
         JFrame.setDefaultLookAndFeelDecorated(true);
+        Logger.getLogger("org.hibernate").setLevel(Level.OFF);
+        model = new DefaultModel();
+        if (gui) {
+            initGui();
+        } else {
+            initConsole();
+        }
+    }
+
+    public static void switchView() {
+        if (INSTANCE != null) {
+            if (INSTANCE.gui) {
+                INSTANCE.gui = false;
+                INSTANCE.initConsole();
+            } else {
+                INSTANCE.gui = true;
+                INSTANCE.initGui();
+            }
+            INSTANCE.start();
+        } else {
+            System.err.println();
+        }
+    }
+
+    private void initGui() {
+        view = new GuiView(model);
+        controller = new GuiController(view, model);
+        model.setView(view);
+        controller.init();
+    }
+
+    private void initConsole() {
+        view = new ConsoleView(model);
+        controller = new ConsoleController(view, model);
+        model.setView(view);
+        controller.init();
+    }
+
+    public void start() {
+        view.start();
+    }
+
+    public static void main(String[] args) {
 
         try {
-
-            View view;
-            Model model = new DefaultModel();
-            if ("gui".equals(args[0])) {
-                view = new GuiView(model);
-            } else {
-                view = new ConsoleView(model);
-                java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
+            App app;
+            switch (args[0]) {
+                case "gui" ->
+                    app = new App(true);
+                case "console" ->
+                    app = new App(false);
+                default ->
+                    throw new NullPointerException();
             }
-
-            model.setView(view);
-            
-            Controller controller = new DefaultController(view, model);
-            controller.init();
-
-            view.start();
-            System.out.println("main end");
+            app.start();
+        } catch (IndexOutOfBoundsException | NullPointerException e) {
+            System.err.println(ERROR_USAGE + e);
 
         } catch (RuntimeException e) {
-            System.err.println("runtime error: " + e.getLocalizedMessage());
+            System.err.println("runtime error: " + e.getMessage());
+            e.getStackTrace();
         }
     }
 }

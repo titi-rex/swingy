@@ -23,79 +23,59 @@
  */
 package fr.ft.swingy.View.Console;
 
-import fr.ft.swingy.Controller.ConsoleAdapter;
+import static fr.ft.swingy.App.ERROR_ENUM_SWITCH;
+import fr.ft.swingy.Controller.InvalidCommandException;
+import fr.ft.swingy.Model.Entity.Cell;
+import fr.ft.swingy.Model.Entity.Creature;
 import fr.ft.swingy.Model.Model;
 import fr.ft.swingy.Model.Entity.Roles;
-import fr.ft.swingy.View.GUI.CreatureView;
-import fr.ft.swingy.View.GUI.Component.SwingyComboBox;
-import fr.ft.swingy.View.GUI.Component.SwingyList;
 import fr.ft.swingy.View.View;
-import fr.ft.swingy.View.ViewElement;
+import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
 /**
  *
  * @author Pril Wolf
  */
-public class ConsoleView implements View {
+public class ConsoleView implements View, ChangeListener {
 
-    private Model model;
+    public interface InputHandler {
 
+        void consume(String input);
+    }
+
+    private interface Printer {
+
+        void print();
+    }
+
+    private final Model model;
+
+    private final BufferedReader consoleReader;
+    private final String rolesList;
     private boolean running;
+    private InputHandler inputHandler;
+    private Printer printer;
+    private String contextMessage;
 
-    public enum Scenes {
-        CREATOR, PLAY
-    };
+    private Creature heroSelected;
+    private String nameSelected;
+    private Roles roleSelected;
 
-    private Scenes currentScene;
-
-    private final ConsoleCommand helpCommand;
-    private final ConsoleCommand switchCommand;
-    private final ConsoleCommand exitCommand;
-    private final ConsoleCommand createCommand;
-    private final ConsoleCommand deleteCommand;
-    private final ConsoleCommand playCommand;
-    private final ConsoleCommand northCommand;
-    private final ConsoleCommand eastCommand;
-    private final ConsoleCommand southCommand;
-    private final ConsoleCommand westCommand;
-    private final ConsoleCommand fightCommand;
-    private final ConsoleCommand runCommand;
-    private final ConsoleCommand yesCommand;
-    private final ConsoleCommand noCommand;
-    
-    private final PlayView playView;
-    private final ConsoleAdapter adapter;
-    
-    private SwingyComboBox rolesBox;
-    private SwingyList charactersList;
-    
+    public static final String NEWLINE = "\n";
 
     public ConsoleView(Model model) {
-        currentScene = Scenes.CREATOR;
-        adapter = new ConsoleAdapter(this);
-
-        helpCommand = new ConsoleCommand();
-        switchCommand = new ConsoleCommand();
-        exitCommand = new ConsoleCommand();
-
-        createCommand = new ConsoleCommand();
-        deleteCommand = new ConsoleCommand();
-        playCommand = new ConsoleCommand();
-
-        northCommand = new ConsoleCommand();
-        eastCommand = new ConsoleCommand();
-        southCommand = new ConsoleCommand();
-        westCommand = new ConsoleCommand();
-        fightCommand = new ConsoleCommand();
-        runCommand = new ConsoleCommand();
-        yesCommand = new ConsoleCommand();
-        noCommand = new ConsoleCommand();
-
-        playView = new PlayView(model);
+        this.model = model;
+        consoleReader = new BufferedReader(new InputStreamReader(System.in));
+        printer = this::printCreator;
+        contextMessage = "Welcome to Swingy!" + NEWLINE;
+        rolesList = storeRoleList();
     }
 
     @Override
@@ -104,33 +84,142 @@ public class ConsoleView implements View {
         loop();
     }
 
-    private void loop() {
-        try (BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in))) {
-            while (running) {
-                switch (currentScene) {
-                    case Scenes.CREATOR:
-                        showView(View.ViewName.CREATOR);
-                        break;
-                    case Scenes.PLAY:
-                        showView(View.ViewName.PLAY);
-                        break;
-                    default:
-                        throw new UnsupportedOperationException("enum switch not fully handled");
-                }
-                System.out.print("> ");
-                String input = consoleReader.readLine();
-                System.out.print(" got: " + input);
-                adapter.parse(currentScene, input.trim().toUpperCase());
-            }
+    @Override
+    public void error(String message) {
+        addContextMessage(message);
+    }
 
-        } catch (IOException | UnsupportedOperationException e) {
-            System.err.println(e.getLocalizedMessage());
+    /*
+    afficher contexte 
+        -> creator : create/delete/play
+        -> playing : map + 5 last gamelogs
+        -> (error) : error message
+        -> (help)  : help message
+     */
+    private void loop() {
+        try {
+            while (running) {
+                printer.print();
+                consumeContextMessage();
+                printPrompt();
+                inputHandler.consume(consoleReader.readLine());
+            }
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
         }
     }
 
     @Override
     public void showView(ViewName viewName) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        switch (viewName) {
+            case ViewName.CREATOR ->
+                printer = this::printCreator;
+            case ViewName.PLAY ->
+                printer = this::printPlay;
+            default ->
+                throw new AssertionError(ERROR_ENUM_SWITCH);
+        }
+
+    }
+
+    private void printPrompt() {
+        System.out.print("> ");
+    }
+
+    private void consumeContextMessage() {
+        if (contextMessage != null && contextMessage.isEmpty() == false) {
+            System.out.println(contextMessage);
+        }
+        contextMessage = "";
+    }
+
+    public void addContextMessage(String contextMessage) {
+        this.contextMessage += contextMessage + NEWLINE;
+    }
+
+    private void printCreator() {
+        String tmp = "Existing Hero:" + NEWLINE;
+
+        int size = model.getCharactersListModel().getSize();
+        for (int i = 0; i < size; i++) {
+            Creature hero = (Creature) model.getCharactersListModel().getElementAt(i);
+            tmp += hero.toString() + "\t|\t(" + hero.getAttack() + "/" + hero.getDefense() + "/" + hero.getHitPoint() + ")";
+            if (hero.getArtifact() != null) {
+                tmp += " equipped with " + hero.getArtifact().toString() + NEWLINE;
+            } else {
+                tmp += NEWLINE;
+            }
+        }
+        System.out.println(tmp);
+    }
+
+    private String storeRoleList() {
+        String tmp = "Availables classes:" + NEWLINE;
+
+        int size = model.getRolesModel().getSize();
+        for (int i = 0; i < size; i++) {
+            Roles role = (Roles) model.getRolesModel().getElementAt(i);
+            tmp += role.toString() + "\t|\tattack: " + role.attack + ", defense:  " + role.defense + ", hp: " + role.hitPoint + NEWLINE;
+        }
+        return tmp;
+    }
+
+    public String getRolesList() {
+        return rolesList;
+    }
+
+    private void printPlay() {
+        printCreature("HERO\t", model.getHero());
+        printMap();
+        if (model.isFighting()) {
+            printCreature("ENNEMY\t", model.getCellAt(model.getHeroCoordinate()).getCreature());
+        }
+        printGameLogs();
+    }
+
+    private void printMap() {
+        System.out.println("MAP");
+        int size = model.getSize();
+        String tmp = "";
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (model.getHeroCoordinate().equals(new Point(j, i))) {
+                    tmp += " H ";
+                } else if (model.getCellAt(new Point(j, i)).getType() == Cell.Type.EMPTY) {
+                    tmp += " . ";
+                } else {
+                    tmp += " E ";
+                }
+            }
+            tmp += NEWLINE;
+        }
+        System.out.println(tmp);
+    }
+
+    private void printCreature(String prefix, Creature creature) {
+        String tmp = "";
+        if (prefix != null) {
+            tmp = prefix;
+        }
+        tmp += creature.toString() + "\t|\t(" + creature.getAttack() + "/" + creature.getDefense() + "/" + creature.getHitPoint() + ")";
+        if (creature.getArtifact() != null) {
+            tmp += " equipped with " + creature.getArtifact().toString() + NEWLINE;
+        }
+        System.out.println(tmp);
+    }
+
+    private void printGameLogs() {
+        System.out.println("LOGS");
+        try {
+            Document doc = model.getGameLogs();
+            String lines[] = doc.getText(0, doc.getLength()).split("\n");
+            int start = Math.max(lines.length - 6, 0);
+            for (int i = start; i < lines.length; i++) {
+                System.out.println(lines[i]);
+            }
+        } catch (BadLocationException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     @Override
@@ -138,105 +227,74 @@ public class ConsoleView implements View {
         running = false;
     }
 
+    public void setHeroSelected(String name) {
+        int size = model.getCharactersListModel().getSize();
+        for (int i = 0; i < size; i++) {
+            Creature hero = (Creature) model.getCharactersListModel().getElementAt(i);
+            if (hero.getName().equals(name)) {
+                this.heroSelected = hero;
+                break;
+            }
+        }
+        if (heroSelected == null) {
+            throw new InvalidCommandException("unknow hero");
+        }
+    }
+
+    public void addInputListener(InputHandler l) {
+        this.inputHandler = l;
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+
+    }
+
+    @Override
+    public Creature getHeroSelected() {
+        Creature tmp = heroSelected;
+        heroSelected = null;
+        return tmp;
+    }
+
+    @Override
+    public boolean isHeroSelected() {
+        return heroSelected != null;
+    }
+
     @Override
     public ChangeListener getPlayViewListener() {
-        return playView;
-    }
-
-
-    @Override
-    public SwingyComboBox getRoles() {
-        return rolesBox;
-    }
-
-    @Override
-    public SwingyList getCharacters() {
-        return charactersList;
+        return this;
     }
 
     @Override
     public String getNameSelected() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String tmp = nameSelected;
+        nameSelected = null;
+        return tmp;
     }
 
     @Override
     public Roles getRoleSelected() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Roles tmp = roleSelected;
+        roleSelected = null;
+        return tmp;
+    }
+
+    public void setNameSelected(String nameSelected) {
+        this.nameSelected = nameSelected;
+    }
+
+    public void setRoleSelected(Roles roleSelected) {
+        this.roleSelected = roleSelected;
     }
 
     @Override
-    public CreatureView getInfoCreature() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void updateInfoCreature(Creature creature) {
     }
 
     @Override
-    public ViewElement getHelp() {
-        return helpCommand;
-    }
-
-    @Override
-    public ViewElement getSwitch() {
-        return switchCommand;
-    }
-
-    @Override
-    public ViewElement getExit() {
-        return exitCommand;
-    }
-
-    @Override
-    public ViewElement getCreate() {
-        return createCommand;
-    }
-
-    @Override
-    public ViewElement getDelete() {
-        return deleteCommand;
-    }
-
-    @Override
-    public ViewElement getPlay() {
-        return playCommand;
-    }
-
-    @Override
-    public ViewElement getNorth() {
-        return northCommand;
-    }
-
-    @Override
-    public ViewElement getEast() {
-        return eastCommand;
-    }
-
-    @Override
-    public ViewElement getSouth() {
-        return southCommand;
-    }
-
-    @Override
-    public ViewElement getWest() {
-        return westCommand;
-    }
-
-    @Override
-    public ViewElement getFight() {
-        return fightCommand;
-    }
-
-    @Override
-    public ViewElement getRun() {
-        return runCommand;
-    }
-
-    @Override
-    public ViewElement getYes() {
-        return yesCommand;
-    }
-
-    @Override
-    public ViewElement getNo() {
-        return noCommand;
+    public void updateInfoCreature(Roles role) {
     }
 
 }

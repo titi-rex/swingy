@@ -23,11 +23,8 @@
  */
 package fr.ft.swingy.View;
 
-import fr.ft.swingy.Model.Model;
+import fr.ft.swingy.Model.Entity.Creature;
 import fr.ft.swingy.Model.Entity.Roles;
-import fr.ft.swingy.View.GUI.CreatureView;
-import fr.ft.swingy.View.GUI.Component.SwingyComboBox;
-import fr.ft.swingy.View.GUI.Component.SwingyList;
 import javax.swing.event.ChangeListener;
 
 /**
@@ -44,46 +41,21 @@ public interface View {
 
     void showView(ViewName viewName);
 
+    void error(String message);
+
     void requestClose();
 
     ChangeListener getPlayViewListener();
 
-    SwingyComboBox getRoles();
+    void updateInfoCreature(Creature creature);
 
-    SwingyList getCharacters();
+    void updateInfoCreature(Roles role);
 
     String getNameSelected();
 
     Roles getRoleSelected();
 
-    CreatureView getInfoCreature();
+    Creature getHeroSelected();
 
-    ViewElement getHelp();
-
-    ViewElement getSwitch();
-
-    ViewElement getExit();
-
-    ViewElement getCreate();
-
-    ViewElement getDelete();
-
-    ViewElement getPlay();
-
-    ViewElement getNorth();
-
-    ViewElement getEast();
-
-    ViewElement getSouth();
-
-    ViewElement getWest();
-
-    ViewElement getFight();
-
-    ViewElement getRun();
-
-    ViewElement getYes();
-
-    ViewElement getNo();
-
+    boolean isHeroSelected();
 }

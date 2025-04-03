@@ -69,10 +69,10 @@ public class CreatorModel {
                 });
                 characters.addElement(newBorn);
             } catch (Exception e) {
-                System.err.println("session throws: " + e.getMessage());
+                throw new InvalidHeroException("duplicate name");
             }
         } else {
-            throw new InvalidHeroException();
+            throw new InvalidHeroException("name not valid");
         }
 
     }

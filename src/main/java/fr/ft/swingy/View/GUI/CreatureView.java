@@ -26,12 +26,9 @@ package fr.ft.swingy.View.GUI;
 import fr.ft.swingy.Model.Entity.Artifact;
 import fr.ft.swingy.Model.Entity.Creature;
 import fr.ft.swingy.Model.Entity.Roles;
-import fr.ft.swingy.View.ViewElement;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -41,7 +38,7 @@ import javax.swing.JPanel;
  *
  * @author Pril Wolf
  */
-public class CreatureView extends JPanel implements ViewElement {
+public class CreatureView extends JPanel {
 
     public static final int P_WIDTH = 130;
     public static final int P_HEIGHT = 300;
@@ -171,16 +168,6 @@ public class CreatureView extends JPanel implements ViewElement {
 
     public JLabel getArtifactValue() {
         return artifactValue;
-    }
-
-    @Override
-    public void addActionListener(ActionListener l) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void triggerAction(ActionEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 }

@@ -30,6 +30,7 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.UniqueElements;
 
 /**
  *
@@ -105,14 +106,12 @@ public class Creature {
     }
 
     public void attack(Creature opponent) {
-        System.err.println(this + " attack " + opponent + " with " + this.getAttack() + " attack");
         opponent.takeDamage(this.getAttack());
     }
 
     public void takeDamage(int value) {
         int damage = Math.max(value - this.defense, 1);
         this.hitPoint -= damage;
-        System.err.println(this + " take " + damage + " damage");
     }
 
     public boolean isAlive() {

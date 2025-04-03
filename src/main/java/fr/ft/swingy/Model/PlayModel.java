@@ -175,7 +175,7 @@ public final class PlayModel implements AutoCloseable {
                 }
                 case Direction.EAST -> {
                     heroDirectionFrom = Direction.WEST;
-                    heroCoordinate.x--;
+                    heroCoordinate.x++;
                     checkEnd();
                 }
                 case Direction.SOUTH -> {
@@ -185,7 +185,7 @@ public final class PlayModel implements AutoCloseable {
                 }
                 case Direction.WEST -> {
                     heroDirectionFrom = Direction.EAST;
-                    heroCoordinate.x++;
+                    heroCoordinate.x--;
                     checkEnd();
                 }
                 case Direction.CENTER -> {

@@ -23,7 +23,6 @@
  */
 package fr.ft.swingy.View.GUI;
 
-import fr.ft.swingy.View.GUI.Component.SwingyMenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.JMenu;
@@ -37,14 +36,14 @@ import javax.swing.KeyStroke;
  */
 public class MenuBarPanel extends JMenuBar {
 
-    private final SwingyMenuItem switchItem;
-    private final SwingyMenuItem exitItem;
+    private final JMenuItem switchItem;
+    private final JMenuItem exitItem;
 
     public MenuBarPanel() {
-        switchItem = new SwingyMenuItem("Switch");
+        switchItem = new JMenuItem("Switch");
         switchItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.ALT_MASK));
 
-        exitItem = new SwingyMenuItem("Exit");
+        exitItem = new JMenuItem("Exit");
 
         JMenu menu = new JMenu("Settings");
         menu.setMnemonic(KeyEvent.VK_M);
@@ -56,11 +55,11 @@ public class MenuBarPanel extends JMenuBar {
     }
 
     // Getter and Setter
-    public SwingyMenuItem getSwitchItem() {
+    public JMenuItem getSwitchItem() {
         return switchItem;
     }
 
-    public SwingyMenuItem getExitItem() {
+    public JMenuItem getExitItem() {
         return exitItem;
     }
 }

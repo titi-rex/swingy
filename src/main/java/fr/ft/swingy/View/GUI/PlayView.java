@@ -23,7 +23,6 @@
  */
 package fr.ft.swingy.View.GUI;
 
-import fr.ft.swingy.View.GUI.Component.SwingyButton;
 import fr.ft.swingy.Model.Entity.Cell;
 import fr.ft.swingy.Model.Model;
 import java.awt.BorderLayout;
@@ -34,6 +33,7 @@ import java.awt.Point;
 import java.net.URL;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -95,10 +95,6 @@ public class PlayView extends JPanel implements ChangeListener {
         add(commandBar, BorderLayout.PAGE_END);
     }
 
-    /**
-     *
-     * @param e
-     */
     @Override
     public void stateChanged(ChangeEvent e) {
         logArea.setCaretPosition(logArea.getDocument().getLength());
@@ -115,7 +111,6 @@ public class PlayView extends JPanel implements ChangeListener {
         int end = Integer.min(pos + RENDER_BOUND + 1, size);
 
         if (pos - RENDER_BOUND < 0) {
-//            end += Math.abs(pos - RENDER_BOUND);
             end = Math.min(size, end + Math.abs(pos - RENDER_BOUND));
         } else if (pos + RENDER_BOUND > size) {
             start = Math.max(0, start + (size - (pos + RENDER_BOUND)));
@@ -169,9 +164,9 @@ public class PlayView extends JPanel implements ChangeListener {
     }
 
     public void renderCommandBar() {
-        if (model.isRunning() == false) {
+        if (model.isPlaying() == false) {
             commandBar.showCommand(CommandBar.CommandName.HIDE);
-        } else if (model.getCellAt(model.getHeroCoordinate()).getType() == Cell.Type.ENNEMY) {
+        } else if (model.isFighting()) {
             commandBar.showCommand(CommandBar.CommandName.FIGHT);
         } else if (model.getDropped() == null) {
             commandBar.showCommand(CommandBar.CommandName.MOVE);
@@ -205,14 +200,14 @@ public class PlayView extends JPanel implements ChangeListener {
             HIDE
         };
 
-        private final SwingyButton northButton;
-        private final SwingyButton eastButton;
-        private final SwingyButton southButton;
-        private final SwingyButton westButton;
-        private final SwingyButton fightButton;
-        private final SwingyButton runButton;
-        private final SwingyButton yesButton;
-        private final SwingyButton noButton;
+        private final JButton northButton;
+        private final JButton eastButton;
+        private final JButton southButton;
+        private final JButton westButton;
+        private final JButton fightButton;
+        private final JButton runButton;
+        private final JButton yesButton;
+        private final JButton noButton;
 
         private final CardLayout layout;
 
@@ -225,30 +220,30 @@ public class PlayView extends JPanel implements ChangeListener {
             setLayout(layout);
 
             JPanel movePanel = new JPanel(new FlowLayout());
-            northButton = new SwingyButton("North");
-            eastButton = new SwingyButton("East");
-            southButton = new SwingyButton("South");
-            westButton = new SwingyButton("West");
+            northButton = new JButton("North");
+            westButton = new JButton("West");
+            southButton = new JButton("South");
+            eastButton = new JButton("East");
             movePanel.add(northButton);
-            movePanel.add(eastButton);
-            movePanel.add(southButton);
             movePanel.add(westButton);
+            movePanel.add(southButton);
+            movePanel.add(eastButton);
             this.add(movePanel, CommandName.MOVE.name());
 
             JPanel fightPanel = new JPanel(new FlowLayout());
-            fightButton = new SwingyButton("Fight");
-            runButton = new SwingyButton("Run");
+            fightButton = new JButton("Fight");
+            runButton = new JButton("Run");
             fightPanel.add(fightButton);
             fightPanel.add(runButton);
             this.add(fightPanel, CommandName.FIGHT.name());
 
             JPanel artifactPanel = new JPanel(new FlowLayout());
-            yesButton = new SwingyButton("Take Artifact");
-            noButton = new SwingyButton("Leave");
+            yesButton = new JButton("Take Artifact");
+            noButton = new JButton("Leave");
             artifactPanel.add(yesButton);
             artifactPanel.add(noButton);
             this.add(artifactPanel, CommandName.ARTIFACT.name());
-            
+
             JPanel hidePanel = new JPanel(new FlowLayout());
             this.add(hidePanel, CommandName.HIDE.name());
         }
@@ -258,35 +253,35 @@ public class PlayView extends JPanel implements ChangeListener {
         }
 
         //    Getter and Setter
-        public SwingyButton getNorthButton() {
+        public JButton getNorthButton() {
             return northButton;
         }
 
-        public SwingyButton getEastButton() {
+        public JButton getEastButton() {
             return eastButton;
         }
 
-        public SwingyButton getWestButton() {
+        public JButton getWestButton() {
             return westButton;
         }
 
-        public SwingyButton getSouthButton() {
+        public JButton getSouthButton() {
             return southButton;
         }
 
-        public SwingyButton getFightButton() {
+        public JButton getFightButton() {
             return fightButton;
         }
 
-        public SwingyButton getRunButton() {
+        public JButton getRunButton() {
             return runButton;
         }
 
-        public SwingyButton getYesButton() {
+        public JButton getYesButton() {
             return yesButton;
         }
 
-        public SwingyButton getNoButton() {
+        public JButton getNoButton() {
             return noButton;
         }
 

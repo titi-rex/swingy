@@ -27,7 +27,6 @@ import fr.ft.swingy.Model.Entity.Cell;
 import fr.ft.swingy.Model.Entity.Creature;
 import fr.ft.swingy.Model.Entity.Roles;
 import fr.ft.swingy.Model.Entity.Artifact;
-import fr.ft.swingy.Controller.Controller;
 import fr.ft.swingy.View.View;
 import java.awt.Point;
 import javax.swing.ListModel;
@@ -55,8 +54,6 @@ public interface Model {
 
     void setView(View view);
 
-    void setController(Controller controller);
-
     void createNewHero(String name, Roles role) throws InvalidHeroException;
 
     void deleteHero(Creature hero);
@@ -67,7 +64,11 @@ public interface Model {
 
     void saveGame();
 
-    boolean isRunning();
+    boolean isFighting();
+
+    boolean isPlaying();
+    
+    boolean hasDropped();
 
     void closeGame();
 

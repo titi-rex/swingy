@@ -23,13 +23,13 @@
  */
 package fr.ft.swingy.View.GUI;
 
-import fr.ft.swingy.View.GUI.Component.SwingyComboBox;
-import fr.ft.swingy.View.GUI.Component.SwingyList;
-import fr.ft.swingy.View.GUI.Component.SwingyButton;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -39,13 +39,13 @@ import javax.swing.JTextField;
  */
 public class CreatorView extends JPanel {
 
-    private final SwingyButton createButton;
-    private final SwingyButton deleteButton;
-    private final SwingyButton playButton;
-    private final SwingyComboBox rolesBox;
-    private JTextField nameField;
-    private final SwingyList characterList;
+    private final JButton createButton;
+    private final JButton deleteButton;
+    private final JButton playButton;
+    private final JComboBox rolesBox;
+    private final JList characterList;
     private final CreatureView infoStat;
+    private JTextField nameField;
 
     /**
      * must set model for characterList
@@ -54,11 +54,11 @@ public class CreatorView extends JPanel {
         setLayout(new BorderLayout());
 
         nameField = new JTextField(12);
-        rolesBox = new SwingyComboBox();
-        characterList = new SwingyList();
-        createButton = new SwingyButton("Create");
-        deleteButton = new SwingyButton("Delete");
-        playButton = new SwingyButton("Play");
+        rolesBox = new JComboBox();
+        characterList = new JList();
+        createButton = new JButton("Create");
+        deleteButton = new JButton("Delete");
+        playButton = new JButton("Play");
         infoStat = new CreatureView();
 
         add(creationForm(), BorderLayout.PAGE_START);
@@ -92,19 +92,19 @@ public class CreatorView extends JPanel {
     }
 
     // Getter and Setter
-    public SwingyButton getCreateButton() {
+    public JButton getCreateButton() {
         return createButton;
     }
 
-    public SwingyButton getDeleteButton() {
+    public JButton getDeleteButton() {
         return deleteButton;
     }
 
-    public SwingyButton getPlayButton() {
+    public JButton getPlayButton() {
         return playButton;
     }
 
-    public SwingyComboBox getRolesBox() {
+    public JComboBox getRolesBox() {
         return rolesBox;
     }
 
@@ -116,7 +116,7 @@ public class CreatorView extends JPanel {
         this.nameField = nameField;
     }
 
-    public SwingyList getCharacterList() {
+    public JList getCharacterList() {
         return characterList;
     }
 

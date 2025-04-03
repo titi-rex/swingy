@@ -23,11 +23,9 @@
  */
 package fr.ft.swingy.View.GUI;
 
-import fr.ft.swingy.View.GUI.Component.SwingyComboBox;
-import fr.ft.swingy.View.GUI.Component.SwingyList;
+import fr.ft.swingy.Model.Entity.Creature;
 import fr.ft.swingy.Model.Model;
 import fr.ft.swingy.Model.Entity.Roles;
-import fr.ft.swingy.View.ViewElement;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
@@ -41,6 +39,11 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import fr.ft.swingy.View.View;
 import javax.swing.ComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JList;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeListener;
 
@@ -49,8 +52,6 @@ import javax.swing.event.ChangeListener;
  * @author Pril Wolf
  */
 public class GuiView extends JFrame implements View {
-
-    private Model model;
 
     public static final int WINDOW_SIZE = 800;
     public static final int WINDOW_SIZE_MIN = 500;
@@ -62,6 +63,7 @@ public class GuiView extends JFrame implements View {
     private final PlayView playPanel;
     private final JPanel cards;
     private final CardLayout cLayout;
+    private boolean forceClose;
 
     /*
 javax.swing.UIManager$LookAndFeelInfo[Metal javax.swing.plaf.metal.MetalLookAndFeel]
@@ -71,7 +73,6 @@ javax.swing.UIManager$LookAndFeelInfo[GTK+ com.sun.java.swing.plaf.gtk.GTKLookAn
      */
     public GuiView(Model model) throws HeadlessException {
         super(TITLE);
-        this.model = model;
         initWindow();
 
         cLayout = new CardLayout();
@@ -96,10 +97,9 @@ javax.swing.UIManager$LookAndFeelInfo[GTK+ com.sun.java.swing.plaf.gtk.GTKLookAn
         setSize(new Dimension(WINDOW_SIZE, WINDOW_SIZE));
         setMinimumSize(new Dimension(WINDOW_SIZE, WINDOW_SIZE));
         setMaximumSize(new Dimension(WINDOW_SIZE, WINDOW_SIZE));
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
-        addWindowListener(new windowHandler());
-
+        forceClose = false;
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException ex) {
@@ -110,7 +110,11 @@ javax.swing.UIManager$LookAndFeelInfo[GTK+ com.sun.java.swing.plaf.gtk.GTKLookAn
     @Override
     public void start() {
         setVisible(true);
-        showView(ViewName.CREATOR);
+    }
+
+    @Override
+    public void error(String message) {
+        JOptionPane.showMessageDialog(this, message);
     }
 
     @Override
@@ -130,17 +134,20 @@ javax.swing.UIManager$LookAndFeelInfo[GTK+ com.sun.java.swing.plaf.gtk.GTKLookAn
     }
 
     @Override
-    public CreatureView getInfoCreature() {
-        return creatorPanel.getInfoStat();
+    public void updateInfoCreature(Creature creature) {
+        creatorPanel.getInfoStat().update(creature);
     }
 
     @Override
-    public SwingyComboBox getRoles() {
+    public void updateInfoCreature(Roles role) {
+        creatorPanel.getInfoStat().update(role);
+    }
+
+    public JComboBox getRoles() {
         return creatorPanel.getRolesBox();
     }
 
-    @Override
-    public SwingyList getCharacters() {
+    public JList getCharacters() {
         return creatorPanel.getCharacterList();
     }
 
@@ -157,98 +164,68 @@ javax.swing.UIManager$LookAndFeelInfo[GTK+ com.sun.java.swing.plaf.gtk.GTKLookAn
     }
 
     @Override
-    public ViewElement getCreate() {
+    public Creature getHeroSelected() {
+        return (Creature) creatorPanel.getCharacterList().getSelectedValue();
+    }
+
+    @Override
+    public boolean isHeroSelected() {
+        return creatorPanel.getCharacterList().isSelectionEmpty() == false;
+
+    }
+
+    public JButton getCreate() {
         return creatorPanel.getCreateButton();
     }
 
-    @Override
-    public ViewElement getDelete() {
+    public JButton getDelete() {
         return creatorPanel.getDeleteButton();
     }
 
-    @Override
-    public ViewElement getPlay() {
+    public JButton getPlay() {
         return creatorPanel.getPlayButton();
     }
 
-    @Override
-    public ViewElement getSwitch() {
+    public JMenuItem getSwitch() {
         return menuPanel.getSwitchItem();
     }
 
-    @Override
-    public ViewElement getExit() {
+    public JMenuItem getExit() {
         return menuPanel.getExitItem();
     }
 
-    @Override
-    public ViewElement getNorth() {
+    public JButton getNorth() {
         return playPanel.getCommandBar().getNorthButton();
     }
 
-    @Override
-    public ViewElement getEast() {
+    public JButton getEast() {
         return playPanel.getCommandBar().getEastButton();
 
     }
 
-    @Override
-    public ViewElement getSouth() {
+    public JButton getSouth() {
         return playPanel.getCommandBar().getSouthButton();
 
     }
 
-    @Override
-    public ViewElement getWest() {
+    public JButton getWest() {
         return playPanel.getCommandBar().getWestButton();
     }
 
-    @Override
-    public ViewElement getFight() {
+    public JButton getFight() {
         return playPanel.getCommandBar().getFightButton();
     }
 
-    @Override
-    public ViewElement getRun() {
+    public JButton getRun() {
         return playPanel.getCommandBar().getRunButton();
     }
 
-    @Override
-    public ViewElement getYes() {
+    public JButton getYes() {
         return playPanel.getCommandBar().getYesButton();
     }
 
-    @Override
-    public ViewElement getNo() {
+    public JButton getNo() {
         return playPanel.getCommandBar().getNoButton();
-    }
-
-    @Override
-    public ViewElement getHelp() {
-        return null;
-    }
-
-    private class windowHandler extends WindowAdapter {
-
-        @Override
-        public void windowClosing(WindowEvent e) {
-            GuiView frame = (GuiView) e.getSource();
-
-            int result = JOptionPane.showConfirmDialog(
-                    frame,
-                    "Are you sure you want to exit the application?",
-                    "Exit Application",
-                    JOptionPane.YES_NO_OPTION);
-
-            if (result == JOptionPane.YES_OPTION) {
-                frame.dispose();
-            }
-        }
-
-        @Override
-        public void windowClosed(WindowEvent e) {
-            System.out.println("Windows closed");
-        }
     }
 
 }

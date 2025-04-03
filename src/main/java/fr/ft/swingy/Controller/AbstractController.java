@@ -23,11 +23,12 @@
  */
 package fr.ft.swingy.Controller;
 
+import fr.ft.swingy.App;
 import static fr.ft.swingy.App.ERROR_ENUM_SWITCH;
 import fr.ft.swingy.Model.Entity.Creature;
+import fr.ft.swingy.Model.Entity.Roles;
 import fr.ft.swingy.Model.InvalidHeroException;
 import fr.ft.swingy.Model.Model;
-import fr.ft.swingy.Model.Entity.Roles;
 import fr.ft.swingy.View.View;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,37 +37,21 @@ import java.awt.event.ActionListener;
  *
  * @author Pril Wolf
  */
-public class DefaultController implements Controller {
+public abstract class AbstractController implements Controller {
 
-    private final View view;
-    private final Model model;
+    protected final View view;
+    protected final Model model;
 
-    public DefaultController(View view, Model model) {
+    public AbstractController(View view, Model model) {
         this.view = view;
         this.model = model;
     }
 
     @Override
-    public void init() {
-        view.getSwitch().addActionListener(new MetaAction(MetaAction.Types.SWITCH));
-        view.getExit().addActionListener(new MetaAction(MetaAction.Types.EXIT));
-        view.getCreate().addActionListener(new CreatorAction(CreatorAction.Types.CREATE));
-        view.getDelete().addActionListener(new CreatorAction(CreatorAction.Types.DELETE));
-        view.getPlay().addActionListener(new CreatorAction(CreatorAction.Types.PLAY));
-        view.getCharacters().addActionListener(new CreatorAction(CreatorAction.Types.SELECT_HERO));
-        view.getRoles().addActionListener(new CreatorAction(CreatorAction.Types.SELECT_ROLE));
-        view.getNorth().addActionListener(new HeroAction(Model.Action.MOVE, Model.Direction.NORTH));
-        view.getEast().addActionListener(new HeroAction(Model.Action.MOVE, Model.Direction.EAST));
-        view.getSouth().addActionListener(new HeroAction(Model.Action.MOVE, Model.Direction.SOUTH));
-        view.getWest().addActionListener(new HeroAction(Model.Action.MOVE, Model.Direction.WEST));
-        view.getFight().addActionListener(new HeroAction(Model.Action.FIGHT, null));
-        view.getRun().addActionListener(new HeroAction(Model.Action.RUN, null));
-        view.getYes().addActionListener(new HeroAction(Model.Action.TAKE, null));
-        view.getNo().addActionListener(new HeroAction(Model.Action.DISCARD, null));
-    }
+    public abstract void init();
 
     // Meta Actions
-    private class MetaAction implements ActionListener {
+    protected class MetaAction implements ActionListener {
 
         public enum Types {
             HELP, SWITCH, EXIT
@@ -94,7 +79,8 @@ public class DefaultController implements Controller {
                 }
                 case Types.SWITCH -> {
                     return () -> {
-                        System.out.println("switch to cli requested");
+                        view.requestClose();
+                        App.switchView();
                     };
                 }
                 case Types.EXIT -> {
@@ -115,7 +101,7 @@ public class DefaultController implements Controller {
     }
 
     // Creation Actions
-    private class CreatorAction implements ActionListener {
+    protected class CreatorAction implements ActionListener {
 
         public enum Types {
             CREATE, DELETE, PLAY, SELECT_ROLE, SELECT_HERO
@@ -143,37 +129,37 @@ public class DefaultController implements Controller {
                         try {
                             model.createNewHero(name, role);
                         } catch (InvalidHeroException ex) {
-                            System.err.println(ex.getMessage());
+                            System.err.println("Error: " + ex.getMessage());
                         }
                     };
                 }
                 case Types.DELETE -> {
                     return () -> {
-                        if (view.getCharacters().isSelectionEmpty()) {
-                            throw new UnsupportedOperationException("implmentd error user");
+                        if (view.isHeroSelected()) {
+                            model.deleteHero((Creature) view.getHeroSelected());
                         } else {
-                            model.deleteHero((Creature) view.getCharacters().getSelectedValue());
+                            throw new UnsupportedOperationException("implmentd error user");
                         }
                     };
                 }
                 case Types.PLAY -> {
                     return () -> {
-                        if (view.getCharacters().isSelectionEmpty()) {
-                            throw new UnsupportedOperationException("implmentd error user");
-                        } else {
-                            model.createNewGame((Creature) view.getCharacters().getSelectedValue());
+                        if (view.isHeroSelected()) {
+                            model.createNewGame((Creature) view.getHeroSelected());
                             view.showView(View.ViewName.PLAY);
+                        } else {
+                            throw new UnsupportedOperationException("implmentd error user");
                         }
                     };
                 }
                 case Types.SELECT_HERO -> {
                     return () -> {
-                        view.getInfoCreature().update((Creature) view.getCharacters().getSelectedValue());
+                        view.updateInfoCreature((Creature) view.getHeroSelected());
                     };
                 }
                 case Types.SELECT_ROLE -> {
                     return () -> {
-                        view.getInfoCreature().update(view.getRoleSelected());
+                        view.updateInfoCreature(view.getRoleSelected());
                     };
                 }
                 default ->
@@ -188,7 +174,7 @@ public class DefaultController implements Controller {
     }
 
     // In Game Actions
-    private class HeroAction implements ActionListener {
+    protected class HeroAction implements ActionListener {
 
         private interface ActionPtr {
 
