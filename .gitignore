@@ -3,4 +3,5 @@
 *.db
 target/
 
+dependency-reduced-pom.xml
 nbactions.xml

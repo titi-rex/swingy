@@ -112,11 +112,10 @@ public class App {
             }
             app.start();
         } catch (IndexOutOfBoundsException | NullPointerException e) {
-            System.err.println(ERROR_USAGE + e);
+            System.err.println(ERROR_USAGE);
 
         } catch (RuntimeException e) {
             System.err.println("runtime error: " + e.getMessage());
-            e.getStackTrace();
         }
     }
 }
