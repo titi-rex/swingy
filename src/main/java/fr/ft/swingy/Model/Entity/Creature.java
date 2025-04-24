@@ -30,9 +30,10 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import org.hibernate.validator.constraints.UniqueElements;
 
 /**
+ * Creature represent both hero and enemy, can level up, take or discard
+ * Artifact and attack other Creature
  *
  * @author Pril Wolf
  */
@@ -59,7 +60,7 @@ public class Creature {
     public Creature() {
     }
 
-    public Creature(String name, Roles role, int attack, int defense, int hitPoint) {
+    private Creature(String name, Roles role, int attack, int defense, int hitPoint) {
         this.name = name;
         this.role = role;
         this.attack = attack;
@@ -68,6 +69,13 @@ public class Creature {
         this.artifact = null;
     }
 
+    /**
+     * Factory method to create a Creature based on its Role
+     *
+     * @param p_name
+     * @param p_role
+     * @return
+     */
     static public Creature invoke(String p_name, Roles p_role) {
         return new Creature(p_name, p_role,
                 p_role.attack,
@@ -75,6 +83,12 @@ public class Creature {
                 p_role.hitPoint);
     }
 
+    /**
+     * Primary method for gaining Xp and leveling a Creature
+     *
+     * @param value amount of xp gained
+     * @return true if the Creature has leveled up
+     */
     public boolean gainXp(int value) {
         xp += value;
         return checkLevel();
@@ -92,6 +106,9 @@ public class Creature {
         return leveled;
     }
 
+    /**
+     * Augment Creature's level by one
+     */
     public void levelUp() {
         level += 1;
         attack += role.aGrowth;
@@ -99,25 +116,48 @@ public class Creature {
         hitPoint += role.hGrowth;
     }
 
+    /**
+     * Augment Creature's level by n
+     *
+     * @param n
+     */
     public void levelUp(int n) {
         for (int i = 0; i < n; i++) {
             this.levelUp();
         }
     }
 
+    /**
+     * Attack another Creature, decreasing its hitPoint value
+     *
+     * @param opponent
+     */
     public void attack(Creature opponent) {
         opponent.takeDamage(this.getAttack());
     }
 
+    /**
+     * Take damage reduced by Creature's defense, or one
+     *
+     * @param value
+     */
     public void takeDamage(int value) {
         int damage = Math.max(value - this.defense, 1);
         this.hitPoint -= damage;
     }
 
+    /**
+     * Check if a Creature is alive, that is id its hitPoint are greater than 0
+     *
+     * @return
+     */
     public boolean isAlive() {
-        return getHitPoint() >= 0;
+        return getHitPoint() > 0;
     }
 
+    /**
+     * Increase a Creature power with the Artifact holded
+     */
     public void applyArtifact() {
         switch (artifact.getType()) {
             case Artifact.Types.ARMOR ->
@@ -129,6 +169,9 @@ public class Creature {
         }
     }
 
+    /**
+     * Remove the stats boost caused by the Artifact
+     */
     public void discardArtifact() {
         switch (artifact.getType()) {
             case Artifact.Types.ARMOR ->
@@ -140,6 +183,11 @@ public class Creature {
         }
     }
 
+    /**
+     * Pretty name with Creature's role
+     *
+     * @return
+     */
     @Override
     public String toString() {
         return name + " the " + role.toString();
@@ -206,6 +254,11 @@ public class Creature {
         return artifact;
     }
 
+    /**
+     * Set a new Artifact, if there was already one, it's discarded before
+     *
+     * @param artifact
+     */
     public void setArtifact(Artifact artifact) {
         if (this.artifact != null) {
             discardArtifact();

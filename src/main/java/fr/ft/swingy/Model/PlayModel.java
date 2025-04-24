@@ -38,11 +38,11 @@ import javax.swing.text.PlainDocument;
 import org.hibernate.SessionFactory;
 
 /**
- * Main Model for the swingy game
+ * Model used for game status (map, enemy, hero position)
  *
  * @author Pril Wolf
  */
-public final class PlayModel implements AutoCloseable {
+public final class PlayModel {
 
     private final static String NEW_LINE = "\n";
 
@@ -58,10 +58,11 @@ public final class PlayModel implements AutoCloseable {
     private Artifact dropped;
     private Direction heroDirectionFrom;
     private Document gameLogs;
+    private boolean end;
 
     /**
-     * after creation you nust set the view via
-     * {@link fr.ft.swingo.Model.PlayModel#setView}
+     * after creation you must set the view via
+     * {@link fr.ft.swingy.Model.PlayModel#setView}
      *
      * @param sessionFactory
      */
@@ -72,16 +73,14 @@ public final class PlayModel implements AutoCloseable {
         this.heroDirectionFrom = Direction.CENTER;
         this.dropped = null;
         this.gameLogs = new PlainDocument();
+        this.end = false;
     }
 
-    public void addLog(String msg) {
-        try {
-            gameLogs.insertString(gameLogs.getLength(), "> " + msg + NEW_LINE, null);
-        } catch (BadLocationException e) {
-            System.err.println("can't write game log: " + e.getLocalizedMessage());
-        }
-    }
-
+    /**
+     * Retrieve the selected Hero from database
+     *
+     * @param newHero
+     */
     public void invokeHero(Creature newHero) {
         hero = sessionFactory.fromSession(session -> {
             return session
@@ -94,6 +93,9 @@ public final class PlayModel implements AutoCloseable {
         this.level = hero.getLevel();
     }
 
+    /**
+     * Generate a new world base on the hero level
+     */
     public void generateWorld() {
         addLog("Generating World...");
         if (hero == null) {
@@ -143,13 +145,19 @@ public final class PlayModel implements AutoCloseable {
         return artifact;
     }
 
+    /**
+     * Start the game
+     */
     public void startGame() {
         running = true;
         addLog("Game Start!");
     }
 
+    /**
+     * Save hero status to database
+     */
     public void save() {
-        if (running == true) {
+        if (sessionFactory != null && hero != null) {
             addLog("Game Saved!");
             sessionFactory.inTransaction(session -> {
                 session.merge(hero);
@@ -158,8 +166,8 @@ public final class PlayModel implements AutoCloseable {
     }
 
     /**
-     * function to moddify hero position check if victory condition happen after
-     *
+     * Function to modify hero position. Check if fight or victory condition
+     * happen after
      *
      * @param dir where the hero should move
      */
@@ -197,6 +205,9 @@ public final class PlayModel implements AutoCloseable {
         }
     }
 
+    /**
+     * try to run away from enemy
+     */
     public void resolveRun() {
         addLog("Trying to run away..!");
         if (randGen.nextInt(100) < 50) {
@@ -208,6 +219,9 @@ public final class PlayModel implements AutoCloseable {
         }
     }
 
+    /**
+     * Start a fight with the creature present at hero position.
+     */
     public void resolveFight() {
         Creature opponent = getCellAt(heroCoordinate).getCreature();
         if (opponent == null) {
@@ -242,12 +256,18 @@ public final class PlayModel implements AutoCloseable {
         }
     }
 
+    /**
+     * Take the dropped artifact, removing the old one
+     */
     public void takeDropped() {
         hero.setArtifact(dropped);
         dropped = null;
         checkEnd();
     }
 
+    /**
+     * Don't take the dropped artifact
+     */
     public void discardDropped() {
         dropped = null;
         checkEnd();
@@ -255,7 +275,7 @@ public final class PlayModel implements AutoCloseable {
 
     /**
      * call ChangeListener registered at
-     * {@link fr.ft.swingo.Model.PlayModel#view}
+     * {@link fr.ft.swingy.Model.PlayModel#view}
      */
     private void checkEnd() {
         if (heroCoordinate.x == 0
@@ -264,6 +284,7 @@ public final class PlayModel implements AutoCloseable {
                 || heroCoordinate.y == size - 1
                 || hero.getHitPoint() <= 0) {
             running = false;
+            end = true;
             addLog("Congratulation! You reached the end of the maze!");
         } else if (getCellAt(heroCoordinate).getType() == Cell.Type.ENNEMY) {
             addLog(getCellAt(heroCoordinate).getCreature().getName()
@@ -272,14 +293,20 @@ public final class PlayModel implements AutoCloseable {
         view.stateChanged(null);
     }
 
-    @Override
-    public void close() {
-        if (running == true) {
-            sessionFactory.close();
+    /**
+     * Add a line to the game logs, insert new line automatically
+     *
+     * @param msg
+     */
+    public void addLog(String msg) {
+        try {
+            gameLogs.insertString(gameLogs.getLength(), "> " + msg + NEW_LINE, null);
+        } catch (BadLocationException e) {
+            System.err.println("can't write game log: " + e.getLocalizedMessage());
         }
     }
 
-    //    Getter and Setter
+//    Getter and Setter
     public Cell getCellAt(int y, int x) {
         return cells[y][x];
     }
@@ -292,16 +319,8 @@ public final class PlayModel implements AutoCloseable {
         return size;
     }
 
-    public void setSize(int size) {
-        this.size = size;
-    }
-
     public Cell[][] getCells() {
         return cells;
-    }
-
-    public void setCells(Cell[][] cells) {
-        this.cells = cells;
     }
 
     public ChangeListener getView() {
@@ -316,16 +335,12 @@ public final class PlayModel implements AutoCloseable {
         return heroCoordinate;
     }
 
-    public void setHeroCoordinate(Point heroCoordinate) {
-        this.heroCoordinate = heroCoordinate;
-    }
-
     public boolean isRunning() {
         return running;
     }
 
-    public void setRunning(boolean running) {
-        this.running = running;
+    public boolean isEnd() {
+        return end;
     }
 
     public Creature getHero() {
@@ -338,10 +353,6 @@ public final class PlayModel implements AutoCloseable {
 
     public Document getGameLogs() {
         return gameLogs;
-    }
-
-    public void setGameLogs(Document gameLogs) {
-        this.gameLogs = gameLogs;
     }
 
 }

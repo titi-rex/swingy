@@ -52,6 +52,10 @@ public class App {
     private Controller controller;
     private boolean gui;
 
+    /**
+     * 
+     * @param gui start gui view
+     */
     public App(boolean gui) {
         this.gui = gui;
         INSTANCE = this;
@@ -76,7 +80,7 @@ public class App {
             }
             INSTANCE.start();
         } else {
-            System.err.println();
+            throw new RuntimeException("must create an instance before switch!");
         }
     }
 
@@ -94,10 +98,17 @@ public class App {
         controller.init();
     }
 
+    /**
+     * start rendering the view
+     */
     public void start() {
         view.start();
     }
 
+    /**
+     * program entrypoint, accept one arg to choose the view
+     * @param args "gui" or "console"
+     */
     public static void main(String[] args) {
 
         try {

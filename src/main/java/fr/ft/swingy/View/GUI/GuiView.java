@@ -29,12 +29,10 @@ import fr.ft.swingy.Model.Entity.Roles;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import fr.ft.swingy.View.View;
@@ -48,6 +46,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeListener;
 
 /**
+ * GUI View Class for Swingy, display game and take user input from a GUI.
  *
  * @author Pril Wolf
  */
@@ -59,17 +58,16 @@ public class GuiView extends JFrame implements View {
     public static final String TITLE = "Swingy - The best RPG you never played";
 
     private final MenuBarPanel menuPanel;
-    private final CreatorView creatorPanel;
-    private final PlayView playPanel;
+    private final CreatorScene creatorPanel;
+    private final PlayScene playPanel;
     private final JPanel cards;
     private final CardLayout cLayout;
-    private boolean forceClose;
 
-    /*
-javax.swing.UIManager$LookAndFeelInfo[Metal javax.swing.plaf.metal.MetalLookAndFeel]
-javax.swing.UIManager$LookAndFeelInfo[Nimbus javax.swing.plaf.nimbus.NimbusLookAndFeel]
-javax.swing.UIManager$LookAndFeelInfo[CDE/Motif com.sun.java.swing.plaf.motif.MotifLookAndFeel]
-javax.swing.UIManager$LookAndFeelInfo[GTK+ com.sun.java.swing.plaf.gtk.GTKLookAndFeel]
+    /**
+     * Create a GuiView. By default the Close Operation is DO_NOTHING
+     *
+     * @param model
+     * @throws HeadlessException if no graphic environment
      */
     public GuiView(Model model) throws HeadlessException {
         super(TITLE);
@@ -82,24 +80,22 @@ javax.swing.UIManager$LookAndFeelInfo[GTK+ com.sun.java.swing.plaf.gtk.GTKLookAn
         menuPanel = new MenuBarPanel();
         setJMenuBar(menuPanel);
 
-        creatorPanel = new CreatorView();
+        creatorPanel = new CreatorScene();
         creatorPanel.getCharacterList().setModel(model.getCharactersListModel());
         creatorPanel.getRolesBox().setModel((ComboBoxModel) model.getRolesModel());
         cards.add(creatorPanel, ViewName.CREATOR.name());
 
-        playPanel = new PlayView();
+        playPanel = new PlayScene();
         playPanel.setModel(model);
         cards.add(playPanel, ViewName.PLAY.name());
-
     }
 
     private void initWindow() {
         setSize(new Dimension(WINDOW_SIZE, WINDOW_SIZE));
         setMinimumSize(new Dimension(WINDOW_SIZE, WINDOW_SIZE));
         setMaximumSize(new Dimension(WINDOW_SIZE, WINDOW_SIZE));
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
-        forceClose = false;
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException ex) {
@@ -107,16 +103,29 @@ javax.swing.UIManager$LookAndFeelInfo[GTK+ com.sun.java.swing.plaf.gtk.GTKLookAn
         }
     }
 
+    /**
+     * Set Frame visible
+     */
     @Override
     public void start() {
         setVisible(true);
     }
 
+    /**
+     * Display error message in popup message
+     *
+     * @param message
+     */
     @Override
     public void error(String message) {
         JOptionPane.showMessageDialog(this, message);
     }
 
+    /**
+     * Change current view
+     *
+     * @param viewName
+     */
     @Override
     public void showView(ViewName viewName) {
         cLayout.show(cards, viewName.name());
@@ -127,17 +136,30 @@ javax.swing.UIManager$LookAndFeelInfo[GTK+ com.sun.java.swing.plaf.gtk.GTKLookAn
         return playPanel;
     }
 
+    /**
+     * Send a window close event
+     */
     @Override
     public void requestClose() {
         this.dispatchEvent(
                 new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }
 
+    /**
+     * Update a {@link fr.ft.swingy.View.GUI.CreatureDataPanel}
+     *
+     * @param creature
+     */
     @Override
     public void updateInfoCreature(Creature creature) {
         creatorPanel.getInfoStat().update(creature);
     }
 
+    /**
+     * Update a {@link fr.ft.swingy.View.GUI.CreatureDataPanel}
+     *
+     * @param role
+     */
     @Override
     public void updateInfoCreature(Roles role) {
         creatorPanel.getInfoStat().update(role);

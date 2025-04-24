@@ -33,20 +33,21 @@ import javax.swing.ListModel;
 import javax.swing.text.Document;
 
 /**
+ * Interface for Swingy Model
  *
  * @author Pril Wolf
  */
 public interface Model {
 
     /**
-     * enum representing possible movement for hero
+     * enumeration representing possible movement for hero
      */
     public enum Direction {
         NORTH, EAST, WEST, SOUTH, CENTER
     }
 
     /**
-     * enum representing possible action for hero
+     * enumeration representing possible action for hero
      */
     public enum Action {
         MOVE, FIGHT, RUN, TAKE, DISCARD
@@ -67,10 +68,10 @@ public interface Model {
     boolean isFighting();
 
     boolean isPlaying();
-    
+
     boolean hasDropped();
 
-    void closeGame();
+    boolean isEnd();
 
     ListModel getRolesModel();
 

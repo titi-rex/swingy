@@ -27,10 +27,13 @@ import fr.ft.swingy.Model.Model;
 import fr.ft.swingy.View.GUI.GuiView;
 import fr.ft.swingy.View.View;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 /**
+ * Controller implementation for {@link fr.ft.swingy.View.GUI.GuiView}
  *
  * @author Pril Wolf
  */
@@ -38,13 +41,22 @@ public class GuiController extends AbstractController {
 
     private final GuiView gView;
 
+    /**
+     *
+     * @param view
+     * @param model
+     */
     public GuiController(View view, Model model) {
         super(view, model);
         gView = (GuiView) view;
     }
 
+    /**
+     * Link the view component to controller actions and set the current scene
+     */
     @Override
     public void init() {
+        gView.addWindowListener(new windowHandler());
         gView.getSwitch().addActionListener(new MetaAction(MetaAction.Types.SWITCH));
         gView.getExit().addActionListener(new MetaAction(MetaAction.Types.EXIT));
         gView.getCreate().addActionListener(new CreatorAction(CreatorAction.Types.CREATE));
@@ -81,6 +93,16 @@ public class GuiController extends AbstractController {
             listener.actionPerformed(null);
         }
 
+    }
+    
+        private class windowHandler extends WindowAdapter {
+
+        @Override
+        public void windowClosing(WindowEvent e) {
+            GuiView frame = (GuiView) e.getSource();
+            model.saveGame();
+            frame.dispose();            
+        }
     }
 
 }

@@ -31,7 +31,7 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 /**
- *
+ * MenuBar for Update a {@link fr.ft.swingy.View.GUIView}
  * @author Pril Wolf
  */
 public class MenuBarPanel extends JMenuBar {
@@ -39,6 +39,9 @@ public class MenuBarPanel extends JMenuBar {
     private final JMenuItem switchItem;
     private final JMenuItem exitItem;
 
+    /**
+     * Create a MenuBar with Switch and Exit item
+     */
     public MenuBarPanel() {
         switchItem = new JMenuItem("Switch");
         switchItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.ALT_MASK));

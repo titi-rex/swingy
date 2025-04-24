@@ -40,16 +40,24 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
 /**
+ * Console View Class for Swingy, display game and take user input from a
+ * console
  *
  * @author Pril Wolf
  */
-public class ConsoleView implements View, ChangeListener {
+public final class ConsoleView implements View, ChangeListener {
 
+    /**
+     * Input handler are in charge to parse and react to user input
+     */
     public interface InputHandler {
 
         void consume(String input);
     }
 
+    /**
+     * Private interface for holding current printer
+     */
     private interface Printer {
 
         void print();
@@ -70,32 +78,38 @@ public class ConsoleView implements View, ChangeListener {
 
     public static final String NEWLINE = "\n";
 
+    /**
+     *
+     * @param model
+     */
     public ConsoleView(Model model) {
         this.model = model;
         consoleReader = new BufferedReader(new InputStreamReader(System.in));
         printer = this::printCreator;
-        contextMessage = "Welcome to Swingy!" + NEWLINE;
+        contextMessage = "";
+        addContextMessage(NEWLINE + "Welcome to Swingy!" + NEWLINE);
         rolesList = storeRoleList();
     }
 
+    /**
+     * Start view loop
+     */
     @Override
     public void start() {
         running = true;
         loop();
     }
 
+    /**
+     * Display error message in the contextMessage area
+     *
+     * @param message
+     */
     @Override
     public void error(String message) {
         addContextMessage(message);
     }
 
-    /*
-    afficher contexte 
-        -> creator : create/delete/play
-        -> playing : map + 5 last gamelogs
-        -> (error) : error message
-        -> (help)  : help message
-     */
     private void loop() {
         try {
             while (running) {
@@ -109,6 +123,11 @@ public class ConsoleView implements View, ChangeListener {
         }
     }
 
+    /**
+     * Change current view
+     *
+     * @param viewName
+     */
     @Override
     public void showView(ViewName viewName) {
         switch (viewName) {
@@ -133,6 +152,12 @@ public class ConsoleView implements View, ChangeListener {
         contextMessage = "";
     }
 
+    /**
+     * Add a contextual message to display in the contextMessage area, message
+     * are displayed in order
+     *
+     * @param contextMessage
+     */
     public void addContextMessage(String contextMessage) {
         this.contextMessage += contextMessage + NEWLINE;
     }
@@ -143,7 +168,7 @@ public class ConsoleView implements View, ChangeListener {
         int size = model.getCharactersListModel().getSize();
         for (int i = 0; i < size; i++) {
             Creature hero = (Creature) model.getCharactersListModel().getElementAt(i);
-            tmp += hero.toString() + "\t|\t(" + hero.getAttack() + "/" + hero.getDefense() + "/" + hero.getHitPoint() + ")";
+            tmp += hero.toString() + " lvl " + hero.getLevel() + "\t|\t(" + hero.getAttack() + "/" + hero.getDefense() + "/" + hero.getHitPoint() + ")";
             if (hero.getArtifact() != null) {
                 tmp += " equipped with " + hero.getArtifact().toString() + NEWLINE;
             } else {
@@ -164,6 +189,10 @@ public class ConsoleView implements View, ChangeListener {
         return tmp;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getRolesList() {
         return rolesList;
     }
@@ -201,7 +230,7 @@ public class ConsoleView implements View, ChangeListener {
         if (prefix != null) {
             tmp = prefix;
         }
-        tmp += creature.toString() + "\t|\t(" + creature.getAttack() + "/" + creature.getDefense() + "/" + creature.getHitPoint() + ")";
+        tmp += creature.toString() + " lvl " + creature.getLevel() + "\t|\t(" + creature.getAttack() + "/" + creature.getDefense() + "/" + creature.getHitPoint() + ")";
         if (creature.getArtifact() != null) {
             tmp += " equipped with " + creature.getArtifact().toString() + NEWLINE;
         }
@@ -222,6 +251,9 @@ public class ConsoleView implements View, ChangeListener {
         }
     }
 
+    /**
+     * Stop the view loop
+     */
     @Override
     public void requestClose() {
         running = false;
@@ -241,10 +273,19 @@ public class ConsoleView implements View, ChangeListener {
         }
     }
 
+    /**
+     *
+     * @param l
+     */
     public void addInputListener(InputHandler l) {
         this.inputHandler = l;
     }
 
+    /**
+     * Actually does nothing because reprint is handled by the loop
+     *
+     * @param e
+     */
     @Override
     public void stateChanged(ChangeEvent e) {
 

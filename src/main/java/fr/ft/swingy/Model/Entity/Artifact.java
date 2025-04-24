@@ -30,6 +30,7 @@ import jakarta.persistence.Transient;
 import java.io.Serializable;
 
 /**
+ * Artifact for Hero
  *
  * @author Pril Wolf
  */
@@ -40,9 +41,16 @@ public class Artifact implements Serializable {
     @GeneratedValue
     private long id;
 
+    /**
+     * Base Power for <code>Artifact</code>
+     */
     @Transient
     public static final int BASE_POWER = 2;
 
+    /**
+     * Possible type of <code>Artifact</code>, type is used to choose what hero
+     * stats is boosted by the Artifact
+     */
     public enum Types {
         HELM, ARMOR, WEAPON;
 
@@ -57,7 +65,7 @@ public class Artifact implements Serializable {
 
     public Artifact() {
     }
-    
+
     public Artifact(Types type) {
         this.type = type;
         this.power = BASE_POWER;
@@ -68,6 +76,7 @@ public class Artifact implements Serializable {
         return type.toString();
     }
 
+//  Getter/Setter
     public Types getType() {
         return type;
     }

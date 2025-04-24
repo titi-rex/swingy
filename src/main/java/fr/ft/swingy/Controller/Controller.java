@@ -24,12 +24,15 @@
 package fr.ft.swingy.Controller;
 
 /**
+ * Interface for Swingy Controller
  *
  * @author Pril Wolf
  */
 public interface Controller {
 
+    /**
+     * Link the view component to controller actions and set the current scene
+     */
     void init();
 
-    
 }

@@ -34,23 +34,26 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
+ * GUI Creation scene for {@link fr.ft.swingy.View.View.ViewName.CREATOR}
  *
  * @author Pril Wolf
  */
-public class CreatorView extends JPanel {
+public class CreatorScene extends JPanel {
 
     private final JButton createButton;
     private final JButton deleteButton;
     private final JButton playButton;
     private final JComboBox rolesBox;
     private final JList characterList;
-    private final CreatureView infoStat;
+    private final CreatureDataPanel infoStat;
     private JTextField nameField;
 
     /**
-     * must set model for characterList
+     * Create a CreatorScene who display a list of created hero, a creation box
+     * for new hero, current selection stats and button for deleting or playing.
+     * Must set model for characterList
      */
-    public CreatorView() {
+    public CreatorScene() {
         setLayout(new BorderLayout());
 
         nameField = new JTextField(12);
@@ -59,7 +62,7 @@ public class CreatorView extends JPanel {
         createButton = new JButton("Create");
         deleteButton = new JButton("Delete");
         playButton = new JButton("Play");
-        infoStat = new CreatureView();
+        infoStat = new CreatureDataPanel();
 
         add(creationForm(), BorderLayout.PAGE_START);
         add(characterList, BorderLayout.CENTER);
@@ -120,7 +123,7 @@ public class CreatorView extends JPanel {
         return characterList;
     }
 
-    public CreatureView getInfoStat() {
+    public CreatureDataPanel getInfoStat() {
         return infoStat;
     }
 

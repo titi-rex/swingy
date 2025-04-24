@@ -24,11 +24,15 @@
 package fr.ft.swingy.Model.Entity;
 
 /**
+ * Cell representing an unit of the world
  *
  * @author Pril Wolf
  */
 public class Cell {
 
+    /**
+     * What is present ion the cell
+     */
     public enum Type {
         EMPTY, HERO, ENNEMY
     };
@@ -50,7 +54,7 @@ public class Cell {
     public String toString() {
         return type.toString() + " with " + creature;
     }
-    
+
     public Type getType() {
         return type;
     }

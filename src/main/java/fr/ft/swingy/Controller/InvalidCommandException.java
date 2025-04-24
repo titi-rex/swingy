@@ -24,6 +24,8 @@
 package fr.ft.swingy.Controller;
 
 /**
+ * Exception for invalid user input in
+ * {@link fr.ft.swingy.View.Console.ConsoleView}
  *
  * @author Pril Wolf
  */

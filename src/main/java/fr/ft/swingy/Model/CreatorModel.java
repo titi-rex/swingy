@@ -33,6 +33,7 @@ import javax.swing.DefaultListModel;
 import org.hibernate.SessionFactory;
 
 /**
+ * Model used for creation, deletion and selection of hero
  *
  * @author Pril Wolf
  */
@@ -42,6 +43,13 @@ public class CreatorModel {
     private final Validator validator;
     private DefaultListModel characters;
 
+    /**
+     * Retrieve character list from database using a sessionFactory and store
+     * them in a ListModel
+     *
+     * @param sessionFactory
+     * @param validator
+     */
     public CreatorModel(SessionFactory sessionFactory, Validator validator) {
         this.sessionFactory = sessionFactory;
         this.validator = validator;
@@ -55,6 +63,12 @@ public class CreatorModel {
         characters.addAll(data);
     }
 
+    /**
+     * Check if hero fields contain unauthorized value
+     *
+     * @param hero
+     * @return true if hero is valid
+     */
     public boolean validateHero(Creature hero) {
         Set<ConstraintViolation<Creature>> constraintViolations = validator.validate(hero);
         return constraintViolations.isEmpty();
@@ -77,6 +91,9 @@ public class CreatorModel {
 
     }
 
+    /**
+     * Update the characters list from database
+     */
     public void refresh() {
         characters.clear();
         List<Creature> data = sessionFactory.fromSession(session -> {
@@ -87,6 +104,11 @@ public class CreatorModel {
         characters.addAll(data);
     }
 
+    /**
+     * Delete a hero from database and refresh characters list
+     *
+     * @param hero
+     */
     public void delete(Creature hero) {
         sessionFactory.inTransaction(session -> {
             session.remove(hero);
@@ -94,12 +116,12 @@ public class CreatorModel {
         refresh();
     }
 
+    /**
+     *
+     * @return
+     */
     public DefaultListModel getCharacters() {
         return characters;
-    }
-
-    public void setCharacters(DefaultListModel characters) {
-        this.characters = characters;
     }
 
 }

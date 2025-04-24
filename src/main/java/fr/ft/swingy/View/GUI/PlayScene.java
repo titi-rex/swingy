@@ -42,10 +42,12 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
+ * GUI Play scene for {@link fr.ft.swingy.View.View.ViewName.PLAY}. Display the
+ * map, user status and button for interaction
  *
  * @author Pril Wolf
  */
-public class PlayView extends JPanel implements ChangeListener {
+public class PlayScene extends JPanel implements ChangeListener {
 
     public static final int MIN_RENDER_SIZE = 7;
     public static final int MAX_RENDER_SIZE = 19;
@@ -59,14 +61,14 @@ public class PlayView extends JPanel implements ChangeListener {
     private JPanel map;
     private final JTextArea logArea;
 
-    private final CreatureView heroStats;
-    private final CreatureView ennemyStats;
+    private final CreatureDataPanel heroStats;
+    private final CreatureDataPanel ennemyStats;
     private final CommandBar commandBar;
 
     /**
-     * MUST set model after constructor
+     * Must set model after constructor
      */
-    public PlayView() {
+    public PlayScene() {
         super();
         setLayout(new BorderLayout());
 
@@ -85,8 +87,8 @@ public class PlayView extends JPanel implements ChangeListener {
         header.add(logLabel);
         header.add(scrollPane);
 
-        heroStats = new CreatureView();
-        ennemyStats = new CreatureView();
+        heroStats = new CreatureDataPanel();
+        ennemyStats = new CreatureDataPanel();
         commandBar = new CommandBar();
 
         add(header, BorderLayout.PAGE_START);
@@ -95,6 +97,11 @@ public class PlayView extends JPanel implements ChangeListener {
         add(commandBar, BorderLayout.PAGE_END);
     }
 
+    /**
+     * Render PlayScene
+     *
+     * @param e
+     */
     @Override
     public void stateChanged(ChangeEvent e) {
         logArea.setCaretPosition(logArea.getDocument().getLength());
@@ -102,7 +109,7 @@ public class PlayView extends JPanel implements ChangeListener {
         renderMap();
         renderCommandBar();
         renderHeroStats();
-        renderEnnemyStats();
+        renderEnemyStats();
         this.revalidate();
     }
 
@@ -119,6 +126,9 @@ public class PlayView extends JPanel implements ChangeListener {
         return new Point(start, end);
     }
 
+    /**
+     * Render the Map area of PlayScene
+     */
     public void renderMap() {
         Point yRenderInterval = getRenderPosition(
                 model.getHeroCoordinate().y,
@@ -157,12 +167,18 @@ public class PlayView extends JPanel implements ChangeListener {
         return mapPanel;
     }
 
+    /**
+     * Clear the map area
+     */
     public void clearMap() {
         if (map != null) {
             remove(map);
         }
     }
 
+    /**
+     * Render the CommandBar area of PlayScene. Depend of game context
+     */
     public void renderCommandBar() {
         if (model.isPlaying() == false) {
             commandBar.showCommand(CommandBar.CommandName.HIDE);
@@ -175,11 +191,17 @@ public class PlayView extends JPanel implements ChangeListener {
         }
     }
 
+    /**
+     * Render the Hero Status area of PlayScene.
+     */
     public void renderHeroStats() {
         heroStats.update(model.getHero());
     }
 
-    public void renderEnnemyStats() {
+    /**
+     * Render the Enemy Status area of PlayScene.
+     */
+    public void renderEnemyStats() {
         Point hero = model.getHeroCoordinate();
         if (model.getCellAt(hero.y, hero.x).getType() == Cell.Type.ENNEMY) {
             ennemyStats.update(model.getCellAt(hero.y, hero.x).getCreature());
@@ -189,10 +211,13 @@ public class PlayView extends JPanel implements ChangeListener {
     }
 
     /**
-     * class holding possible command and button for user
+     * Class holding possible command and button for user
      */
     public class CommandBar extends JPanel {
 
+        /**
+         * Possible state of the CommandBar
+         */
         public static enum CommandName {
             MOVE,
             FIGHT,
@@ -212,7 +237,8 @@ public class PlayView extends JPanel implements ChangeListener {
         private final CardLayout layout;
 
         /**
-         *
+         * Create a CommandBar with 3 cards: North/West/South/East, Fight/Run
+         * and Take Artifact/Leave
          */
         public CommandBar() {
             super();
@@ -248,6 +274,11 @@ public class PlayView extends JPanel implements ChangeListener {
             this.add(hidePanel, CommandName.HIDE.name());
         }
 
+        /**
+         * Show the requested state
+         *
+         * @param command
+         */
         public void showCommand(CommandName command) {
             layout.show(this, command.name());
         }

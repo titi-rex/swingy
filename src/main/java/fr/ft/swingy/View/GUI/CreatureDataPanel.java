@@ -35,10 +35,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
+ * Panel to display a Creature/Roles stats. Display: Name, Role, attack,
+ * defense, hitPoint and Artifact
  *
  * @author Pril Wolf
  */
-public class CreatureView extends JPanel {
+public class CreatureDataPanel extends JPanel {
 
     public static final int P_WIDTH = 130;
     public static final int P_HEIGHT = 300;
@@ -51,7 +53,10 @@ public class CreatureView extends JPanel {
     private final JLabel hitPointValue;
     private final JLabel artifactValue;
 
-    public CreatureView() {
+    /**
+     * Create an empty CreatureDataPanel
+     */
+    public CreatureDataPanel() {
         super();
 
         Dimension d = new Dimension(P_WIDTH, P_HEIGHT);
@@ -87,6 +92,11 @@ public class CreatureView extends JPanel {
 
     }
 
+    /**
+     * Update the panel with data from Creature
+     *
+     * @param creature
+     */
     public void update(Creature creature) {
         if (creature == null) {
             clear();
@@ -107,6 +117,11 @@ public class CreatureView extends JPanel {
         }
     }
 
+    /**
+     * Update the panel with data from Roles
+     *
+     * @param role
+     */
     public void update(Roles role) {
         if (role == null) {
             clear();
@@ -121,6 +136,9 @@ public class CreatureView extends JPanel {
         }
     }
 
+    /**
+     * Empty the panel
+     */
     public void clear() {
         nameValue.setText("");
         roleValue.setText("");

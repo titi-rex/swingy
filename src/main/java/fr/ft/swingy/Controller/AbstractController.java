@@ -34,6 +34,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
+ * parent class for swingy controller
  *
  * @author Pril Wolf
  */
@@ -50,11 +51,13 @@ public abstract class AbstractController implements Controller {
     @Override
     public abstract void init();
 
-    // Meta Actions
+    /**
+     * Implement logic for Switching between view and Exit the app
+     */
     protected class MetaAction implements ActionListener {
 
         public enum Types {
-            HELP, SWITCH, EXIT
+            SWITCH, EXIT
         };
 
         private interface ActionPtr {
@@ -65,6 +68,11 @@ public abstract class AbstractController implements Controller {
         private final Types actionType;
         private final ActionPtr actionPtr;
 
+        /**
+         * Create a MetaAction with the actionType requested
+         *
+         * @param actionType
+         */
         public MetaAction(Types actionType) {
             this.actionType = actionType;
             this.actionPtr = assignAction();
@@ -72,11 +80,6 @@ public abstract class AbstractController implements Controller {
 
         private ActionPtr assignAction() {
             switch (actionType) {
-                case Types.HELP -> {
-                    return () -> {
-
-                    };
-                }
                 case Types.SWITCH -> {
                     return () -> {
                         view.requestClose();
@@ -85,7 +88,7 @@ public abstract class AbstractController implements Controller {
                 }
                 case Types.EXIT -> {
                     return () -> {
-                        model.saveGame();
+                        
                         view.requestClose();
                     };
                 }
@@ -100,7 +103,11 @@ public abstract class AbstractController implements Controller {
         }
     }
 
-    // Creation Actions
+    /**
+     * Implement logic for: Creation and deletion of Hero, Starting a game with
+     * a selected Hero and Updating view component when a Class or a Hero is
+     * selected
+     */
     protected class CreatorAction implements ActionListener {
 
         public enum Types {
@@ -115,6 +122,11 @@ public abstract class AbstractController implements Controller {
         private final Types actionType;
         private final ActionPtr actionPtr;
 
+        /**
+         * Create a CreatorAction with the actionType requested
+         *
+         * @param actionType
+         */
         public CreatorAction(Types actionType) {
             this.actionType = actionType;
             this.actionPtr = assignAction();
@@ -128,8 +140,8 @@ public abstract class AbstractController implements Controller {
                         Roles role = (Roles) view.getRoleSelected();
                         try {
                             model.createNewHero(name, role);
-                        } catch (InvalidHeroException ex) {
-                            System.err.println("Error: " + ex.getMessage());
+                        } catch (InvalidHeroException e) {
+                            view.error("Error: invalid hero: " + e.getMessage());
                         }
                     };
                 }
@@ -137,8 +149,6 @@ public abstract class AbstractController implements Controller {
                     return () -> {
                         if (view.isHeroSelected()) {
                             model.deleteHero((Creature) view.getHeroSelected());
-                        } else {
-                            throw new UnsupportedOperationException("implmentd error user");
                         }
                     };
                 }
@@ -147,8 +157,6 @@ public abstract class AbstractController implements Controller {
                         if (view.isHeroSelected()) {
                             model.createNewGame((Creature) view.getHeroSelected());
                             view.showView(View.ViewName.PLAY);
-                        } else {
-                            throw new UnsupportedOperationException("implmentd error user");
                         }
                     };
                 }
@@ -174,6 +182,9 @@ public abstract class AbstractController implements Controller {
     }
 
     // In Game Actions
+    /**
+     * Implement logic for: Movements, Fight and Artifact
+     */
     protected class HeroAction implements ActionListener {
 
         private interface ActionPtr {
@@ -185,6 +196,12 @@ public abstract class AbstractController implements Controller {
         private final Model.Direction direction;
         private final ActionPtr actionPtr;
 
+        /**
+         * Create a HeroAction with the actionType requested and optional direction
+         *
+         * @param actionType
+         * @param direction can be null
+         */
         public HeroAction(Model.Action actionType, Model.Direction direction) {
             this.actionType = actionType;
             this.direction = direction;

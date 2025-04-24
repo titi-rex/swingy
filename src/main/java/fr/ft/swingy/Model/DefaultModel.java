@@ -28,13 +28,11 @@ import fr.ft.swingy.Model.Entity.Creature;
 import fr.ft.swingy.Model.Entity.Roles;
 import fr.ft.swingy.Model.Entity.Artifact;
 import static fr.ft.swingy.App.ERROR_ENUM_SWITCH;
-import fr.ft.swingy.Controller.Controller;
 import fr.ft.swingy.View.View;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import java.awt.Point;
-import java.util.List;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ListModel;
@@ -43,6 +41,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 /**
+ * General Model Class for Swingy, use a  in {@link ft.ft.swingy.Model.CreatorModel} and a
+ * {@link ft.ft.swingy.Model.PlayModel} internally
  *
  * @author Pril Wolf
  */
@@ -58,25 +58,35 @@ public class DefaultModel implements Model, AutoCloseable {
     private final CreatorModel creatorModel;
     private PlayModel playModel;
 
+    /**
+     *
+     */
     public DefaultModel() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
         sessionFactory = new Configuration().configure().buildSessionFactory();
         creatorModel = new CreatorModel(sessionFactory, validator);
         playModel = new PlayModel(sessionFactory);
-
         rolesBoxModel = new DefaultComboBoxModel(Roles.heroes());
     }
 
+    /**
+     * Create a new Hero and store it inside the database
+     *
+     * @param name
+     * @param role
+     * @throws InvalidHeroException if hero not valid
+     */
     @Override
     public void createNewHero(String name, Roles role) throws InvalidHeroException {
-        try {
-            creatorModel.create(name, role);
-        } catch (InvalidHeroException e) {
-            view.error("Error: invalid hero: " + e.getMessage());
-        }
+        creatorModel.create(name, role);
+
     }
 
+    /**
+     *
+     * @param hero
+     */
     @Override
     public void deleteHero(Creature hero) {
         try {
@@ -86,6 +96,11 @@ public class DefaultModel implements Model, AutoCloseable {
         }
     }
 
+    /**
+     * Create a new map and start a new game with
+     *
+     * @param hero Hero to play with
+     */
     @Override
     public void createNewGame(Creature hero) {
         playModel.invokeHero(hero);
@@ -94,6 +109,12 @@ public class DefaultModel implements Model, AutoCloseable {
         playModel.getView().stateChanged(null);
     }
 
+    /**
+     * Function to change Hero coordinates or to resolve fight/artifact actions
+     *
+     * @param action
+     * @param direction
+     */
     @Override
     public void actionHero(Model.Action action, Model.Direction direction) {
         switch (action) {
@@ -112,6 +133,9 @@ public class DefaultModel implements Model, AutoCloseable {
         }
     }
 
+    /**
+     * Save Hero status to database
+     */
     @Override
     public void saveGame() {
         if (playModel != null) {
@@ -119,11 +143,21 @@ public class DefaultModel implements Model, AutoCloseable {
         }
     }
 
+    /**
+     * Close the sessionFactory
+     */
+    @Override
+    public void close() {
+        sessionFactory.close();
+        playModel = null;
+    }
+
+    // Getter/Setter
     @Override
     public boolean isFighting() {
         return playModel.getCellAt(playModel.getHeroCoordinate()).getType() == Cell.Type.ENNEMY;
     }
-    
+
     @Override
     public boolean isPlaying() {
         return playModel.isRunning();
@@ -133,19 +167,10 @@ public class DefaultModel implements Model, AutoCloseable {
     public boolean hasDropped() {
         return playModel.getDropped() != null;
     }
-    
-    @Override
-    public void closeGame() {
-        if (playModel != null) {
-            playModel.close();
-            playModel = null;
-        }
-    }
 
     @Override
-    public void close() {
-        closeGame();
-        sessionFactory.close();
+    public boolean isEnd() {
+        return playModel.isEnd();
     }
 
     @Override

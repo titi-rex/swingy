@@ -23,7 +23,6 @@
  */
 package fr.ft.swingy.Controller;
 
-import fr.ft.swingy.Model.Entity.Cell;
 import fr.ft.swingy.Model.Entity.Roles;
 import fr.ft.swingy.Model.Model;
 import fr.ft.swingy.View.Console.ConsoleView;
@@ -34,11 +33,15 @@ import java.awt.event.ActionListener;
 import static fr.ft.swingy.View.Console.ConsoleView.NEWLINE;
 
 /**
+ * Controller implementation for {@link fr.ft.swingy.View.Console.ConsoleView}
  *
  * @author Pril Wolf
  */
 public class ConsoleController extends AbstractController implements InputHandler {
 
+    /**
+     * Input value
+     */
     public enum InputType {
         HELP,
         GUI,
@@ -57,39 +60,58 @@ public class ConsoleController extends AbstractController implements InputHandle
         DISCARD
     }
 
-    public static final String ERROR_INPUT_UNKNOW = "Error: not a valid command: ";
-    public static final String ERROR_INPUT_MISSING = "Error: missing an argument: ";
+    /**
+     * Error message for unknown input
+     */
+    public static final String ERROR_INPUT_UNKNOWN = "Error: not a valid command: ";
 
+    /**
+     * Error message for missing input
+     */
+    public static final String ERROR_INPUT_MISSING = "Error: missing an argument: ";
+    /**
+     * General Help message
+     */
     public static final String HELP_HELP_MSG = "help: display help" + NEWLINE
             + "exit: save and exit the game" + NEWLINE
             + "gui: switch to gui";
 
+    /**
+     * Contextual help message for creator scene
+     */
     public static final String CREATOR_HELP_MSG = "create NAME CLASS: create a new hero" + NEWLINE
             + "class: print list of class available" + NEWLINE
             + "delete NAME: delete a hero" + NEWLINE
             + "play NAME: start a game";
-
+    /**
+     * Contextual help message for play scene
+     */
     public static final String PLAY_HELP_MSG = "move your hero with: north/west/south/east" + NEWLINE
             + "choose your fate with: fight/run" + NEWLINE
             + "take the artifact: yes/no";
 
-    public static final String MOVE_HELP_MSG = "move your hero with: north/west/south/east";
-    public static final String FIGHT_HELP_MSG = "choose your fate with: fight/run";
-    public static final String ARTIFACT_HELP_MSG = "take the artifact: yes/no";
 
     private ViewName currentScene;
     private final ConsoleView cView;
 
+    /**
+     * 
+     * @param view
+     * @param model
+     */
     public ConsoleController(View view, Model model) {
         super(view, model);
         this.cView = (ConsoleView) view;
     }
 
+    /**
+     * Link the view component to controller actions and set the current scene
+     */
     @Override
     public void init() {
         cView.addInputListener(this);
         cView.addContextMessage(HELP_HELP_MSG);
-        if (model.isPlaying()) {
+        if (model.isPlaying() || model.isEnd()) {
             currentScene = ViewName.PLAY;
         } else {
             currentScene = ViewName.CREATOR;
@@ -97,14 +119,18 @@ public class ConsoleController extends AbstractController implements InputHandle
         cView.showView(currentScene);
     }
 
+    /**
+     * Parse input and perform action
+     * @param input raw user input from view
+     */
     @Override
     public void consume(String input) {
         try {
             parse(normalize(input));
         } catch (InvalidCommandException e) {
-            cView.addContextMessage(ERROR_INPUT_UNKNOW + e.getMessage());
+            cView.addContextMessage(ERROR_INPUT_UNKNOWN + e.getMessage());
         } catch (IllegalArgumentException e) {
-            cView.addContextMessage(ERROR_INPUT_UNKNOW);
+            cView.addContextMessage(ERROR_INPUT_UNKNOWN);
         } catch (IndexOutOfBoundsException e) {
             cView.addContextMessage(ERROR_INPUT_MISSING + e.getMessage());
         }
@@ -120,6 +146,10 @@ public class ConsoleController extends AbstractController implements InputHandle
         return clean;
     }
 
+    /**
+     * Parse Meta command 
+     * @param input 
+     */
     private void parse(String input[]) {
         InputType inputType = ConsoleController.InputType.valueOf(input[0]);
         ActionListener action;
@@ -184,7 +214,7 @@ public class ConsoleController extends AbstractController implements InputHandle
                 cView.addContextMessage(PLAY_HELP_MSG);
             }
             case InputType.NORTH, InputType.EAST, InputType.SOUTH, InputType.WEST -> {
-                if (model.isFighting() || model.hasDropped()) {
+                if (model.isFighting() || model.hasDropped() || model.isEnd()) {
                     throw new InvalidCommandException("unauthorised in this context");
                 } else {
                     HeroAction action = new HeroAction(Model.Action.MOVE, Model.Direction.valueOf(inputType.name()));

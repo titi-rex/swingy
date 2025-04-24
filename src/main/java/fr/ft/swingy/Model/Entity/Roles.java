@@ -23,9 +23,8 @@
  */
 package fr.ft.swingy.Model.Entity;
 
-import org.sqlite.util.StringUtils;
-
 /*
+ * Roles (class) of Creature, each role has a name, and base stats and growth stats for each stats (attack, defense,hitPoint)
  *
  * @author Pril Wolf
  */
@@ -58,19 +57,34 @@ public enum Roles {
         hGrowth = p_hGrowth;
     }
 
+    /**
+     * List of which role are considered as suitable for a Hero
+     *
+     * @return
+     */
     public static Roles[] heroes() {
         Roles[] heroes = {SENTINEL, PRIESTESS, VALKYRIE, EMPRESS, PRODIGE};
         return heroes;
     }
 
+    /**
+     * List of role for monster/enemy
+     *
+     * @return
+     */
     public static Roles[] monster() {
         Roles[] monster = {LICH, ARCANIST, FELL_GOD, CORRUPTED};
         return monster;
     }
 
+    /**
+     * Pretty name capitalized
+     *
+     * @return
+     */
     @Override
     public String toString() {
         return name().substring(0, 1) + name().substring(1).toLowerCase();
     }
-    
+
 }

@@ -28,34 +28,95 @@ import fr.ft.swingy.Model.Entity.Roles;
 import javax.swing.event.ChangeListener;
 
 /**
+ * Interface for Swingy View
  *
  * @author Pril Wolf
  */
 public interface View {
 
+    /**
+     * Type of scene view has to present
+     */
     enum ViewName {
         CREATOR, PLAY
     };
 
+    /**
+     * Start the view loop
+     */
     void start();
 
+    /**
+     * Switch to specific view type
+     *
+     * @param viewName
+     */
     void showView(ViewName viewName);
 
+    /**
+     * Display an error message
+     *
+     * @param message
+     */
     void error(String message);
 
+    /**
+     * Ask the view to close
+     */
     void requestClose();
 
+    /**
+     * Return a ChangeListner for the in
+     * {@link ft.ft.swingy.View.View.ViewName.PLAY} view, used by model to
+     * notify update
+     *
+     * @return
+     */
     ChangeListener getPlayViewListener();
 
+    /**
+     * Update a creature info display
+     *
+     * @param creature
+     */
     void updateInfoCreature(Creature creature);
 
+    /**
+     * Update a creature info display
+     *
+     * @param role
+     */
     void updateInfoCreature(Roles role);
 
+    /**
+     * Return the name of the selected hero in
+     * {@link ft.ft.swingy.View.View.ViewName.CREATOR}
+     *
+     * @return
+     */
     String getNameSelected();
 
+    /**
+     * Return the role selected in
+     * {@link ft.ft.swingy.View.View.ViewName.CREATOR}
+     *
+     * @return
+     */
     Roles getRoleSelected();
 
+    /**
+     * Return the selected hero in
+     * {@link ft.ft.swingy.View.View.ViewName.CREATOR}
+     *
+     * @return
+     */
     Creature getHeroSelected();
 
+    /**
+     * Indicate if a hero is selected in
+     * {@link ft.ft.swingy.View.View.ViewName.CREATOR}
+     *
+     * @return
+     */
     boolean isHeroSelected();
 }
