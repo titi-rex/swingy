@@ -43,11 +43,19 @@ public abstract class AbstractController implements Controller {
     protected final View view;
     protected final Model model;
 
+    /**
+     *
+     * @param view
+     * @param model
+     */
     public AbstractController(View view, Model model) {
         this.view = view;
         this.model = model;
     }
 
+    /**
+     *
+     */
     @Override
     public abstract void init();
 
@@ -56,6 +64,9 @@ public abstract class AbstractController implements Controller {
      */
     protected class MetaAction implements ActionListener {
 
+        /**
+         * List of Meta Action
+         */
         public enum Types {
             SWITCH, EXIT
         };
@@ -88,7 +99,7 @@ public abstract class AbstractController implements Controller {
                 }
                 case Types.EXIT -> {
                     return () -> {
-                        
+                        model.saveGame();
                         view.requestClose();
                     };
                 }
@@ -110,6 +121,9 @@ public abstract class AbstractController implements Controller {
      */
     protected class CreatorAction implements ActionListener {
 
+        /**
+         * List of  possible Action in Creator Scene
+         */
         public enum Types {
             CREATE, DELETE, PLAY, SELECT_ROLE, SELECT_HERO
         };
@@ -156,7 +170,7 @@ public abstract class AbstractController implements Controller {
                     return () -> {
                         if (view.isHeroSelected()) {
                             model.createNewGame((Creature) view.getHeroSelected());
-                            view.showView(View.ViewName.PLAY);
+                            view.showView(View.SceneName.PLAY);
                         }
                     };
                 }

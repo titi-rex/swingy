@@ -37,7 +37,7 @@ public interface View {
     /**
      * Type of scene view has to present
      */
-    enum ViewName {
+    enum SceneName {
         CREATOR, PLAY
     };
 
@@ -51,7 +51,7 @@ public interface View {
      *
      * @param viewName
      */
-    void showView(ViewName viewName);
+    void showView(SceneName viewName);
 
     /**
      * Display an error message
@@ -72,7 +72,7 @@ public interface View {
      *
      * @return
      */
-    ChangeListener getPlayViewListener();
+    ChangeListener getPlaySceneListener();
 
     /**
      * Update a creature info display

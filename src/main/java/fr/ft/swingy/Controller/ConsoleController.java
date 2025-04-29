@@ -28,7 +28,7 @@ import fr.ft.swingy.Model.Model;
 import fr.ft.swingy.View.Console.ConsoleView;
 import fr.ft.swingy.View.Console.ConsoleView.InputHandler;
 import fr.ft.swingy.View.View;
-import fr.ft.swingy.View.View.ViewName;
+import fr.ft.swingy.View.View.SceneName;
 import java.awt.event.ActionListener;
 import static fr.ft.swingy.View.Console.ConsoleView.NEWLINE;
 
@@ -50,10 +50,10 @@ public class ConsoleController extends AbstractController implements InputHandle
         CREATE,
         DELETE,
         PLAY,
-        NORTH,
-        EAST,
-        SOUTH,
-        WEST,
+        NORTH, N,
+        EAST, E,
+        SOUTH, S,
+        WEST, W,
         FIGHT,
         RUN,
         TAKE,
@@ -86,16 +86,15 @@ public class ConsoleController extends AbstractController implements InputHandle
     /**
      * Contextual help message for play scene
      */
-    public static final String PLAY_HELP_MSG = "move your hero with: north/west/south/east" + NEWLINE
-            + "choose your fate with: fight/run" + NEWLINE
-            + "take the artifact: yes/no";
+    public static final String PLAY_HELP_MSG = "north/west/south/east: move your hero" + NEWLINE
+            + "fight/run: against a monster choose your fate" + NEWLINE
+            + "yes/no: if dropped, take the artifact";
 
-
-    private ViewName currentScene;
+    private SceneName currentScene;
     private final ConsoleView cView;
 
     /**
-     * 
+     *
      * @param view
      * @param model
      */
@@ -112,15 +111,16 @@ public class ConsoleController extends AbstractController implements InputHandle
         cView.addInputListener(this);
         cView.addContextMessage(HELP_HELP_MSG);
         if (model.isPlaying() || model.isEnd()) {
-            currentScene = ViewName.PLAY;
+            currentScene = SceneName.PLAY;
         } else {
-            currentScene = ViewName.CREATOR;
+            currentScene = SceneName.CREATOR;
         }
         cView.showView(currentScene);
     }
 
     /**
      * Parse input and perform action
+     *
      * @param input raw user input from view
      */
     @Override
@@ -146,12 +146,24 @@ public class ConsoleController extends AbstractController implements InputHandle
         return clean;
     }
 
+    private InputType shortToLong(InputType shortInput) {
+        return switch (shortInput) {
+            case InputType.N -> InputType.NORTH;
+            case InputType.E -> InputType.EAST;
+            case InputType.S -> InputType.SOUTH;
+            case InputType.W -> InputType.WEST;
+            default -> shortInput;
+        };
+    }
+
     /**
-     * Parse Meta command 
-     * @param input 
+     * Parse Meta command
+     *
+     * @param input
      */
     private void parse(String input[]) {
         InputType inputType = ConsoleController.InputType.valueOf(input[0]);
+        inputType = shortToLong(inputType);
         ActionListener action;
         switch (inputType) {
             case InputType.EXIT:
@@ -165,7 +177,8 @@ public class ConsoleController extends AbstractController implements InputHandle
             case InputType.HELP:
                 cView.addContextMessage(HELP_HELP_MSG);
             default:
-                if (currentScene == ViewName.CREATOR) {
+
+                if (currentScene == SceneName.CREATOR) {
                     parseCreator(inputType, input);
                 } else {
                     parsePlay(inputType);
@@ -195,11 +208,11 @@ public class ConsoleController extends AbstractController implements InputHandle
 
             }
             case InputType.PLAY -> {
-                currentScene = ViewName.PLAY;
                 cView.setHeroSelected(input[1]);
-                cView.showView(currentScene);
                 CreatorAction action = new CreatorAction(CreatorAction.Types.PLAY);
                 action.actionPerformed(null);
+                currentScene = SceneName.PLAY;
+                cView.showView(currentScene);
 
             }
             default ->
@@ -219,6 +232,7 @@ public class ConsoleController extends AbstractController implements InputHandle
                 } else {
                     HeroAction action = new HeroAction(Model.Action.MOVE, Model.Direction.valueOf(inputType.name()));
                     action.actionPerformed(null);
+
                 }
             }
             case InputType.FIGHT, InputType.RUN -> {

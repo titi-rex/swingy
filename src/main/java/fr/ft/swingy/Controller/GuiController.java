@@ -72,11 +72,11 @@ public class GuiController extends AbstractController {
         gView.getRun().addActionListener(new HeroAction(Model.Action.RUN, null));
         gView.getYes().addActionListener(new HeroAction(Model.Action.TAKE, null));
         gView.getNo().addActionListener(new HeroAction(Model.Action.DISCARD, null));
-        if (model.isPlaying()) {
-            gView.showView(View.ViewName.PLAY);
-            gView.getPlayViewListener().stateChanged(null);
+        if (model.isPlaying() || model.isEnd()) {
+            gView.showView(View.SceneName.PLAY);
+            gView.getPlaySceneListener().stateChanged(null);
         } else {
-            gView.showView(View.ViewName.CREATOR);
+            gView.showView(View.SceneName.CREATOR);
         }
     }
 

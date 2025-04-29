@@ -54,7 +54,7 @@ public class App {
 
     /**
      * 
-     * @param gui start gui view
+     * @param gui start GUI view if true
      */
     public App(boolean gui) {
         this.gui = gui;

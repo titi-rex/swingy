@@ -186,7 +186,7 @@ public class DefaultModel implements Model, AutoCloseable {
     @Override
     public void setView(View view) {
         this.view = view;
-        playModel.setView(view.getPlayViewListener());
+        playModel.setView(view.getPlaySceneListener());
     }
 
     @Override

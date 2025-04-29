@@ -58,8 +58,8 @@ public class GuiView extends JFrame implements View {
     public static final String TITLE = "Swingy - The best RPG you never played";
 
     private final MenuBarPanel menuPanel;
-    private final CreatorScene creatorPanel;
-    private final PlayScene playPanel;
+    private final CreatorScene creatorScene;
+    private final PlayScene playScene;
     private final JPanel cards;
     private final CardLayout cLayout;
 
@@ -80,14 +80,14 @@ public class GuiView extends JFrame implements View {
         menuPanel = new MenuBarPanel();
         setJMenuBar(menuPanel);
 
-        creatorPanel = new CreatorScene();
-        creatorPanel.getCharacterList().setModel(model.getCharactersListModel());
-        creatorPanel.getRolesBox().setModel((ComboBoxModel) model.getRolesModel());
-        cards.add(creatorPanel, ViewName.CREATOR.name());
+        creatorScene = new CreatorScene();
+        creatorScene.getCharacterList().setModel(model.getCharactersListModel());
+        creatorScene.getRolesBox().setModel((ComboBoxModel) model.getRolesModel());
+        cards.add(creatorScene, SceneName.CREATOR.name());
 
-        playPanel = new PlayScene();
-        playPanel.setModel(model);
-        cards.add(playPanel, ViewName.PLAY.name());
+        playScene = new PlayScene();
+        playScene.setModel(model);
+        cards.add(playScene, SceneName.PLAY.name());
     }
 
     private void initWindow() {
@@ -127,13 +127,13 @@ public class GuiView extends JFrame implements View {
      * @param viewName
      */
     @Override
-    public void showView(ViewName viewName) {
+    public void showView(SceneName viewName) {
         cLayout.show(cards, viewName.name());
     }
 
     @Override
-    public ChangeListener getPlayViewListener() {
-        return playPanel;
+    public ChangeListener getPlaySceneListener() {
+        return playScene;
     }
 
     /**
@@ -152,7 +152,7 @@ public class GuiView extends JFrame implements View {
      */
     @Override
     public void updateInfoCreature(Creature creature) {
-        creatorPanel.getInfoStat().update(creature);
+        creatorScene.getInfoStat().update(creature);
     }
 
     /**
@@ -162,50 +162,50 @@ public class GuiView extends JFrame implements View {
      */
     @Override
     public void updateInfoCreature(Roles role) {
-        creatorPanel.getInfoStat().update(role);
+        creatorScene.getInfoStat().update(role);
     }
 
     public JComboBox getRoles() {
-        return creatorPanel.getRolesBox();
+        return creatorScene.getRolesBox();
     }
 
     public JList getCharacters() {
-        return creatorPanel.getCharacterList();
+        return creatorScene.getCharacterList();
     }
 
     @Override
     public String getNameSelected() {
-        String name = creatorPanel.getNameField().getText();
-        creatorPanel.getNameField().setText("");
+        String name = creatorScene.getNameField().getText();
+        creatorScene.getNameField().setText("");
         return name;
     }
 
     @Override
     public Roles getRoleSelected() {
-        return (Roles) creatorPanel.getRolesBox().getSelectedItem();
+        return (Roles) creatorScene.getRolesBox().getSelectedItem();
     }
 
     @Override
     public Creature getHeroSelected() {
-        return (Creature) creatorPanel.getCharacterList().getSelectedValue();
+        return (Creature) creatorScene.getCharacterList().getSelectedValue();
     }
 
     @Override
     public boolean isHeroSelected() {
-        return creatorPanel.getCharacterList().isSelectionEmpty() == false;
+        return creatorScene.getCharacterList().isSelectionEmpty() == false;
 
     }
 
     public JButton getCreate() {
-        return creatorPanel.getCreateButton();
+        return creatorScene.getCreateButton();
     }
 
     public JButton getDelete() {
-        return creatorPanel.getDeleteButton();
+        return creatorScene.getDeleteButton();
     }
 
     public JButton getPlay() {
-        return creatorPanel.getPlayButton();
+        return creatorScene.getPlayButton();
     }
 
     public JMenuItem getSwitch() {
@@ -217,37 +217,37 @@ public class GuiView extends JFrame implements View {
     }
 
     public JButton getNorth() {
-        return playPanel.getCommandBar().getNorthButton();
+        return playScene.getCommandBar().getNorthButton();
     }
 
     public JButton getEast() {
-        return playPanel.getCommandBar().getEastButton();
+        return playScene.getCommandBar().getEastButton();
 
     }
 
     public JButton getSouth() {
-        return playPanel.getCommandBar().getSouthButton();
+        return playScene.getCommandBar().getSouthButton();
 
     }
 
     public JButton getWest() {
-        return playPanel.getCommandBar().getWestButton();
+        return playScene.getCommandBar().getWestButton();
     }
 
     public JButton getFight() {
-        return playPanel.getCommandBar().getFightButton();
+        return playScene.getCommandBar().getFightButton();
     }
 
     public JButton getRun() {
-        return playPanel.getCommandBar().getRunButton();
+        return playScene.getCommandBar().getRunButton();
     }
 
     public JButton getYes() {
-        return playPanel.getCommandBar().getYesButton();
+        return playScene.getCommandBar().getYesButton();
     }
 
     public JButton getNo() {
-        return playPanel.getCommandBar().getNoButton();
+        return playScene.getCommandBar().getNoButton();
     }
 
 }

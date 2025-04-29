@@ -129,11 +129,11 @@ public final class ConsoleView implements View, ChangeListener {
      * @param viewName
      */
     @Override
-    public void showView(ViewName viewName) {
+    public void showView(SceneName viewName) {
         switch (viewName) {
-            case ViewName.CREATOR ->
+            case SceneName.CREATOR ->
                 printer = this::printCreator;
-            case ViewName.PLAY ->
+            case SceneName.PLAY ->
                 printer = this::printPlay;
             default ->
                 throw new AssertionError(ERROR_ENUM_SWITCH);
@@ -304,7 +304,7 @@ public final class ConsoleView implements View, ChangeListener {
     }
 
     @Override
-    public ChangeListener getPlayViewListener() {
+    public ChangeListener getPlaySceneListener() {
         return this;
     }
 

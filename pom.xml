@@ -5,11 +5,16 @@
     <artifactId>swingy</artifactId>
     <version>2.0</version>
     <packaging>jar</packaging>
+    <name>Swingy</name>
+    <description>GUI Programming in Java - 42 school project</description>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>21</maven.compiler.release>
         <exec.mainClass>fr.ft.swingy.App</exec.mainClass>
+        <target.name>swingy</target.name>
     </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.hibernate.orm</groupId>
@@ -42,8 +47,7 @@
             <version>8.0.2.Final</version>
         </dependency>
     </dependencies>
-    <name>Swingy</name>
-    <description>GUI Programming in Java - 42 school project</description>
+
     <build>
         <plugins>
             <plugin>
@@ -62,7 +66,7 @@
                                     <mainClass>${exec.mainClass}</mainClass>
                                 </transformer>
                             </transformers>
-                             <finalName>swingy</finalName>
+                            <finalName>${target.name}</finalName>
                         </configuration>
                     </execution>
                 </executions>
