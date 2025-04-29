@@ -87,7 +87,7 @@ public final class ConsoleView implements View, ChangeListener {
         consoleReader = new BufferedReader(new InputStreamReader(System.in));
         printer = this::printCreator;
         contextMessage = "";
-        addContextMessage(NEWLINE + "Welcome to Swingy!" + NEWLINE);
+        System.out.println(NEWLINE + "Welcome to Swingy!" + NEWLINE);
         rolesList = storeRoleList();
     }
 

@@ -54,16 +54,31 @@ public class ConsoleController extends AbstractController implements InputHandle
         EAST, E,
         SOUTH, S,
         WEST, W,
-        FIGHT,
-        RUN,
-        TAKE,
-        DISCARD
+        FIGHT, F,
+        RUN, R,
+        TAKE, YES,
+        DISCARD, NO,
     }
 
     /**
      * Error message for unknown input
      */
-    public static final String ERROR_INPUT_UNKNOWN = "Error: not a valid command: ";
+    public static final String ERROR_INPUT_UNKNOWN = "Error: not a valid command";
+
+    /**
+     * Prefix error message for unknown input
+     */
+    public static final String ERROR_INPUT_UNKNOWN_PRE = "Error: not a valid command: ";
+
+    /**
+     * Error message for invalid number of parameter
+     */
+    public static final String ERROR_NUMBER_PARAMTER = "missing parameter";
+
+    /**
+     * Error message for contextually unauthorized command
+     */
+    public static final String ERROR_UNAUTHORIZED = "unauthorised in this context";
 
     /**
      * Error message for missing input
@@ -88,7 +103,7 @@ public class ConsoleController extends AbstractController implements InputHandle
      */
     public static final String PLAY_HELP_MSG = "north/west/south/east: move your hero" + NEWLINE
             + "fight/run: against a monster choose your fate" + NEWLINE
-            + "yes/no: if dropped, take the artifact";
+            + "take/discard: if dropped, take the artifact";
 
     private SceneName currentScene;
     private final ConsoleView cView;
@@ -112,8 +127,10 @@ public class ConsoleController extends AbstractController implements InputHandle
         cView.addContextMessage(HELP_HELP_MSG);
         if (model.isPlaying() || model.isEnd()) {
             currentScene = SceneName.PLAY;
+            cView.addContextMessage(PLAY_HELP_MSG);
         } else {
             currentScene = SceneName.CREATOR;
+            cView.addContextMessage(CREATOR_HELP_MSG);
         }
         cView.showView(currentScene);
     }
@@ -128,11 +145,11 @@ public class ConsoleController extends AbstractController implements InputHandle
         try {
             parse(normalize(input));
         } catch (InvalidCommandException e) {
-            cView.addContextMessage(ERROR_INPUT_UNKNOWN + e.getMessage());
+            cView.addContextMessage(ERROR_INPUT_UNKNOWN_PRE + e.getMessage());
         } catch (IllegalArgumentException e) {
             cView.addContextMessage(ERROR_INPUT_UNKNOWN);
         } catch (IndexOutOfBoundsException e) {
-            cView.addContextMessage(ERROR_INPUT_MISSING + e.getMessage());
+            cView.addContextMessage(ERROR_INPUT_MISSING + ERROR_NUMBER_PARAMTER);
         }
     }
 
@@ -148,11 +165,24 @@ public class ConsoleController extends AbstractController implements InputHandle
 
     private InputType shortToLong(InputType shortInput) {
         return switch (shortInput) {
-            case InputType.N -> InputType.NORTH;
-            case InputType.E -> InputType.EAST;
-            case InputType.S -> InputType.SOUTH;
-            case InputType.W -> InputType.WEST;
-            default -> shortInput;
+            case InputType.N ->
+                InputType.NORTH;
+            case InputType.E ->
+                InputType.EAST;
+            case InputType.S ->
+                InputType.SOUTH;
+            case InputType.W ->
+                InputType.WEST;
+            case InputType.YES ->
+                InputType.TAKE;
+            case InputType.NO ->
+                InputType.DISCARD;
+            case InputType.F ->
+                InputType.FIGHT;
+            case InputType.R ->
+                InputType.RUN;
+            default ->
+                shortInput;
         };
     }
 
@@ -199,13 +229,11 @@ public class ConsoleController extends AbstractController implements InputHandle
                 cView.setRoleSelected(Roles.valueOf(input[2]));
                 CreatorAction action = new CreatorAction(CreatorAction.Types.CREATE);
                 action.actionPerformed(null);
-
             }
             case InputType.DELETE -> {
                 cView.setHeroSelected(input[1]);
                 CreatorAction action = new CreatorAction(CreatorAction.Types.DELETE);
                 action.actionPerformed(null);
-
             }
             case InputType.PLAY -> {
                 cView.setHeroSelected(input[1]);
@@ -213,10 +241,10 @@ public class ConsoleController extends AbstractController implements InputHandle
                 action.actionPerformed(null);
                 currentScene = SceneName.PLAY;
                 cView.showView(currentScene);
-
+                cView.addContextMessage(PLAY_HELP_MSG);
             }
             default ->
-                throw new InvalidCommandException("unauthorised in this context");
+                throw new InvalidCommandException(ERROR_UNAUTHORIZED);
         }
     }
 
@@ -228,7 +256,7 @@ public class ConsoleController extends AbstractController implements InputHandle
             }
             case InputType.NORTH, InputType.EAST, InputType.SOUTH, InputType.WEST -> {
                 if (model.isFighting() || model.hasDropped() || model.isEnd()) {
-                    throw new InvalidCommandException("unauthorised in this context");
+                    throw new InvalidCommandException(ERROR_UNAUTHORIZED);
                 } else {
                     HeroAction action = new HeroAction(Model.Action.MOVE, Model.Direction.valueOf(inputType.name()));
                     action.actionPerformed(null);
@@ -240,7 +268,7 @@ public class ConsoleController extends AbstractController implements InputHandle
                     HeroAction action = new HeroAction(Model.Action.valueOf(inputType.name()), null);
                     action.actionPerformed(null);
                 } else {
-                    throw new InvalidCommandException("unauthorised in this context");
+                    throw new InvalidCommandException(ERROR_UNAUTHORIZED);
                 }
             }
             case InputType.TAKE, InputType.DISCARD -> {
@@ -248,11 +276,11 @@ public class ConsoleController extends AbstractController implements InputHandle
                     HeroAction action = new HeroAction(Model.Action.valueOf(inputType.name()), null);
                     action.actionPerformed(null);
                 } else {
-                    throw new InvalidCommandException("unauthorised in this context");
+                    throw new InvalidCommandException(ERROR_UNAUTHORIZED);
                 }
             }
             default ->
-                throw new InvalidCommandException("unauthorised in this context");
+                throw new InvalidCommandException(ERROR_UNAUTHORIZED);
         }
     }
 

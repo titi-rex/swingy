@@ -251,6 +251,8 @@ public final class PlayModel {
         if (creature.getArtifact() != null && randGen.nextInt(100) < 40) {
             dropped = creature.getArtifact();
             addLog(creature + " dropped something.. It's a " + dropped.toString() + " to your taking!");
+            addLog("Would you like to take it?");
+
         } else {
             dropped = null;
         }
@@ -262,6 +264,7 @@ public final class PlayModel {
     public void takeDropped() {
         hero.setArtifact(dropped);
         dropped = null;
+        addLog("You take the " + hero.getArtifact());
         checkEnd();
     }
 
@@ -270,6 +273,7 @@ public final class PlayModel {
      */
     public void discardDropped() {
         dropped = null;
+        addLog("The brave needs no trinkets.");
         checkEnd();
     }
 
@@ -285,10 +289,13 @@ public final class PlayModel {
                 || hero.getHitPoint() <= 0) {
             running = false;
             end = true;
-            addLog("Congratulation! You reached the end of the maze!");
+            if (hero.getHitPoint() > 0) {
+                addLog("Congratulation! You reached the end of the maze!");
+            }
         } else if (getCellAt(heroCoordinate).getType() == Cell.Type.ENNEMY) {
             addLog(getCellAt(heroCoordinate).getCreature().getName()
-                    + " approach you with murderous intent");
+                    + " approach you with murderous intent.");
+            addLog("You should fight. Or run away if you value your life.");
         }
         view.stateChanged(null);
     }
