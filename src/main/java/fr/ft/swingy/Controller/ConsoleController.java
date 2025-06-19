@@ -147,7 +147,7 @@ public class ConsoleController extends AbstractController implements InputHandle
         } catch (InvalidCommandException e) {
             cView.addContextMessage(ERROR_INPUT_UNKNOWN_PRE + e.getMessage());
         } catch (IllegalArgumentException e) {
-            cView.addContextMessage(ERROR_INPUT_UNKNOWN);
+            cView.addContextMessage(ERROR_INPUT_UNKNOWN + ": invalid argument");
         } catch (IndexOutOfBoundsException e) {
             cView.addContextMessage(ERROR_INPUT_MISSING + ERROR_NUMBER_PARAMTER);
         }
